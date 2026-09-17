@@ -1,0 +1,146 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fb;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+}
+
+.left {
+    width: 50%;
+    background-color: #4a6fa5;
+    color: white;
+    padding: 100px 70px;
+}
+
+.left h1 {
+    font-size: 42px;
+    margin-bottom: 20px;
+}
+
+.tagline {
+    font-size: 25px;
+    margin-bottom: 20px;
+}
+
+.about {
+    width: 450px;
+    line-height: 1.6;
+}
+
+.login-box {
+    width: 400px;
+    margin: auto;
+    background-color: white;
+    padding: 35px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.login-box h2 {
+    margin-bottom: 8px;
+}
+
+.login-text {
+    color: #777;
+    margin-bottom: 25px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 18px;
+}
+
+.password-box {
+    position: relative;
+}
+
+.password-box input {
+    padding-right: 55px;
+}
+
+.password-box button {
+    position: absolute;
+    right: 8px;
+    top: 9px;
+    border: none;
+    background: none;
+    color: #4a6fa5;
+    cursor: pointer;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.options label {
+    margin: 0;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #4a6fa5;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background-color: #3d5d8a;
+}
+
+a {
+    color: #4a6fa5;
+    text-decoration: none;
+}
+
+.signup {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .left {
+        width: 100%;
+        padding: 40px 30px;
+    }
+
+    .about {
+        width: auto;
+    }
+
+    .login-box {
+        width: 90%;
+        margin: 40px auto;
+    }
+}
