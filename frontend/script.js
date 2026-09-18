@@ -10,13 +10,39 @@ function showPassword() {
     }
 }
 
-function login(event) {
+async function login(event) {
     event.preventDefault();
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
     if (email === "" || password === "") {
         alert("Please enter your email and password.");
-    } else {
-        alert("Login successful!");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(data.message);
+        } else {
+            alert("Login failed.");
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Could not connect to the backend.");
     }
 }
