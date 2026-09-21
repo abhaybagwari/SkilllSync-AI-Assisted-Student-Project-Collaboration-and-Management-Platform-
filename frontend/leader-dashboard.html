@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSync - Team Leader Dashboard</title>
+    <title>SkillSync - Team Leader</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="dashboard">
@@ -14,78 +15,161 @@
 
         <h2>SkillSync</h2>
 
-        <a href="#">Dashboard</a>
-        <a href="#">My Profile</a>
-        <a href="#">My Projects</a>
-        <a href="#">Find Members</a>
-        <a href="#">Team Requests</a>
-        <a href="#">Team Members</a>
-        <a href="#">Tasks</a>
-        <a href="#">Settings</a>
+        <a href="#" onclick="showSection('create-project')">
+            Create Project
+        </a>
 
-        <a href="index.html" class="logout">Logout</a>
+        <a href="#" onclick="showSection('your-projects')">
+            Your Projects
+        </a>
+
+        <a href="#" onclick="showSection('feedback')">
+            Feedback
+        </a>
+
+        <a href="index.html" class="logout" onclick="logout()">
+            Exit
+        </a>
 
     </div>
 
+
     <div class="main-content">
 
-        <h1>Team Leader Dashboard</h1>
-        <p class="welcome">Manage your projects, team members and tasks.</p>
+        <!-- CREATE PROJECT -->
 
-        <div class="cards">
+        <div id="create-project" class="dashboard-section">
 
-            <div class="card">
-                <h3>My Projects</h3>
-                <p></p>
-            </div>
+            <h1>Create Project</h1>
 
-            <div class="card">
-                <h3>Team Members</h3>
-                <p></p>
-            </div>
+            <p class="welcome">
+                Create a new project and find the right team members.
+            </p>
 
-            <div class="card">
-                <h3>Pending Requests</h3>
-                <p></p>
-            </div>
+            <div class="project-form">
 
-            <div class="card">
-                <h3>Tasks</h3>
-                <p></p>
+                <label for="projectName">
+                    Project Name
+                </label>
+
+                <input
+                    type="text"
+                    id="projectName"
+                    placeholder="Enter project name"
+                >
+
+
+                <label for="membersRequired">
+                    Members Required
+                </label>
+
+                <input
+                    type="number"
+                    id="membersRequired"
+                    placeholder="Enter number of members"
+                    min="1"
+                >
+
+
+                <label for="skillsRequired">
+                    Skills Required
+                </label>
+
+                <input
+                    type="text"
+                    id="skillsRequired"
+                    placeholder="Example: Python, Java, SQL"
+                >
+
+
+                <label for="projectTimeline">
+                    Timeline
+                </label>
+
+                <input
+                    type="date"
+                    id="projectTimeline"
+                >
+
+
+                <button
+                    type="button"
+                    class="login-btn"
+                    onclick="sendProject()"
+                >
+                    SEND
+                </button>
+
             </div>
 
         </div>
 
-        <div class="section">
 
-            <h2>My Projects</h2>
+        <!-- YOUR PROJECTS -->
 
-            <div class="project">
-                <h3></h3>
-                <p></p>
-                <p class="match"></p>
+        <div id="your-projects" class="dashboard-section hidden">
+
+            <h1>Your Projects</h1>
+
+            <p class="welcome">
+                View and manage your projects.
+            </p>
+
+            <div class="project-table-container">
+
+                <table class="project-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Project</th>
+                            <th>Members</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="projectTableBody">
+
+</tbody>>
+
+                </table>
+
             </div>
 
         </div>
 
-        <div class="section">
 
-            <h2>Team Requests</h2>
+        <!-- FEEDBACK -->
 
-            <div class="project">
-                <h3></h3>
-                <p></p>
-                <p class="match"></p>
-            </div>
+        <div id="feedback" class="dashboard-section hidden">
 
-        </div>
+            <h1>Feedback</h1>
 
-        <div class="section">
+            <p class="welcome">
+                Share your feedback about SkillSync.
+            </p>
 
-            <h2>Team Tasks</h2>
+            <div class="project-form">
 
-            <div class="task">
-                <span class="status"></span>
+                <label for="feedbackText">
+                    Your Feedback
+                </label>
+
+                <textarea
+                    id="feedbackText"
+                    placeholder="Write your feedback here..."
+                    rows="6"
+                ></textarea>
+
+                <button
+                    type="button"
+                    class="login-btn"
+                    onclick="sendFeedback()"
+                >
+                    SEND FEEDBACK
+                </button>
+
             </div>
 
         </div>
@@ -93,6 +177,222 @@
     </div>
 
 </div>
+
+
+<script>
+
+function showSection(sectionId) {
+
+    const sections =
+        document.querySelectorAll(".dashboard-section");
+
+    sections.forEach(function(section) {
+
+        section.classList.add("hidden");
+
+    });
+
+    document
+        .getElementById(sectionId)
+        .classList.remove("hidden");
+}
+
+
+async function sendProject() {
+
+    const projectName =
+        document.getElementById("projectName").value.trim();
+
+    const members =
+        document.getElementById("membersRequired").value;
+
+    const skills =
+        document.getElementById("skillsRequired").value.trim();
+
+    const timeline =
+        document.getElementById("projectTimeline").value;
+
+    const userId =
+        localStorage.getItem("userId");
+
+
+    if (
+        projectName === "" ||
+        members === "" ||
+        skills === "" ||
+        timeline === ""
+    ) {
+        alert("Please fill all project details.");
+        return;
+    }
+
+
+    if (!userId) {
+        alert("User session not found. Please login again.");
+        window.location.href = "index.html";
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            "http://127.0.0.1:8000/projects/",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    project_name: projectName,
+                    members_required: parseInt(members),
+                    skill_required: skills,
+                    submission_date: timeline,
+                    user_id: parseInt(userId)
+                })
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (!response.ok) {
+            alert(data.detail || "Failed to create project.");
+            return;
+        }
+
+
+        alert("Project created successfully.");
+
+
+        document.getElementById("projectName").value = "";
+        document.getElementById("membersRequired").value = "";
+        document.getElementById("skillsRequired").value = "";
+        document.getElementById("projectTimeline").value = "";
+
+
+        await loadProjects();
+
+        showSection("your-projects");
+
+    }
+
+    catch (error) {
+
+        console.error("Project creation error:", error);
+
+        alert(
+            "Unable to connect to the SkillSync backend."
+        );
+
+    }
+}
+
+
+function sendFeedback() {
+
+    const feedback =
+        document.getElementById("feedbackText").value.trim();
+
+
+    if (feedback === "") {
+
+        alert("Please enter your feedback.");
+
+        return;
+    }
+
+
+    alert("Thank you for your feedback!");
+
+    document.getElementById("feedbackText").value = "";
+}
+
+
+function logout() {
+
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+
+}
+async function loadProjects() {
+
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+        console.error("User ID not found.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `http://127.0.0.1:8000/projects/user/${userId}`
+        );
+
+        const data = await response.json();
+
+        console.log("Projects API response:", data);
+
+        if (!response.ok) {
+
+            console.error(
+                "Failed to load projects:",
+                data
+            );
+
+            return;
+        }
+
+        const tableBody =
+            document.getElementById("projectTableBody");
+
+        tableBody.innerHTML = "";
+
+        if (!data.projects || data.projects.length === 0) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="3">
+                        No projects found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        data.projects.forEach(function(project) {
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${project.Project_Name}</td>
+                <td>${project.Members_Required}</td>
+                <td>Ongoing</td>
+            `;
+
+            tableBody.appendChild(row);
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Unable to load projects:",
+            error
+        );
+
+    }
+}
+
+</script>
+window.onload = function() {
+    loadProjects();
+};
 
 </body>
 </html>

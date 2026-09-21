@@ -57,17 +57,47 @@
 </div>
 
 <script>
-function createAccount(event) {
+async function createAccount(event) {
     event.preventDefault();
 
+    let name = document.getElementById("signupName").value;
+    let role = document.getElementById("signupRole").value;
+    let email = document.getElementById("signupEmail").value;
     let password = document.getElementById("signupPassword").value;
     let confirmPassword = document.getElementById("confirmPassword").value;
 
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
         alert("Passwords do not match");
-    } else {
+        return;
+    }
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/auth/signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name,
+                role: role,
+                email: email,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.detail || "Signup failed");
+            return;
+        }
+
         alert("Account created successfully");
         window.location.href = "index.html";
+
+    } catch (error) {
+        alert("Unable to connect to the server.");
+        console.error(error);
     }
 }
 </script>
