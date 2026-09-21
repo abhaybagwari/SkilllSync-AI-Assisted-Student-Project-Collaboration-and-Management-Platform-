@@ -4,7 +4,7 @@ def get_connection():
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="Kritika",
+       password="YOUR_MYSQL_PASSWORD"
         database="SkillSync"
     )
 
