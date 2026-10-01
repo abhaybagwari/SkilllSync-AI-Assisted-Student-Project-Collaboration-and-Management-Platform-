@@ -23,6 +23,10 @@
             Your Projects
         </a>
 
+        <a href="#" onclick="showSection('team-management'); loadTeamProjects()">
+            Team Management
+        </a>
+
         <a href="#" onclick="showSection('feedback')">
             Feedback
         </a>
@@ -33,10 +37,7 @@
 
     </div>
 
-
     <div class="main-content">
-
-        <!-- CREATE PROJECT -->
 
         <div id="create-project" class="dashboard-section">
 
@@ -58,6 +59,15 @@
                     placeholder="Enter project name"
                 >
 
+                <label for="projectDescription">
+                    Project Description
+                </label>
+
+                <textarea
+                    id="projectDescription"
+                    rows="5"
+                    placeholder="Describe your project, its purpose, features, and requirements..."
+                ></textarea>
 
                 <label for="membersRequired">
                     Members Required
@@ -70,7 +80,6 @@
                     min="1"
                 >
 
-
                 <label for="skillsRequired">
                     Skills Required
                 </label>
@@ -81,7 +90,6 @@
                     placeholder="Example: Python, Java, SQL"
                 >
 
-
                 <label for="projectTimeline">
                     Timeline
                 </label>
@@ -90,7 +98,6 @@
                     type="date"
                     id="projectTimeline"
                 >
-
 
                 <button
                     type="button"
@@ -104,8 +111,6 @@
 
         </div>
 
-
-        <!-- YOUR PROJECTS -->
 
         <div id="your-projects" class="dashboard-section hidden">
 
@@ -130,8 +135,7 @@
                     </thead>
 
                     <tbody id="projectTableBody">
-
-</tbody>>
+                    </tbody>
 
                 </table>
 
@@ -140,7 +144,122 @@
         </div>
 
 
-        <!-- FEEDBACK -->
+        <div id="team-management" class="dashboard-section hidden">
+
+            <h1>Team Management</h1>
+
+            <p class="welcome">
+                Manage your project members and applications.
+            </p>
+
+            <div class="project-form">
+
+                <label for="teamProjectSelect">
+                    Select Project
+                </label>
+
+                <select id="teamProjectSelect" onchange="loadTeamMembers()">
+                    <option value="">
+                        Select a project
+                    </option>
+                </select>
+
+            </div>
+
+
+            <div id="teamDetails" class="hidden">
+
+                <h2>Team Overview</h2>
+
+                <div class="project-table-container">
+
+                    <table class="project-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Team Size</th>
+                                <th>Members Required</th>
+                                <th>Available Positions</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="teamSummaryBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <h2>Current Members</h2>
+
+                <div class="project-table-container">
+
+                    <table class="project-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="currentMembersBody">
+
+                            <tr>
+                                <td colspan="4">
+                                    No team members found.
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <h2>Pending Applications</h2>
+
+                <div class="project-table-container">
+
+                    <table class="project-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="pendingApplicationsBody">
+
+                            <tr>
+                                <td colspan="4">
+                                    No pending applications.
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
 
         <div id="feedback" class="dashboard-section hidden">
 
@@ -187,9 +306,7 @@ function showSection(sectionId) {
         document.querySelectorAll(".dashboard-section");
 
     sections.forEach(function(section) {
-
         section.classList.add("hidden");
-
     });
 
     document
@@ -203,6 +320,9 @@ async function sendProject() {
     const projectName =
         document.getElementById("projectName").value.trim();
 
+    const description =
+        document.getElementById("projectDescription").value.trim();
+
     const members =
         document.getElementById("membersRequired").value;
 
@@ -215,9 +335,9 @@ async function sendProject() {
     const userId =
         localStorage.getItem("userId");
 
-
     if (
         projectName === "" ||
+        description === "" ||
         members === "" ||
         skills === "" ||
         timeline === ""
@@ -226,13 +346,11 @@ async function sendProject() {
         return;
     }
 
-
     if (!userId) {
         alert("User session not found. Please login again.");
         window.location.href = "index.html";
         return;
     }
-
 
     try {
 
@@ -247,6 +365,7 @@ async function sendProject() {
 
                 body: JSON.stringify({
                     project_name: projectName,
+                    project_description: description,
                     members_required: parseInt(members),
                     skill_required: skills,
                     submission_date: timeline,
@@ -255,75 +374,55 @@ async function sendProject() {
             }
         );
 
-
         const data = await response.json();
 
-
         if (!response.ok) {
-            alert(data.detail || "Failed to create project.");
+
+            alert(
+                data.detail ||
+                "Failed to create project."
+            );
+
             return;
         }
 
-
         alert("Project created successfully.");
 
-
         document.getElementById("projectName").value = "";
+        document.getElementById("projectDescription").value = "";
         document.getElementById("membersRequired").value = "";
         document.getElementById("skillsRequired").value = "";
         document.getElementById("projectTimeline").value = "";
-
 
         await loadProjects();
 
         showSection("your-projects");
 
-    }
+    } catch (error) {
 
-    catch (error) {
-
-        console.error("Project creation error:", error);
+        console.error(
+            "Project creation error:",
+            error
+        );
 
         alert(
             "Unable to connect to the SkillSync backend."
         );
-
     }
 }
 
 
-function sendFeedback() {
-
-    const feedback =
-        document.getElementById("feedbackText").value.trim();
-
-
-    if (feedback === "") {
-
-        alert("Please enter your feedback.");
-
-        return;
-    }
-
-
-    alert("Thank you for your feedback!");
-
-    document.getElementById("feedbackText").value = "";
-}
-
-
-function logout() {
-
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userRole");
-
-}
 async function loadProjects() {
 
-    const userId = localStorage.getItem("userId");
+    const userId =
+        localStorage.getItem("userId");
 
     if (!userId) {
-        console.error("User ID not found.");
+
+        console.error(
+            "User ID not found."
+        );
+
         return;
     }
 
@@ -333,9 +432,13 @@ async function loadProjects() {
             `http://127.0.0.1:8000/projects/user/${userId}`
         );
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
-        console.log("Projects API response:", data);
+        console.log(
+            "Projects API response:",
+            data
+        );
 
         if (!response.ok) {
 
@@ -352,7 +455,10 @@ async function loadProjects() {
 
         tableBody.innerHTML = "";
 
-        if (!data.projects || data.projects.length === 0) {
+        if (
+            !data.projects ||
+            data.projects.length === 0
+        ) {
 
             tableBody.innerHTML = `
                 <tr>
@@ -367,7 +473,8 @@ async function loadProjects() {
 
         data.projects.forEach(function(project) {
 
-            const row = document.createElement("tr");
+            const row =
+                document.createElement("tr");
 
             row.innerHTML = `
                 <td>${project.Project_Name}</td>
@@ -385,14 +492,495 @@ async function loadProjects() {
             "Unable to load projects:",
             error
         );
-
     }
 }
 
-</script>
+
+async function loadTeamProjects() {
+
+    const userId =
+        localStorage.getItem("userId");
+
+    if (!userId) {
+
+        alert("User session not found. Please login again.");
+
+        window.location.href = "index.html";
+
+        return;
+    }
+
+    const select =
+        document.getElementById("teamProjectSelect");
+
+    select.innerHTML = `
+        <option value="">
+            Select a project
+        </option>
+    `;
+
+    try {
+
+        const response = await fetch(
+            `http://127.0.0.1:8000/projects/user/${userId}`
+        );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            alert("Unable to load your projects.");
+
+            return;
+        }
+
+        if (
+            !data.projects ||
+            data.projects.length === 0
+        ) {
+
+            select.innerHTML = `
+                <option value="">
+                    No projects available
+                </option>
+            `;
+
+            return;
+        }
+
+        data.projects.forEach(function(project) {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                project.Project_ID;
+
+            option.textContent =
+                project.Project_Name;
+
+            select.appendChild(option);
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Team project loading error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the SkillSync backend."
+        );
+    }
+}
+
+
+async function loadTeamMembers() {
+
+    const projectId =
+        document.getElementById("teamProjectSelect").value;
+
+    const teamDetails =
+        document.getElementById("teamDetails");
+
+    if (!projectId) {
+
+        teamDetails.classList.add("hidden");
+
+        return;
+    }
+
+    teamDetails.classList.remove("hidden");
+
+    const currentMembersBody =
+        document.getElementById("currentMembersBody");
+
+    const pendingApplicationsBody =
+        document.getElementById("pendingApplicationsBody");
+
+    currentMembersBody.innerHTML = `
+        <tr>
+            <td colspan="4">
+                Loading team members...
+            </td>
+        </tr>
+    `;
+
+    pendingApplicationsBody.innerHTML = `
+        <tr>
+            <td colspan="4">
+                Loading applications...
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        const response = await fetch(
+            `http://127.0.0.1:8000/projects/${projectId}/members`
+        );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            currentMembersBody.innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        Team management backend is not connected yet.
+                    </td>
+                </tr>
+            `;
+
+            pendingApplicationsBody.innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        Team management backend is not connected yet.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        updateTeamMembers(data);
+
+    } catch (error) {
+
+        console.error(
+            "Team management error:",
+            error
+        );
+
+        currentMembersBody.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Unable to load team members.
+                </td>
+            </tr>
+        `;
+
+        pendingApplicationsBody.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Unable to load applications.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+
+function updateTeamMembers(data) {
+
+    const currentMembersBody =
+        document.getElementById("currentMembersBody");
+
+    const pendingApplicationsBody =
+        document.getElementById("pendingApplicationsBody");
+
+    const teamSummaryBody =
+        document.getElementById("teamSummaryBody");
+
+    const members =
+        data.members || [];
+
+    const applications =
+        data.applications || [];
+
+    const membersRequired =
+        data.members_required || 0;
+
+    const availablePositions =
+        Math.max(
+            membersRequired - members.length,
+            0
+        );
+
+    teamSummaryBody.innerHTML = `
+        <tr>
+            <td>${members.length}</td>
+            <td>${membersRequired}</td>
+            <td>${availablePositions}</td>
+        </tr>
+    `;
+
+    currentMembersBody.innerHTML = "";
+
+    if (members.length === 0) {
+
+        currentMembersBody.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    No accepted members yet.
+                </td>
+            </tr>
+        `;
+
+    } else {
+
+        members.forEach(function(member) {
+
+            const row =
+                document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${member.name || member.Name || "Unknown"}</td>
+                <td>${member.email || member.Email || "N/A"}</td>
+                <td>Accepted</td>
+                <td>
+                    <button
+                        type="button"
+                        onclick="removeMember(${member.member_id || member.Member_ID})"
+                    >
+                        REMOVE
+                    </button>
+                </td>
+            `;
+
+            currentMembersBody.appendChild(row);
+
+        });
+    }
+
+    pendingApplicationsBody.innerHTML = "";
+
+    if (applications.length === 0) {
+
+        pendingApplicationsBody.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    No pending applications.
+                </td>
+            </tr>
+        `;
+
+    } else {
+
+        applications.forEach(function(application) {
+
+            const row =
+                document.createElement("tr");
+
+            const memberId =
+                application.member_id ||
+                application.Member_ID;
+
+            row.innerHTML = `
+                <td>
+                    ${application.name || application.Name || "Unknown"}
+                </td>
+
+                <td>
+                    ${application.email || application.Email || "N/A"}
+                </td>
+
+                <td>
+                    Pending
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        onclick="acceptMember(${memberId})"
+                    >
+                        ACCEPT
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="rejectMember(${memberId})"
+                    >
+                        REJECT
+                    </button>
+
+                </td>
+            `;
+
+            pendingApplicationsBody.appendChild(row);
+
+        });
+    }
+}
+
+
+async function acceptMember(memberId) {
+
+    if (!confirm("Accept this student into the project?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `http://127.0.0.1:8000/projects/members/${memberId}/accept`,
+            {
+                method: "PUT"
+            }
+        );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            alert(
+                data.detail ||
+                "Unable to accept member."
+            );
+
+            return;
+        }
+
+        alert("Member accepted successfully.");
+
+        await loadTeamMembers();
+
+    } catch (error) {
+
+        console.error(
+            "Accept member error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the backend."
+        );
+    }
+}
+
+
+async function rejectMember(memberId) {
+
+    if (!confirm("Reject this application?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `http://127.0.0.1:8000/projects/members/${memberId}/reject`,
+            {
+                method: "PUT"
+            }
+        );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            alert(
+                data.detail ||
+                "Unable to reject application."
+            );
+
+            return;
+        }
+
+        alert("Application rejected.");
+
+        await loadTeamMembers();
+
+    } catch (error) {
+
+        console.error(
+            "Reject member error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the backend."
+        );
+    }
+}
+
+
+async function removeMember(memberId) {
+
+    if (!confirm("Remove this member from the project?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `http://127.0.0.1:8000/projects/members/${memberId}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            alert(
+                data.detail ||
+                "Unable to remove member."
+            );
+
+            return;
+        }
+
+        alert("Member removed successfully.");
+
+        await loadTeamMembers();
+
+    } catch (error) {
+
+        console.error(
+            "Remove member error:",
+            error
+        );
+
+        alert(
+            "Unable to connect to the backend."
+        );
+    }
+}
+
+
+function sendFeedback() {
+
+    const feedback =
+        document.getElementById("feedbackText").value.trim();
+
+    if (feedback === "") {
+
+        alert("Please enter your feedback.");
+
+        return;
+    }
+
+    alert("Thank you for your feedback!");
+
+    document.getElementById("feedbackText").value = "";
+}
+
+
+function logout() {
+
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userId");
+
+}
+
+
 window.onload = function() {
+
     loadProjects();
+
 };
+
+</script>
 
 </body>
 </html>
