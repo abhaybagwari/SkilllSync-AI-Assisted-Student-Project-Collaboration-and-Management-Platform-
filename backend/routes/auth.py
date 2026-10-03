@@ -12,20 +12,18 @@ class SignupRequest(BaseModel):
     password: str
 
 
+role_map = {
+    "student": "Team Member",
+    "leader": "Team Leader",
+    "mentor": "Mentor"
+}
+
+
 @router.post("/signup")
 def signup(user: SignupRequest):
 
-    role_map = {
-        "student": "Team Member",
-        "leader": "Team Leader",
-        "mentor": "Mentor"
-    }
-
     if user.role not in role_map:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid role"
-        )
+        raise HTTPException(status_code=400, detail="Invalid role")
 
     db_role = role_map[user.role]
 
@@ -38,9 +36,7 @@ def signup(user: SignupRequest):
             (user.email,)
         )
 
-        existing_user = cursor.fetchone()
-
-        if existing_user:
+        if cursor.fetchone():
             raise HTTPException(
                 status_code=400,
                 detail="Email already registered"
@@ -48,10 +44,15 @@ def signup(user: SignupRequest):
 
         cursor.execute(
             """
-            INSERT INTO User (Role, Email, Password)
-            VALUES (%s, %s, %s)
+            INSERT INTO User (Name, Role, Email, Password)
+            VALUES (%s, %s, %s, %s)
             """,
-            (db_role, user.email, user.password)
+            (
+                user.name.strip(),
+                db_role,
+                user.email,
+                user.password
+            )
         )
 
         connection.commit()
@@ -73,10 +74,19 @@ def signup(user: SignupRequest):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+    role: str
 
 
 @router.post("/login")
 def login(user: LoginRequest):
+
+    expected_role = role_map.get(user.role)
+
+    if not expected_role:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid role"
+        )
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -84,7 +94,7 @@ def login(user: LoginRequest):
     try:
         cursor.execute(
             """
-            SELECT User_ID, Role, Password
+            SELECT User_ID, Name, Role, Password
             FROM User
             WHERE Email = %s
             """,
@@ -99,7 +109,7 @@ def login(user: LoginRequest):
                 detail="Invalid email or password"
             )
 
-        user_id, role, password = db_user
+        user_id, name, role, password = db_user
 
         if password != user.password:
             raise HTTPException(
@@ -107,10 +117,17 @@ def login(user: LoginRequest):
                 detail="Invalid email or password"
             )
 
+        if role != expected_role:
+            raise HTTPException(
+                status_code=403,
+                detail="Selected role does not match this account"
+            )
+
         return {
             "message": "Login successful",
             "user": {
                 "user_id": user_id,
+                "name": name,
                 "email": user.email,
                 "role": role
             }

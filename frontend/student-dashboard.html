@@ -10,76 +10,339 @@
 
 <div class="dashboard">
 
-    <div class="sidebar">
-
+    <aside class="sidebar">
         <h2>SkillSync</h2>
 
         <a href="#">Dashboard</a>
         <a href="#">My Profile</a>
-        <a href="#">Find Projects</a>
-        <a href="#">My Team</a>
-        <a href="#">My Tasks</a>
+        <a href="#projects">Find Projects</a>
+        <a href="#team">My Team</a>
+        <a href="#tasks">My Tasks</a>
         <a href="#">Certificates</a>
         <a href="#">Settings</a>
-
         <a href="index.html" class="logout">Logout</a>
+    </aside>
 
-    </div>
-
-    <div class="main-content">
+    <main class="main-content">
 
         <h1>Student Dashboard</h1>
-        <p class="welcome">Welcome back! Find projects and work with the right team.</p>
+
+        <p class="welcome" id="welcomeMessage">
+            Welcome back! Find projects and work with the right team.
+        </p>
 
         <div class="cards">
 
             <div class="card">
                 <h3>My Projects</h3>
-                <p></p>
+                <p id="projectCount">0</p>
             </div>
 
             <div class="card">
                 <h3>Team Members</h3>
-                <p></p>
+                <p id="teamCount">0</p>
             </div>
 
             <div class="card">
                 <h3>Pending Tasks</h3>
-                <p></p>
+                <p>0</p>
             </div>
 
             <div class="card">
                 <h3>Completed Tasks</h3>
-                <p></p>
+                <p>0</p>
             </div>
 
         </div>
 
-        <div class="section">
+        <section class="section" id="projects">
 
             <h2>Recommended Projects</h2>
 
-            <div class="project">
-                <h3></h3>
-                <p></p>
-                <p class="match"></p>
+            <div id="projectsContainer">
+                <p>Loading projects...</p>
             </div>
 
-        </div>
+        </section>
 
-        <div class="section">
+        <section class="section" id="team">
+
+            <h2>My Team</h2>
+
+            <div id="teamContainer">
+                <p>Loading team information...</p>
+            </div>
+
+        </section>
+
+        <section class="section" id="tasks">
 
             <h2>My Recent Tasks</h2>
 
             <div class="task">
-                <span class="status"></span>
+                No tasks assigned yet.
             </div>
 
-        </div>
+        </section>
 
-    </div>
+    </main>
 
 </div>
+
+<script>
+
+const API_URL = "http://127.0.0.1:8000";
+
+const userId = localStorage.getItem("userId");
+const userName = localStorage.getItem("userName");
+
+if (!userId) {
+    alert("Please login first.");
+    window.location.href = "index.html";
+}
+
+if (userName) {
+    document.getElementById("welcomeMessage").innerText =
+        `Welcome back, ${userName}! Find projects and work with the right team.`;
+}
+
+
+async function loadProjects() {
+
+    const container = document.getElementById("projectsContainer");
+
+    try {
+
+        const response = await fetch(`${API_URL}/projects/`);
+
+        if (!response.ok) {
+            throw new Error("Failed to load projects");
+        }
+
+        const data = await response.json();
+
+        if (!data.projects || data.projects.length === 0) {
+
+            container.innerHTML =
+                "<p>No projects available.</p>";
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        data.projects.forEach(project => {
+
+            const projectDiv = document.createElement("div");
+
+            projectDiv.className = "project";
+
+            const isLeader =
+                Number(project.Leader_ID) === Number(userId);
+
+            projectDiv.innerHTML = `
+                <h3>${project.Project_Name}</h3>
+
+                <p>${project.Project_Description}</p>
+
+                <p>
+                    <strong>Skills:</strong>
+                    ${project.Skill_Required}
+                </p>
+
+                <p>
+                    <strong>Members Required:</strong>
+                    ${project.Members_Required}
+                </p>
+
+                <p>
+                    <strong>Submission Date:</strong>
+                    ${project.Submission_Date}
+                </p>
+
+                <p>
+                    <strong>Leader:</strong>
+                    ${project.Leader_Name || "Unknown"}
+                </p>
+
+                ${
+                    isLeader
+                    ?
+                    `<p>
+                        <strong>You are the project leader.</strong>
+                    </p>`
+                    :
+                    `
+                    <button
+                        class="login-btn"
+                        onclick="applyToProject(${project.Project_ID})">
+                        Apply
+                    </button>
+                    `
+                }
+            `;
+
+            container.appendChild(projectDiv);
+
+        });
+
+    } catch (error) {
+
+        console.error("Project loading error:", error);
+
+        container.innerHTML =
+            "<p>Unable to load projects. Make sure the backend is running.</p>";
+    }
+}
+
+
+async function applyToProject(projectId) {
+
+    if (!userId) {
+
+        alert("Please login first.");
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/projects/${projectId}/apply`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    user_id: Number(userId)
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            alert(data.detail || "Unable to apply.");
+
+            return;
+        }
+
+        alert(data.message);
+
+        loadMyProjects();
+
+    } catch (error) {
+
+        console.error("Application error:", error);
+
+        alert("Unable to connect to the backend.");
+    }
+}
+
+
+async function loadMyProjects() {
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/projects/member/${userId}`
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Failed to load student projects"
+            );
+        }
+
+        const data = await response.json();
+
+        document.getElementById("projectCount").innerText =
+            data.projects.length;
+
+        const teamContainer =
+            document.getElementById("teamContainer");
+
+        if (data.projects.length === 0) {
+
+            teamContainer.innerHTML =
+                "<p>You have not joined any project yet.</p>";
+
+            document.getElementById("teamCount").innerText =
+                "0";
+
+            return;
+        }
+
+        let acceptedProjects = 0;
+
+        let teamHTML = "";
+
+        data.projects.forEach(project => {
+
+            if (project.Status === "Accepted") {
+
+                acceptedProjects++;
+
+            }
+
+            teamHTML += `
+                <div class="project">
+
+                    <h3>
+                        ${project.Project_Name}
+                    </h3>
+
+                    <p>
+                        <strong>Leader:</strong>
+                        ${project.Leader_Name || "Unknown"}
+                    </p>
+
+                    <p>
+                        <strong>Skills:</strong>
+                        ${project.Skill_Required}
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="match">
+                            ${project.Status}
+                        </span>
+                    </p>
+
+                </div>
+            `;
+
+        });
+
+        document.getElementById("teamCount").innerText =
+            acceptedProjects;
+
+        teamContainer.innerHTML =
+            teamHTML;
+
+    } catch (error) {
+
+        console.error(
+            "Student project loading error:",
+            error
+        );
+
+        document.getElementById("teamContainer").innerHTML =
+            "<p>Unable to load your projects.</p>";
+    }
+}
+
+
+loadProjects();
+
+loadMyProjects();
+
+</script>
 
 </body>
 </html>
