@@ -1,17 +1,14 @@
 function showPassword() {
-let password = document.getElementById("password");
-let button = document.querySelector(".password-box button");
+    let password = document.getElementById("password");
+    let button = document.querySelector(".password-box button");
 
-```
-if (password.type === "password") {
-    password.type = "text";
-    button.innerText = "Hide";
-} else {
-    password.type = "password";
-    button.innerText = "Show";
-}
-```
-
+    if (password.type === "password") {
+        password.type = "text";
+        button.innerText = "Hide";
+    } else {
+        password.type = "password";
+        button.innerText = "Show";
+    }
 }
 
 async function login(event) {
@@ -34,7 +31,8 @@ async function login(event) {
             },
             body: JSON.stringify({
                 email: email,
-                password: password
+                password: password,
+                role: role
             })
         });
 
@@ -53,11 +51,9 @@ async function login(event) {
 
         if (data.user.role === "Team Member") {
             window.location.href = "student-dashboard.html";
-        }
-        else if (data.user.role === "Team Leader") {
+        } else if (data.user.role === "Team Leader") {
             window.location.href = "leader-dashboard.html";
-        }
-        else if (data.user.role === "Mentor") {
+        } else if (data.user.role === "Mentor") {
             window.location.href = "mentor-dashboard.html";
         }
 
@@ -65,6 +61,4 @@ async function login(event) {
         console.error("Login error:", error);
         alert("Unable to connect to the SkillSync backend. Make sure FastAPI is running.");
     }
-
-
 }
