@@ -48,6 +48,7 @@ async function login(event) {
         localStorage.setItem("userId", data.user.user_id);
         localStorage.setItem("userEmail", data.user.email);
         localStorage.setItem("userRole", data.user.role);
+        localStorage.setItem("userName", data.name);
 
         if (data.user.role === "Team Member") {
             window.location.href = "student-dashboard.html";
