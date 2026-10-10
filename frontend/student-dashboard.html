@@ -236,11 +236,9 @@ async function applyToProject(projectId) {
         loadMyProjects();
 
     } catch (error) {
-
-        console.error("Application error:", error);
-
-        alert("Unable to connect to the backend.");
-    }
+    console.error("Application error:", error);
+    alert("Request failed: " + error.message);
+}
 }
 
 
