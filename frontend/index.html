@@ -1,64 +1,178 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSync - Login</title>
-    <link rel="stylesheet" href="style.css">
+    <title>SkillSync | Student Collaboration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #FAF8F3;
+            color: #292D2D;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 8%;
+            background: #F5F0E5;
+            border-bottom: 1px solid #E5DED1;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #A88B5E;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 23px;
+            border: 1px solid #B79A68;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #292D2D;
+            font-size: 14px;
+            background: #E4D5B4;
+            transition: background 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #D6C29B;
+        }
+
+        .intro {
+            min-height: 78vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+            padding: 65px 9%;
+            background: #F3EAD8;
+        }
+
+        .intro-text {
+            flex: 1;
+        }
+
+        .intro h1 {
+            font-size: clamp(36px, 4vw, 49px);
+            line-height: 1.25;
+            margin-bottom: 22px;
+        }
+
+        .intro h1 span {
+            color: #A88B5E;
+        }
+
+        .intro p {
+            max-width: 470px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 28px;
+        }
+
+        .intro-image {
+            flex: 1;
+            min-height: 310px;
+            background: #E4D5B4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 35px;
+        }
+
+        .intro-image h2 {
+            font-size: 27px;
+            margin-bottom: 15px;
+        }
+
+        .intro-image p {
+            margin: 0;
+            font-size: 15px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #FAF8F3;
+            color: #777;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 20px 6%;
+            }
+
+            .intro {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 45px 6%;
+                gap: 30px;
+            }
+
+            .intro-image {
+                min-height: 220px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <div class="logo">Skill<span>Sync</span></div>
+        <a href="login.html" class="btn">Login</a>
+        <a href="signup.html" class="btn">Sign Up</a>
+    </header>
 
-    <div class="container">
+    <main>
+        <section class="intro">
+            <div class="intro-text">
+                <h1>
+                    Build Skills.<br>
+                    Form <span>Teams.</span><br>
+                    Create <span>Impact.</span>
+                </h1>
 
-        <div class="left">
-            <h1>SkillSync</h1>
-            <p class="tagline">Find the right team for your project.</p>
-            <p class="about">Connect with students who have the skills you need and work together on projects.</p>
-        </div>
+                <p>
+                    SkillSync helps students find teammates based on
+                    their skills and interests. Connect with other
+                    students, work together on college projects and
+                    turn your ideas into reality.
+                </p>
 
-        <div class="login-box">
+                <a href="signup.html" class="btn">Get Started</a>
+            </div>
 
-            <p class="login-text">Login to continue to SkillSync</p>
-
-            <form onsubmit="login(event)">
-
-                <label>Role</label>
-                <select id="role" required>
-                    <option value="">Select your role</option>
-                    <option value="student">Student</option>
-                    <option value="leader">Team Leader</option>
-                    <option value="mentor">Mentor</option>
-                </select>
-
-                <label>Email ID</label>
-                <input type="email" id="email" placeholder="Enter your email" required>
-
-                <label>Password</label>
-
-                <div class="password-box">
-                    <input type="password" id="password" placeholder="Enter your password" required>
-                    <button type="button" onclick="showPassword()">Show</button>
+            <div class="intro-image">
+                <div>
+                    <h2>Find the right team</h2>
+                    <p>
+                        The right people, shared skills and better
+                        teamwork for your next project.
+                    </p>
                 </div>
+            </div>
+        </section>
+    </main>
 
-                <div class="options">
-                    <label><input type="checkbox"> Remember me</label>
-                    <a href="#">Forgot Password?</a>
-                </div>
-
-                <button type="submit" class="login-btn">Login</button>
-
-            </form>
-
-            <p class="signup">
-                Don't have an account?
-                <a href="signup.html">Sign Up</a>
-            </p>
-
-        </div>
-
-    </div>
-
-    <script src="script.js"></script>
-
+    <footer>
+        SkillSync | Student Project Collaboration Platform
+    </footer>
 </body>
 </html>
