@@ -49,7 +49,7 @@
 
         <p class="signup">
             Already have an account?
-            <a href="index.html">Login</a>
+            <a href="login.html">Login</a>
         </p>
 
     </div>
@@ -92,8 +92,13 @@ async function createAccount(event) {
             return;
         }
 
-        alert("Account created successfully");
-        window.location.href = "index.html";
+       localStorage.setItem("skillsyncSignup", JSON.stringify({
+    name: name,
+    role: role,
+    email: email
+}));
+
+window.location.href = "login.html";
 
     } catch (error) {
         alert("Unable to connect to the server.");
