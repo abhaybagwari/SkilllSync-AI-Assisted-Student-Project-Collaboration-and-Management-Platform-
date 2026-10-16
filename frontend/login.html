@@ -78,15 +78,19 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             return;
         }
 
-        localStorage.setItem("skillsyncUser", JSON.stringify(data));
+       const loggedInUser = data.user;
 
-        if (data.role === "Team Leader") {
-            window.location.href = "leader-dashboard.html";
-        } else if (data.role === "Mentor") {
-            window.location.href = "mentor-dashboard.html";
-        } else {
-            window.location.href = "credentials.html";
-        }
+localStorage.setItem("skillsyncUser", JSON.stringify(loggedInUser));
+localStorage.setItem("userId", loggedInUser.user_id);
+localStorage.setItem("userRole", loggedInUser.role);
+
+if (loggedInUser.role === "Team Leader") {
+    window.location.href = "leader-dashboard.html";
+} else if (loggedInUser.role === "Mentor") {
+    window.location.href = "mentor-dashboard.html";
+} else {
+    window.location.href = "student-dashboard.html";
+}
     } catch (error) {
         message.textContent = "Unable to connect to the server. Check that the backend is running.";
         console.error(error);

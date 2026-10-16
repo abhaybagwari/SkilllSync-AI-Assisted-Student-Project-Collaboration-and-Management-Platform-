@@ -92,13 +92,21 @@ async function createAccount(event) {
             return;
         }
 
-       localStorage.setItem("skillsyncSignup", JSON.stringify({
+      localStorage.setItem("skillsyncSignup", JSON.stringify({
     name: name,
     role: role,
     email: email
 }));
 
-window.location.href = "login.html";
+localStorage.setItem("skillsync_pending_credentials", "true");
+
+if (role === "student") {
+    window.location.href = "credentials.html";
+} else if (role === "leader") {
+    window.location.href = "leader-dashboard.html";
+} else {
+    window.location.href = "mentor-dashboard.html";
+}
 
     } catch (error) {
         alert("Unable to connect to the server.");
