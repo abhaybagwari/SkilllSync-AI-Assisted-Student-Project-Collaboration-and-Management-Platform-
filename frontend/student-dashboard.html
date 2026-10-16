@@ -5,6 +5,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillSync - Student Dashboard</title>
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        .profile-section {
+            display: none;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .profile-header p {
+            color: #777;
+            margin-top: 6px;
+        }
+
+        .profile-card {
+            background: var(--card-bg, #fff);
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .profile-card h3 {
+            margin-top: 0;
+            margin-bottom: 18px;
+        }
+
+        .profile-user {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .profile-avatar {
+            width: 68px;
+            height: 68px;
+            min-width: 68px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e1ebe4;
+            color: #365b49;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .profile-user h3 {
+            margin: 0 0 7px;
+        }
+
+        .profile-user p {
+            margin: 0 0 8px;
+            color: #777;
+            overflow-wrap: anywhere;
+        }
+
+        .profile-role {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #e8efe9;
+            color: #365b49;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .profile-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .profile-field label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .profile-field input,
+        .profile-field select,
+        .profile-field textarea,
+        #profileAbout {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 12px;
+            border: 1px solid #d8dde2;
+            border-radius: 8px;
+            font: inherit;
+            background: #fff;
+            color: #263238;
+        }
+
+        .profile-field input:disabled,
+        .profile-field select:disabled,
+        #profileAbout:disabled {
+            background: #f5f6f6;
+            color: #555;
+            opacity: 1;
+        }
+
+        #profileAbout {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .profile-help {
+            color: #777;
+            font-size: 13px;
+            margin-top: -10px;
+            margin-bottom: 18px;
+        }
+
+        .profile-actions {
+            display: none;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .profile-actions button,
+        .profile-edit-btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .profile-edit-btn,
+        .profile-save-btn {
+            background: #365b49;
+            color: #fff;
+        }
+
+        .profile-cancel-btn {
+            background: #e8eaec;
+            color: #263238;
+        }
+
+        #profileMessage {
+            margin: 12px 0;
+            font-size: 14px;
+        }
+
+        .profile-nav-active {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        @media (max-width: 650px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .profile-card {
+                padding: 16px;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -12,85 +185,228 @@
 
     <aside class="sidebar">
         <h2>SkillSync</h2>
-
-        <a href="#">Dashboard</a>
-        <a href="#">My Profile</a>
-        <a href="#projects">Find Projects</a>
-        <a href="#team">My Team</a>
-        <a href="#tasks">My Tasks</a>
-        <a href="#">Certificates</a>
-        <a href="#">Settings</a>
-        <a href="index.html" class="logout">Logout</a>
+        <a href="#" data-section="dashboard" onclick="showSection('dashboard'); return false;">Dashboard</a>
+        <a href="#profile" data-section="profile" onclick="showSection('profile'); return false;">My Profile</a>
+        <a href="#projects" data-section="projects" onclick="showSection('projects'); return false;">My Projects</a>
+        <a href="#team" data-section="team" onclick="showSection('team'); return false;">My Team</a>
+        <a href="index.html" class="logout" onclick="logout()">Logout</a>
     </aside>
 
     <main class="main-content">
 
-        <h1>Student Dashboard</h1>
+        <div id="dashboardSection">
+            <h1>Student Dashboard</h1>
 
-        <p class="welcome" id="welcomeMessage">
-            Welcome back! Find projects and work with the right team.
-        </p>
+            <p class="welcome" id="welcomeMessage">
+                Welcome back! Find projects and work with the right team.
+            </p>
 
-        <div class="cards">
+            <div class="cards">
+                <div class="card">
+                    <h3>My Projects</h3>
+                    <p id="projectCount">0</p>
+                </div>
 
-            <div class="card">
-                <h3>My Projects</h3>
-                <p id="projectCount">0</p>
+                <div class="card">
+                    <h3>Team Members</h3>
+                    <p id="teamCount">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Pending Tasks</h3>
+                    <p>0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Completed Tasks</h3>
+                    <p>0</p>
+                </div>
             </div>
-
-            <div class="card">
-                <h3>Team Members</h3>
-                <p id="teamCount">0</p>
-            </div>
-
-            <div class="card">
-                <h3>Pending Tasks</h3>
-                <p>0</p>
-            </div>
-
-            <div class="card">
-                <h3>Completed Tasks</h3>
-                <p>0</p>
-            </div>
-
         </div>
 
         <section class="section" id="projects">
-
-            <h2>Recommended Projects</h2>
-
+            <h2>My Projects</h2>
             <div id="projectsContainer">
-                <p>Loading projects...</p>
+                <p>Loading available projects...</p>
             </div>
-
         </section>
 
         <section class="section" id="team">
-
             <h2>My Team</h2>
-
             <div id="teamContainer">
-                <p>Loading team information...</p>
+                <p>Loading your applied projects...</p>
             </div>
-
         </section>
 
         <section class="section" id="tasks">
-
             <h2>My Recent Tasks</h2>
-
             <div class="task">
                 No tasks assigned yet.
             </div>
+        </section>
 
+        <section class="section profile-section" id="profile">
+            <div class="profile-header">
+                <div>
+                    <h2>My Profile</h2>
+                    <p>Manage your personal information and technical skills.</p>
+                </div>
+
+                <button type="button" class="profile-edit-btn" id="editProfileBtn"
+                    onclick="toggleProfileEdit()">
+                    Edit Profile
+                </button>
+            </div>
+
+            <div class="profile-card profile-user">
+                <div class="profile-avatar" id="profileAvatar">S</div>
+
+                <div>
+                    <h3 id="profileDisplayName">Student Name</h3>
+                    <p id="profileDisplayEmail">Add your email address</p>
+                    <span class="profile-role" id="profileDisplayRole">Student</span>
+                </div>
+            </div>
+
+            <form id="profileForm">
+                <div class="profile-card">
+                    <h3>Personal Information</h3>
+
+                    <div class="profile-grid">
+                        <div class="profile-field">
+                            <label for="profileName">Full Name</label>
+                            <input type="text" id="profileName"
+                                placeholder="Enter your full name" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileEmail">Email Address</label>
+                            <input type="email" id="profileEmail"
+                                placeholder="Enter your email" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileStudentId">Student ID</label>
+                            <input type="text" id="profileStudentId"
+                                placeholder="Enter your student ID" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileCourse">Course</label>
+                            <input type="text" id="profileCourse"
+                                value="B.Tech CSE" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileSemester">Semester</label>
+                            <select id="profileSemester" disabled>
+                                <option value="">Select semester</option>
+                                <option>1st Semester</option>
+                                <option>2nd Semester</option>
+                                <option>3rd Semester</option>
+                                <option>4th Semester</option>
+                                <option>5th Semester</option>
+                                <option>6th Semester</option>
+                                <option>7th Semester</option>
+                                <option>8th Semester</option>
+                            </select>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileRole">Role</label>
+                            <select id="profileRole" disabled>
+                                <option>Student</option>
+                                <option>Team Leader</option>
+                                <option>Mentor</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h3>My Skills</h3>
+                    <p class="profile-help">
+                        Add your technical skills and proficiency levels.
+                    </p>
+
+                    <div class="profile-grid">
+                        <div class="profile-field">
+                            <label for="profileSkill1">Skill 1</label>
+                            <input type="text" id="profileSkill1"
+                                placeholder="e.g. HTML" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileLevel1">Proficiency</label>
+                            <select id="profileLevel1" disabled>
+                                <option value="">Select level</option>
+                                <option>Beginner</option>
+                                <option>Intermediate</option>
+                                <option>Advanced</option>
+                            </select>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileSkill2">Skill 2</label>
+                            <input type="text" id="profileSkill2"
+                                placeholder="e.g. C++" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileLevel2">Proficiency</label>
+                            <select id="profileLevel2" disabled>
+                                <option value="">Select level</option>
+                                <option>Beginner</option>
+                                <option>Intermediate</option>
+                                <option>Advanced</option>
+                            </select>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileSkill3">Skill 3</label>
+                            <input type="text" id="profileSkill3"
+                                placeholder="e.g. DBMS" disabled>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profileLevel3">Proficiency</label>
+                            <select id="profileLevel3" disabled>
+                                <option value="">Select level</option>
+                                <option>Beginner</option>
+                                <option>Intermediate</option>
+                                <option>Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h3>About Me</h3>
+
+                    <textarea id="profileAbout" rows="4"
+                        placeholder="Tell your teammates about yourself, your interests and the projects you want to build."
+                        disabled></textarea>
+                </div>
+
+                <div class="profile-actions" id="profileActions">
+                    <button type="submit" class="profile-save-btn">
+                        Save Changes
+                    </button>
+
+                    <button type="button" class="profile-cancel-btn"
+                        onclick="cancelProfileEdit()">
+                        Cancel
+                    </button>
+                </div>
+
+                <p id="profileMessage" role="status"></p>
+            </form>
         </section>
 
     </main>
-
 </div>
 
 <script>
-
 const API_URL = "http://127.0.0.1:8000";
 
 const userId = localStorage.getItem("userId");
@@ -106,240 +422,420 @@ if (userName) {
         `Welcome back, ${userName}! Find projects and work with the right team.`;
 }
 
+let availableProjects = [];
+let myProjects = [];
+let applying = new Set();
 
-async function loadProjects() {
+function showSection(sectionId) {
+    const dashboardSection = document.getElementById("dashboardSection");
+    const projectsSection = document.getElementById("projects");
+    const teamSection = document.getElementById("team");
+    const tasksSection = document.getElementById("tasks");
+    const profileSection = document.getElementById("profile");
 
-    const container = document.getElementById("projectsContainer");
+    dashboardSection.style.display = "none";
+    projectsSection.style.display = "none";
+    teamSection.style.display = "none";
+    tasksSection.style.display = "none";
+    profileSection.style.display = "none";
 
-    try {
+    document.querySelectorAll(".sidebar a[data-section]").forEach(link => {
+        link.classList.toggle(
+            "profile-nav-active",
+            link.dataset.section === sectionId
+        );
+    });
 
-        const response = await fetch(`${API_URL}/projects/`);
-
-        if (!response.ok) {
-            throw new Error("Failed to load projects");
-        }
-
-        const data = await response.json();
-
-        if (!data.projects || data.projects.length === 0) {
-
-            container.innerHTML =
-                "<p>No projects available.</p>";
-
-            return;
-        }
-
-        container.innerHTML = "";
-
-        data.projects.forEach(project => {
-
-            const projectDiv = document.createElement("div");
-
-            projectDiv.className = "project";
-
-            const isLeader =
-                Number(project.Leader_ID) === Number(userId);
-
-            projectDiv.innerHTML = `
-                <h3>${project.Project_Name}</h3>
-
-                <p>${project.Project_Description}</p>
-
-                <p>
-                    <strong>Skills:</strong>
-                    ${project.Skill_Required}
-                </p>
-
-                <p>
-                    <strong>Members Required:</strong>
-                    ${project.Members_Required}
-                </p>
-
-                <p>
-                    <strong>Submission Date:</strong>
-                    ${project.Submission_Date}
-                </p>
-
-                <p>
-                    <strong>Leader:</strong>
-                    ${project.Leader_Name || "Unknown"}
-                </p>
-
-                ${
-                    isLeader
-                    ?
-                    `<p>
-                        <strong>You are the project leader.</strong>
-                    </p>`
-                    :
-                    `
-                    <button
-                        class="login-btn"
-                        onclick="applyToProject(${project.Project_ID})">
-                        Apply
-                    </button>
-                    `
-                }
-            `;
-
-            container.appendChild(projectDiv);
-
-        });
-
-    } catch (error) {
-
-        console.error("Project loading error:", error);
-
-        container.innerHTML =
-            "<p>Unable to load projects. Make sure the backend is running.</p>";
+    if (sectionId === "dashboard") {
+        dashboardSection.style.display = "block";
+        projectsSection.style.display = "block";
+        teamSection.style.display = "block";
+        tasksSection.style.display = "block";
+    } else if (sectionId === "projects") {
+        projectsSection.style.display = "block";
+    } else if (sectionId === "team") {
+        teamSection.style.display = "block";
+    } else if (sectionId === "profile") {
+        profileSection.style.display = "block";
+        loadProfile();
     }
 }
 
+const profileFields = [
+    "profileName",
+    "profileEmail",
+    "profileStudentId",
+    "profileCourse",
+    "profileSemester",
+    "profileRole",
+    "profileSkill1",
+    "profileLevel1",
+    "profileSkill2",
+    "profileLevel2",
+    "profileSkill3",
+    "profileLevel3",
+    "profileAbout"
+];
 
-async function applyToProject(projectId) {
+let profileOriginalData = {};
 
-    if (!userId) {
+function getProfileStorageKey() {
+    return "skillSyncProfile_" + (userId || "guest");
+}
 
-        alert("Please login first.");
+function loadProfile() {
+    let savedProfile = {};
 
+    try {
+        savedProfile = JSON.parse(
+            localStorage.getItem(getProfileStorageKey()) || "{}"
+        );
+    } catch (error) {
+        console.error("Unable to read saved profile:", error);
+    }
+
+    document.getElementById("profileName").value =
+        savedProfile.profileName || localStorage.getItem("userName") || "";
+
+    document.getElementById("profileEmail").value =
+        savedProfile.profileEmail || localStorage.getItem("userEmail") || "";
+
+    profileFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+
+        if (savedProfile[fieldId] !== undefined) {
+            field.value = savedProfile[fieldId];
+        }
+    });
+
+    updateProfileHeader();
+    saveOriginalProfileData();
+}
+
+function updateProfileHeader() {
+    const name = document.getElementById("profileName").value.trim();
+    const email = document.getElementById("profileEmail").value.trim();
+    const role = document.getElementById("profileRole").value;
+
+    document.getElementById("profileDisplayName").textContent =
+        name || "Student Name";
+
+    document.getElementById("profileDisplayEmail").textContent =
+        email || "Add your email address";
+
+    document.getElementById("profileDisplayRole").textContent =
+        role || "Student";
+
+    document.getElementById("profileAvatar").textContent =
+        (name || "S").charAt(0).toUpperCase();
+}
+
+function saveOriginalProfileData() {
+    profileOriginalData = {};
+
+    profileFields.forEach(fieldId => {
+        profileOriginalData[fieldId] =
+            document.getElementById(fieldId).value;
+    });
+}
+
+function toggleProfileEdit() {
+    profileFields.forEach(fieldId => {
+        document.getElementById(fieldId).disabled = false;
+    });
+
+    document.getElementById("profileActions").style.display = "flex";
+    document.getElementById("editProfileBtn").style.display = "none";
+    document.getElementById("profileMessage").textContent = "";
+}
+
+function cancelProfileEdit() {
+    profileFields.forEach(fieldId => {
+        document.getElementById(fieldId).value =
+            profileOriginalData[fieldId] || "";
+
+        document.getElementById(fieldId).disabled = true;
+    });
+
+    document.getElementById("profileActions").style.display = "none";
+    document.getElementById("editProfileBtn").style.display = "inline-block";
+
+    updateProfileHeader();
+    document.getElementById("profileMessage").textContent = "";
+}
+
+document.getElementById("profileForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const profileData = {};
+
+    profileFields.forEach(fieldId => {
+        profileData[fieldId] =
+            document.getElementById(fieldId).value.trim();
+    });
+
+    localStorage.setItem(
+        getProfileStorageKey(),
+        JSON.stringify(profileData)
+    );
+
+    if (profileData.profileName) {
+        localStorage.setItem("userName", profileData.profileName);
+    }
+
+    if (profileData.profileEmail) {
+        localStorage.setItem("userEmail", profileData.profileEmail);
+    }
+
+    profileFields.forEach(fieldId => {
+        document.getElementById(fieldId).disabled = true;
+    });
+
+    saveOriginalProfileData();
+    updateProfileHeader();
+
+    document.getElementById("profileActions").style.display = "none";
+    document.getElementById("editProfileBtn").style.display = "inline-block";
+    document.getElementById("profileMessage").textContent =
+        "Profile saved successfully!";
+});
+
+profileFields.forEach(fieldId => {
+    document.getElementById(fieldId).addEventListener("input", updateProfileHeader);
+    document.getElementById(fieldId).addEventListener("change", updateProfileHeader);
+});
+
+async function loadDashboard() {
+    if (!userId) return;
+
+    const projectsContainer = document.getElementById("projectsContainer");
+    const teamContainer = document.getElementById("teamContainer");
+
+    projectsContainer.innerHTML = "<p>Loading available projects...</p>";
+    teamContainer.innerHTML = "<p>Loading your applied projects...</p>";
+
+    try {
+        const [projectsResponse, myProjectsResponse] = await Promise.all([
+            fetch(`${API_URL}/projects/`),
+            fetch(`${API_URL}/projects/member/${userId}`)
+        ]);
+
+        if (!projectsResponse.ok || !myProjectsResponse.ok) {
+            throw new Error("Unable to load projects. Please check the backend.");
+        }
+
+        const projectsData = await projectsResponse.json();
+        const myProjectsData = await myProjectsResponse.json();
+
+        const allProjects = projectsData.projects || [];
+        myProjects = myProjectsData.projects || [];
+
+        const appliedIds = new Set(
+            myProjects.map(project => Number(project.Project_ID))
+        );
+
+        availableProjects = allProjects.filter(
+            project => !appliedIds.has(Number(project.Project_ID))
+        );
+
+        document.getElementById("projectCount").innerText =
+            myProjects.length;
+
+        document.getElementById("teamCount").innerText =
+            myProjects.reduce((total, project) => {
+                return total + Number(project.Members || 0);
+            }, 0);
+
+        renderAvailableProjects();
+        renderMyProjects();
+
+    } catch (error) {
+        console.error("Dashboard loading error:", error);
+
+        projectsContainer.innerHTML =
+            "<p>Unable to load projects. Make sure the backend is running.</p>";
+
+        teamContainer.innerHTML =
+            "<p>Unable to load your applied projects.</p>";
+    }
+}
+
+function renderAvailableProjects() {
+    const container = document.getElementById("projectsContainer");
+    container.innerHTML = "";
+
+    if (availableProjects.length === 0) {
+        container.innerHTML =
+            "<p>No new projects available to apply for.</p>";
         return;
     }
 
-    try {
+    availableProjects.forEach(project => {
+        const projectId = Number(project.Project_ID);
 
+        const projectDiv = document.createElement("div");
+        projectDiv.className = "project";
+
+        const title = document.createElement("h3");
+        title.textContent = project.Project_Name || "Untitled Project";
+
+        const description = document.createElement("p");
+        description.textContent =
+            project.Project_Description || "No description available.";
+
+        const skills = document.createElement("p");
+        skills.textContent =
+            "Skills: " + (project.Skill_Required || "Not specified");
+
+        const members = document.createElement("p");
+        members.textContent =
+            "Members Required: " +
+            (project.Members_Required ?? "Not specified");
+
+        const date = document.createElement("p");
+        date.textContent =
+            "Submission Date: " +
+            (project.Submission_Date || "Not specified");
+
+        const leader = document.createElement("p");
+        leader.textContent =
+            "Leader: " + (project.Leader_Name || "Unknown");
+
+        const button = document.createElement("button");
+        button.className = "login-btn";
+        button.textContent = applying.has(projectId)
+            ? "Applying..."
+            : "Apply";
+        button.disabled = applying.has(projectId);
+        button.onclick = () => applyToProject(projectId);
+
+        projectDiv.append(
+            title,
+            description,
+            skills,
+            members,
+            date,
+            leader,
+            button
+        );
+
+        container.appendChild(projectDiv);
+    });
+}
+
+function renderMyProjects() {
+    const container = document.getElementById("teamContainer");
+    container.innerHTML = "";
+
+    if (myProjects.length === 0) {
+        container.innerHTML =
+            "<p>You have not applied to any projects yet.</p>";
+        return;
+    }
+
+    myProjects.forEach(project => {
+        const projectDiv = document.createElement("div");
+        projectDiv.className = "project";
+
+        const title = document.createElement("h3");
+        title.textContent =
+            project.Project_Name || project.Project || "Untitled Project";
+
+        const description = document.createElement("p");
+        description.textContent =
+            project.Project_Description || "No description available.";
+
+        const skills = document.createElement("p");
+        skills.textContent =
+            "Skills: " + (project.Skill_Required || "Not specified");
+
+        const status = document.createElement("p");
+        status.textContent =
+            "Application Status: " +
+            (project.Status || project.Application_Status || "Applied");
+
+        projectDiv.append(
+            title,
+            description,
+            skills,
+            status
+        );
+
+        container.appendChild(projectDiv);
+    });
+}
+
+async function applyToProject(projectId) {
+    const id = Number(projectId);
+
+    if (applying.has(id)) return;
+
+    if (myProjects.some(project =>
+        Number(project.Project_ID) === id
+    )) {
+        alert("You have already applied to this project.");
+        return;
+    }
+
+    applying.add(id);
+    renderAvailableProjects();
+
+    try {
         const response = await fetch(
-            `${API_URL}/projects/${projectId}/apply`,
+            `${API_URL}/projects/${id}/apply`,
             {
                 method: "POST",
-
                 headers: {
                     "Content-Type": "application/json"
                 },
-
                 body: JSON.stringify({
                     user_id: Number(userId)
                 })
             }
         );
 
-        const data = await response.json();
+        const result = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-
-            alert(data.detail || "Unable to apply.");
-
-            return;
-        }
-
-        alert(data.message);
-
-        loadMyProjects();
-
-    } catch (error) {
-    console.error("Application error:", error);
-    alert("Request failed: " + error.message);
-}
-}
-
-
-async function loadMyProjects() {
-
-    try {
-
-        const response = await fetch(
-            `${API_URL}/projects/member/${userId}`
-        );
-
-        if (!response.ok) {
-
             throw new Error(
-                "Failed to load student projects"
+                result.detail || "Application failed. Please try again."
             );
         }
 
-        const data = await response.json();
+        await loadDashboard();
 
-        document.getElementById("projectCount").innerText =
-            data.projects.length;
-
-        const teamContainer =
-            document.getElementById("teamContainer");
-
-        if (data.projects.length === 0) {
-
-            teamContainer.innerHTML =
-                "<p>You have not joined any project yet.</p>";
-
-            document.getElementById("teamCount").innerText =
-                "0";
-
-            return;
-        }
-
-        let acceptedProjects = 0;
-
-        let teamHTML = "";
-
-        data.projects.forEach(project => {
-
-            if (project.Status === "Accepted") {
-
-                acceptedProjects++;
-
-            }
-
-            teamHTML += `
-                <div class="project">
-
-                    <h3>
-                        ${project.Project_Name}
-                    </h3>
-
-                    <p>
-                        <strong>Leader:</strong>
-                        ${project.Leader_Name || "Unknown"}
-                    </p>
-
-                    <p>
-                        <strong>Skills:</strong>
-                        ${project.Skill_Required}
-                    </p>
-
-                    <p>
-                        <strong>Status:</strong>
-                        <span class="match">
-                            ${project.Status}
-                        </span>
-                    </p>
-
-                </div>
-            `;
-
-        });
-
-        document.getElementById("teamCount").innerText =
-            acceptedProjects;
-
-        teamContainer.innerHTML =
-            teamHTML;
-
-    } catch (error) {
-
-        console.error(
-            "Student project loading error:",
-            error
+        const appliedSuccessfully = myProjects.some(
+            project => Number(project.Project_ID) === id
         );
 
-        document.getElementById("teamContainer").innerHTML =
-            "<p>Unable to load your projects.</p>";
+        if (appliedSuccessfully) {
+            alert("Application submitted successfully!");
+        } else {
+            alert(
+                "Application submitted, but the project has not appeared in My Team yet. Please check your backend."
+            );
+        }
+
+    } catch (error) {
+        console.error("Application error:", error);
+        alert(error.message || "Unable to apply. Please try again.");
+
+    } finally {
+        applying.delete(id);
+        renderAvailableProjects();
     }
 }
 
+function logout() {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("role");
+}
 
-loadProjects();
-
-loadMyProjects();
-
+loadProfile();
+loadDashboard();
+showSection("dashboard");
 </script>
 
 </body>
