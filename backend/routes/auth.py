@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from database.connection import get_connection
@@ -21,12 +22,10 @@ role_map = {
 
 @router.post("/signup")
 def signup(user: SignupRequest):
-
     if user.role not in role_map:
         raise HTTPException(status_code=400, detail="Invalid role")
 
     db_role = role_map[user.role]
-
     connection = get_connection()
     cursor = connection.cursor()
 
@@ -55,12 +54,14 @@ def signup(user: SignupRequest):
             )
         )
 
+        user_id = cursor.lastrowid
         connection.commit()
 
         return {
             "message": "Account created successfully",
             "user": {
-                "name": user.name,
+                "user_id": user_id,
+                "name": user.name.strip(),
                 "role": db_role,
                 "email": user.email
             }
@@ -79,7 +80,6 @@ class LoginRequest(BaseModel):
 
 @router.post("/login")
 def login(user: LoginRequest):
-
     expected_role = role_map.get(user.role)
 
     if not expected_role:

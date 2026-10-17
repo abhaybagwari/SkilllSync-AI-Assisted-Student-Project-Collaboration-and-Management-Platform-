@@ -2,602 +2,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mentor Dashboard - SkillSync</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f3ef;
-            color: #333;
-        }
-
-        .sidebar {
-            width: 210px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding: 25px 15px;
-            background: #5c4938;
-            overflow-y: auto;
-        }
-
-        .sidebar h2 {
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        .sidebar button {
-            display: block;
-            width: 100%;
-            padding: 13px 10px;
-            margin-bottom: 8px;
-            color: white;
-            background: transparent;
-            border: none;
-            border-radius: 5px;
-            text-align: left;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .sidebar button:hover,
-        .sidebar button.active {
-            background: #80674f;
-        }
-
-        .main {
-            margin-left: 210px;
-            padding: 30px;
-        }
-
-        h1, h3 {
-            color: #5c4938;
-        }
-
-        .welcome {
-            color: #777;
-            margin-bottom: 25px;
-        }
-
-        .card, .stat-card {
-            background: white;
-            padding: 22px;
-            margin: 15px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px #00000010;
-            overflow-x: auto;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 15px;
-        }
-
-        .stat-card {
-            margin: 0;
-        }
-
-        .stat-card h3 {
-            font-size: 14px;
-            margin-top: 0;
-        }
-
-        .stat-card p {
-            font-size: 25px;
-            font-weight: bold;
-            margin-bottom: 0;
-        }
-
-        .present {
-            color: #39804a;
-        }
-
-        .absent {
-            color: #c44b4b;
-        }
-
-        select, textarea {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            margin: 12px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: white;
-            font-family: Arial, sans-serif;
-        }
-
-        textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        .submit, .action-button {
-            background: #5c4938;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px 5px 5px 0;
-        }
-
-        .submit:hover, .action-button:hover {
-            background: #80674f;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            min-width: 300px;
-        }
-
-        th {
-            background: #5c4938;
-            color: white;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .profile-row {
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .message {
-            margin-top: 12px;
-        }
-
-        @media (max-width: 700px) {
-            .sidebar {
-                width: 150px;
-                padding: 15px 8px;
-            }
-
-            .sidebar h2 {
-                font-size: 18px;
-            }
-
-            .sidebar button {
-                font-size: 13px;
-                padding: 10px 6px;
-            }
-
-            .main {
-                margin-left: 150px;
-                padding: 15px;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            th, td {
-                padding: 8px;
-                font-size: 12px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentor Dashboard - SkillSync</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f3ef;color:#333}
+.sidebar{width:210px;height:100vh;position:fixed;background:#5c4938;padding:24px 14px;top:0;left:0}
+.sidebar h2{color:white;margin-bottom:28px}
+.sidebar button{display:block;width:100%;padding:13px 10px;margin-bottom:8px;color:white;background:transparent;border:0;border-radius:5px;text-align:left;cursor:pointer;font-size:15px}
+.sidebar button:hover,.sidebar button.active{background:#80674f}
+.main{margin-left:210px;padding:28px}
+h1,h3{color:#5c4938}
+.muted{color:#777}
+.card,.stat{background:white;padding:20px;margin:14px 0;border-radius:8px;box-shadow:0 2px 8px #00000010;overflow-x:auto}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.stat{margin:0}
+.stat h3{font-size:14px;margin-top:0}
+.stat p{font-size:26px;font-weight:bold;margin-bottom:0}
+label{display:block;margin-top:14px}
+select,input,textarea{width:100%;padding:11px;margin:8px 0;border:1px solid #ddd;border-radius:5px;font:inherit;background:white}
+textarea{min-height:100px;resize:vertical}
+button.action{background:#5c4938;color:white;border:0;border-radius:5px;padding:11px 16px;cursor:pointer;margin:6px 6px 6px 0}
+button.action:hover{background:#80674f}
+button:disabled{opacity:.6;cursor:wait}
+table{width:100%;border-collapse:collapse;margin-top:14px}
+th,td{text-align:left;padding:11px;border-bottom:1px solid #ddd}
+th{background:#5c4938;color:white}
+.message{margin:12px 0;overflow-wrap:anywhere}
+.error{color:#b42318}.success{color:#26733b}
+.row{padding:12px 0;border-bottom:1px solid #eee;overflow-wrap:anywhere}
+@media(max-width:700px){.sidebar{width:145px;padding:14px 8px}.sidebar button{font-size:13px}.sidebar h2{font-size:18px}.main{margin-left:145px;padding:14px}.stats{grid-template-columns:1fr}th,td{padding:7px;font-size:12px}}
+</style>
 </head>
-
 <body>
-    <div class="sidebar">
-        <h2>SkillSync</h2>
-        <button class="active" onclick="showPage('Dashboard', this)">Dashboard</button>
-        <button onclick="showPage('Projects', this)">Projects</button>
-        <button onclick="showPage('Students', this)">Student Teams</button>
-        <button onclick="showPage('Feedback', this)">Project Feedback</button>
-        <button onclick="showPage('Profile', this)">My Profile</button>
-        <button onclick="logout()">Logout</button>
-    </div>
+<aside class="sidebar">
+<h2>SkillSync</h2>
+<button class="active" data-page="Dashboard" onclick="showPage('Dashboard',this)">Dashboard</button>
+<button data-page="Projects" onclick="showPage('Projects',this)">Projects</button>
+<button data-page="Students" onclick="showPage('Students',this)">Student Teams</button>
+<button data-page="Feedback" onclick="showPage('Feedback',this)">Project Feedback</button>
+<button data-page="Profile" onclick="showPage('Profile',this)">My Profile</button>
+<button onclick="logout()">Logout</button>
+</aside>
+<main class="main" id="content"><h1>Loading mentor dashboard...</h1></main>
 
-    <main class="main" id="content"></main>
+<script>
+const API = "http://127.0.0.1:8000";
+const mentorId = Number(localStorage.getItem("userId"));
+const account = JSON.parse(localStorage.getItem("skillsyncUser") || "{}");
+let mentor = null;
+let projects = [];
+let selectedProjectId = "";
+let currentPage = "Dashboard";
 
-    <script>
-        const projects = {
-            campus: {
-                name: "Smart Campus Portal",
-                team: "Team 1",
-                leader: "Rahul Sharma",
-                interaction: "Project Progress Review",
-                completed: 5,
-                pending: 1,
-                members: [
-                    { name: "Rahul Sharma", attendance: "Present" },
-                    { name: "Aman Verma", attendance: "Absent" },
-                    { name: "Priya Singh", attendance: "Present" }
-                ]
-            },
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    })[c]);
+}
 
-            library: {
-                name: "Library Management System",
-                team: "Team 2",
-                leader: "Neha Gupta",
-                interaction: "Design Discussion",
-                completed: 3,
-                pending: 1,
-                members: [
-                    { name: "Neha Gupta", attendance: "Present" },
-                    { name: "Arjun Kumar", attendance: "Present" },
-                    { name: "Simran Kaur", attendance: "Absent" }
-                ]
-            }
-        };
+async function api(path, options = {}) {
+    const response = await fetch(API + path, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+        }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(data.detail || data.message || `Request failed (${response.status})`);
+    }
+    return data;
+}
 
-        let selectedProject = "campus";
-        let feedbackHistory = [];
+function showMessage(text, type = "error") {
+    const el = document.getElementById("pageMessage");
+    if (el) {
+        el.className = "message " + type;
+        el.textContent = text;
+    }
+}
 
-        function makeAttendanceTable(project) {
-            const rows = project.members.map(function(member) {
-                const status = member.attendance === "Present"
-                    ? "present"
-                    : "absent";
+function projectOptions(includeEmpty = false) {
+    let html = includeEmpty ? '<option value="">Choose a project</option>' : "";
+    html += projects.map(p =>
+        `<option value="${p.Project_ID}">${escapeHtml(p.Project_Name)}</option>`
+    ).join("");
+    return html;
+}
 
-                return `
-                    <tr>
-                        <td>${member.name}</td>
-                        <td class="${status}">${member.attendance}</td>
-                    </tr>
-                `;
-            }).join("");
+function getSelectedProject() {
+    return projects.find(p => String(p.Project_ID) === String(selectedProjectId));
+}
 
-            return `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Member Name</th>
-                            <th>Attendance</th>
-                        </tr>
-                    </thead>
-                    <tbody>${rows}</tbody>
-                </table>
-            `;
+async function loadInitialData() {
+    if (!mentorId || !Number.isInteger(mentorId)) {
+        document.getElementById("content").innerHTML =
+            '<div class="card"><h1>Login required</h1><p>Please log in with your mentor account.</p><button class="action" onclick="logout()">Go to login</button></div>';
+        return;
+    }
+
+    try {
+        const profileData = await api(`/mentor/${mentorId}/profile`);
+        mentor = profileData.profile;
+
+        if (!mentor || mentor.Role !== "Mentor") {
+            throw new Error("This account is not registered as a mentor.");
         }
 
-        function showPage(page, button) {
-            const content = document.getElementById("content");
+        localStorage.setItem("userName", mentor.Name);
+        localStorage.setItem("userEmail", mentor.Email);
 
-            document.querySelectorAll(".sidebar button").forEach(function(btn) {
-                btn.classList.remove("active");
-            });
-
-            if (button) {
-                button.classList.add("active");
-            } else {
-                const indexes = {
-                    Dashboard: 0,
-                    Projects: 1,
-                    Students: 2,
-                    Feedback: 3,
-                    Profile: 4
-                };
-
-                if (indexes[page] !== undefined) {
-                    document.querySelectorAll(".sidebar button")[indexes[page]]
-                        .classList.add("active");
-                }
-            }
-
-            if (page === "Dashboard") {
-                content.innerHTML = `
-                    <h1>Mentor Dashboard</h1>
-                    <p class="welcome">
-                        Select a project to view its individual statistics and team details.
-                    </p>
-
-                    <div class="card">
-                        <label for="dashboardProject">Select Project</label>
-                        <select id="dashboardProject"
-                                onchange="updateDashboardProject()">
-                            <option value="campus">Smart Campus Portal</option>
-                            <option value="library">Library Management System</option>
-                        </select>
-                    </div>
-
-                    <div id="projectStats" class="stats"></div>
-                    <div id="dashboardProjectDetails"></div>
-                `;
-
-                document.getElementById("dashboardProject").value =
-                    selectedProject;
-
-                updateDashboardProject();
-
-            } else if (page === "Projects") {
-                content.innerHTML = `
-                    <h1>Projects</h1>
-                    <p class="welcome">
-                        Select a project to view its leader, members and attendance.
-                    </p>
-
-                    <div class="card">
-                        <label for="projectSelect">Select Project</label>
-                        <select id="projectSelect" onchange="showProjectDetails()">
-                            <option value="">Choose a project</option>
-                            <option value="campus">Smart Campus Portal</option>
-                            <option value="library">Library Management System</option>
-                        </select>
-                    </div>
-
-                    <div id="projectDetails"></div>
-                `;
-
-                document.getElementById("projectSelect").value = selectedProject;
-                showProjectDetails();
-
-            } else if (page === "Students") {
-                content.innerHTML = `
-                    <h1>Student Teams</h1>
-                    <p class="welcome">Team leaders and members for each project.</p>
-
-                    ${Object.keys(projects).map(function(key) {
-                        const project = projects[key];
-
-                        return `
-                            <div class="card">
-                                <h3>${project.team}</h3>
-                                <p><strong>Project:</strong> ${project.name}</p>
-                                <p><strong>Team Leader:</strong> ${project.leader}</p>
-                                <p><strong>Members:</strong></p>
-                                <ul>
-                                    ${project.members.map(function(member) {
-                                        return `<li>${member.name}</li>`;
-                                    }).join("")}
-                                </ul>
-                            </div>
-                        `;
-                    }).join("")}
-                `;
-
-            } else if (page === "Feedback") {
-                content.innerHTML = `
-                    <h1>Project Feedback</h1>
-                    <p class="welcome">Provide feedback for a selected project.</p>
-
-                    <div class="card">
-                        <label for="feedbackProject">Select Project</label>
-                        <select id="feedbackProject">
-                            <option value="">Choose a project</option>
-                            <option value="campus">Smart Campus Portal</option>
-                            <option value="library">Library Management System</option>
-                        </select>
-
-                        <label for="feedback">Feedback</label>
-                        <textarea id="feedback"
-                            placeholder="Write feedback for the project"></textarea>
-
-                        <button class="submit" onclick="giveFeedback()">
-                            Submit Feedback
-                        </button>
-
-                        <p id="message" class="message"></p>
-                        <div id="feedbackHistory"></div>
-                    </div>
-                `;
-
-                document.getElementById("feedbackProject").value =
-                    selectedProject;
-
-                renderFeedbackHistory();
-
-            } else if (page === "Profile") {
-                content.innerHTML = `
-                    <h1>My Profile</h1>
-                    <p class="welcome">Your mentor information.</p>
-
-                    <div class="card">
-                        <h3>Personal Details</h3>
-                        <div class="profile-row"><strong>Name:</strong> Mentor Name</div>
-                        <div class="profile-row"><strong>Department:</strong> Computer Science</div>
-                        <div class="profile-row"><strong>Email:</strong> mentor@example.com</div>
-                        <div class="profile-row"><strong>Phone:</strong> 9876543210</div>
-                    </div>
-                `;
-            }
-        }
-
-        function updateDashboardProject() {
-            const key = document.getElementById("dashboardProject").value;
-            const project = projects[key];
-
-            if (!project) return;
-
-            selectedProject = key;
-
-            const total = project.members.length;
-            const present = project.members.filter(function(member) {
-                return member.attendance === "Present";
-            }).length;
-            const absent = total - present;
-
-            document.getElementById("projectStats").innerHTML = `
-                <div class="stat-card">
-                    <h3>Total Members</h3>
-                    <p>${total}</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Present Today</h3>
-                    <p class="present">${present}</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Absent Today</h3>
-                    <p class="absent">${absent}</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Interactions Done</h3>
-                    <p>${project.completed}</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Pending Interactions</h3>
-                    <p>${project.pending}</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Active Projects</h3>
-                    <p>1</p>
-                </div>
-            `;
-
-            document.getElementById("dashboardProjectDetails").innerHTML = `
-                <div class="card">
-                    <h3>${project.name}</h3>
-                    <p><strong>Team:</strong> ${project.team}</p>
-                    <p><strong>Team Leader:</strong> ${project.leader}</p>
-                    <p><strong>Interaction:</strong> ${project.interaction}</p>
-                    <p><strong>Interactions Completed:</strong> ${project.completed}</p>
-
-                    <h3>Team Members and Attendance</h3>
-                    ${makeAttendanceTable(project)}
-
-                    <button class="action-button"
-                        onclick="openFeedback('${key}')">
-                        Give Feedback for This Project
-                    </button>
-
-                    <button class="action-button"
-                        onclick="openProjects('${key}')">
-                        View Project Details
-                    </button>
-                </div>
-            `;
-        }
-
-        function showProjectDetails() {
-            const selector = document.getElementById("projectSelect");
-            const projectKey = selector.value;
-            const details = document.getElementById("projectDetails");
-
-            selectedProject = projectKey;
-
-            if (!projectKey || !projects[projectKey]) {
-                details.innerHTML = "";
-                return;
-            }
-
-            const project = projects[projectKey];
-            const present = project.members.filter(function(member) {
-                return member.attendance === "Present";
-            }).length;
-            const absent = project.members.length - present;
-
-            details.innerHTML = `
-                <div class="card">
-                    <h3>${project.name}</h3>
-                    <p><strong>Team:</strong> ${project.team}</p>
-                    <p><strong>Team Leader:</strong> ${project.leader}</p>
-                    <p><strong>Interaction:</strong> ${project.interaction}</p>
-                    <p><strong>Interactions Completed:</strong> ${project.completed}</p>
-                    <p><strong>Attendance:</strong>
-                        <span class="present">${present} present</span>,
-                        <span class="absent">${absent} absent</span>
-                    </p>
-
-                    <h3>Team Members and Attendance</h3>
-                    ${makeAttendanceTable(project)}
-
-                    <button class="action-button"
-                        onclick="openFeedback('${projectKey}')">
-                        Give Feedback for This Project
-                    </button>
-                </div>
-            `;
-        }
-
-        function openProjects(key) {
-            selectedProject = key;
-            showPage("Projects");
-        }
-
-        function openFeedback(key = selectedProject) {
-            selectedProject = key;
-            showPage("Feedback");
-        }
-
-        function giveFeedback() {
-            const key = document.getElementById("feedbackProject").value;
-            const feedback = document.getElementById("feedback").value.trim();
-            const message = document.getElementById("message");
-
-            if (!key || !feedback) {
-                message.style.color = "#c44b4b";
-                message.textContent =
-                    "Please select a project and enter feedback.";
-                return;
-            }
-
-            selectedProject = key;
-
-            feedbackHistory.push({
-                project: projects[key].name,
-                text: feedback,
-                date: new Date().toLocaleString()
-            });
-
-            document.getElementById("feedback").value = "";
-            message.style.color = "#39804a";
-            message.textContent =
-                "Feedback added for " + projects[key].name + ".";
-
-            renderFeedbackHistory();
-        }
-
-        function renderFeedbackHistory() {
-            const container = document.getElementById("feedbackHistory");
-            if (!container) return;
-
-            const matchingFeedback = feedbackHistory.filter(function(item) {
-                return item.project === projects[selectedProject]?.name;
-            });
-
-            if (matchingFeedback.length === 0) {
-                container.innerHTML = "<p>No feedback submitted for this project in this session.</p>";
-                return;
-            }
-
-            container.innerHTML = `
-                <h3>Feedback Submitted This Session</h3>
-                ${matchingFeedback.map(function(item) {
-                    return `
-                        <div class="profile-row">
-                            <strong>${item.project}</strong>
-                            <p>${escapeHtml(item.text)}</p>
-                            <small>${item.date}</small>
-                        </div>
-                    `;
-                }).join("")}
-            `;
-        }
-
-        function escapeHtml(value) {
-            return value.replace(/[&<>"']/g, function(char) {
-                return {
-                    "&": "&amp;",
-                    "<": "&lt;",
-                    ">": "&gt;",
-                    '"': "&quot;",
-                    "'": "&#39;"
-                }[char];
-            });
-        }
-
-        function logout() {
-            window.location.href = "index.html";
-        }
+        const projectData = await api(`/mentor/${mentorId}/projects`);
+        projects = projectData.projects || [];
+        selectedProjectId = projects.length ? String(projects[0].Project_ID) : "";
 
         showPage("Dashboard");
-    </script>
+    } catch (error) {
+        document.getElementById("content").innerHTML = `
+            <div class="card">
+                <h1>Unable to load mentor data</h1>
+                <p class="error">${escapeHtml(error.message)}</p>
+                <p>Check that FastAPI is running, the mentor API is registered, and the database tables exist.</p>
+                <button class="action" onclick="loadInitialData()">Try again</button>
+            </div>`;
+    }
+}
+
+function showPage(page, button) {
+    currentPage = page;
+    document.querySelectorAll(".sidebar button[data-page]").forEach(b => {
+        b.classList.toggle("active", b.dataset.page === page);
+    });
+
+    if (page === "Dashboard") renderDashboard();
+    if (page === "Projects") renderProjects();
+    if (page === "Students") renderStudents();
+    if (page === "Feedback") renderFeedback();
+    if (page === "Profile") renderProfile();
+}
+
+function renderDashboard() {
+    const content = document.getElementById("content");
+    const p = getSelectedProject();
+
+    content.innerHTML = `
+        <h1>Mentor Dashboard</h1>
+        <p class="muted">Welcome, ${escapeHtml(mentor?.Name || "Mentor")}. Your information comes from SkillSync's database.</p>
+        <div class="card">
+            <label for="projectSelect">Assigned project</label>
+            <select id="projectSelect" onchange="changeProject(this.value)">
+                ${projectOptions(true)}
+            </select>
+            <p id="pageMessage" class="message"></p>
+        </div>
+        ${p ? `
+        <div class="stats">
+            <div class="stat"><h3>Assigned Projects</h3><p>${projects.length}</p></div>
+            <div class="stat"><h3>Accepted Team Members</h3><p>${Number(p.Total_Members || 0)}</p></div>
+            <div class="stat"><h3>Completed Interactions</h3><p>${Number(p.Completed_Interactions || 0)}</p></div>
+        </div>
+        <div class="card">
+            <h3>${escapeHtml(p.Project_Name)}</h3>
+            <p><strong>Team Leader:</strong> ${escapeHtml(p.Leader_Name)}</p>
+            <p><strong>Description:</strong> ${escapeHtml(p.Project_Description || "No description provided")}</p>
+            <p><strong>Required Skills:</strong> ${escapeHtml(p.Skill_Required || "Not specified")}</p>
+            <p><strong>Submission Date:</strong> ${escapeHtml(p.Submission_Date || "Not specified")}</p>
+            <p><strong>Pending Interactions:</strong> ${Number(p.Pending_Interactions || 0)}</p>
+            <button class="action" onclick="showPage('Students')">View Student Team</button>
+            <button class="action" onclick="showPage('Feedback')">Give Feedback</button>
+        </div>` : `
+        <div class="card"><h3>No assigned projects</h3>
+        <p>No projects are assigned to this mentor yet. A project must be added to the Mentor_Project table before it appears here.</p></div>`}
+    `;
+
+    const selector = document.getElementById("projectSelect");
+    if (selector) selector.value = selectedProjectId;
+}
+
+function changeProject(id) {
+    selectedProjectId = id;
+    renderDashboard();
+}
+
+function renderProjects() {
+    const content = document.getElementById("content");
+    content.innerHTML = `
+        <h1>Assigned Projects</h1>
+        <p class="muted">Projects assigned to your mentor account.</p>
+        <div id="pageMessage" class="message"></div>
+        ${projects.length ? projects.map(p => `
+            <div class="card">
+                <h3>${escapeHtml(p.Project_Name)}</h3>
+                <p>${escapeHtml(p.Project_Description || "No description provided")}</p>
+                <p><strong>Leader:</strong> ${escapeHtml(p.Leader_Name)}</p>
+                <p><strong>Required skills:</strong> ${escapeHtml(p.Skill_Required || "Not specified")}</p>
+                <p><strong>Submission date:</strong> ${escapeHtml(p.Submission_Date || "Not specified")}</p>
+                <p><strong>Accepted members:</strong> ${Number(p.Total_Members || 0)}</p>
+                <button class="action" onclick="selectProject('${p.Project_ID}','Students')">View Team</button>
+                <button class="action" onclick="selectProject('${p.Project_ID}','Feedback')">Project Feedback</button>
+            </div>`).join("") :
+            '<div class="card"><p>No projects have been assigned to you yet.</p></div>'}
+    `;
+}
+
+function selectProject(id, page) {
+    selectedProjectId = String(id);
+    showPage(page);
+}
+
+async function renderStudents() {
+    const content = document.getElementById("content");
+    content.innerHTML = `
+        <h1>Student Teams</h1>
+        <p class="muted">Accepted members of your assigned project.</p>
+        <label for="teamProject">Select project</label>
+        <select id="teamProject" onchange="selectedProjectId=this.value;loadMembers()">${projectOptions(true)}</select>
+        <div id="pageMessage" class="message"></div>
+        <div id="membersArea" class="card">Select a project to load its team.</div>
+    `;
+    const selector = document.getElementById("teamProject");
+    selector.value = selectedProjectId;
+    if (selectedProjectId) await loadMembers();
+}
+
+async function loadMembers() {
+    const area = document.getElementById("membersArea");
+    if (!selectedProjectId) {
+        area.innerHTML = "<p>Select an assigned project first.</p>";
+        return;
+    }
+    area.innerHTML = "<p>Loading team members...</p>";
+    try {
+        const data = await api(`/mentor/${mentorId}/projects/${selectedProjectId}/members`);
+        const members = data.members || [];
+        area.innerHTML = members.length ? `
+            <table><thead><tr><th>Name</th><th>Email</th><th>Status</th></tr></thead>
+            <tbody>${members.map(m => `
+                <tr><td>${escapeHtml(m.Name)}</td><td>${escapeHtml(m.Email)}</td><td>${escapeHtml(m.Status)}</td></tr>
+            `).join("")}</tbody></table>` : "<p>No accepted team members for this project yet.</p>";
+    } catch (error) {
+        area.innerHTML = `<p class="error">${escapeHtml(error.message)}</p>`;
+    }
+}
+
+function renderFeedback() {
+    const content = document.getElementById("content");
+    content.innerHTML = `
+        <h1>Project Feedback</h1>
+        <p class="muted">Submit a rating and feedback. Saved feedback is stored in MySQL.</p>
+        <div class="card">
+            <label for="feedbackProject">Project</label>
+            <select id="feedbackProject" onchange="selectedProjectId=this.value;loadFeedback()">${projectOptions(true)}</select>
+            <form id="feedbackForm">
+                <label for="rating">Rating</label>
+                <select id="rating" required>
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Very good</option>
+                    <option value="3">3 - Good</option>
+                    <option value="2">2 - Needs improvement</option>
+                    <option value="1">1 - Poor</option>
+                </select>
+                <label for="feedbackText">Feedback</label>
+                <textarea id="feedbackText" required maxlength="10000" placeholder="Write feedback about the project"></textarea>
+                <button class="action" type="submit">Save Feedback</button>
+            </form>
+            <p id="pageMessage" class="message"></p>
+        </div>
+        <div class="card"><h3>Saved Feedback</h3><div id="feedbackHistory">Choose a project to see feedback.</div></div>
+    `;
+
+    document.getElementById("feedbackProject").value = selectedProjectId;
+    document.getElementById("feedbackForm").addEventListener("submit", submitFeedback);
+    if (selectedProjectId) loadFeedback();
+}
+
+async function submitFeedback(event) {
+    event.preventDefault();
+    const message = document.getElementById("pageMessage");
+    const text = document.getElementById("feedbackText").value.trim();
+    const rating = Number(document.getElementById("rating").value);
+
+    if (!selectedProjectId) {
+        message.className = "message error";
+        message.textContent = "Select an assigned project first.";
+        return;
+    }
+    if (!text) {
+        message.className = "message error";
+        message.textContent = "Enter feedback before submitting.";
+        return;
+    }
+
+    try {
+        await api(`/mentor/${mentorId}/projects/${selectedProjectId}/feedback`, {
+            method: "POST",
+            body: JSON.stringify({rating, feedback_text: text})
+        });
+        message.className = "message success";
+        message.textContent = "Feedback saved successfully.";
+        document.getElementById("feedbackText").value = "";
+        await loadFeedback();
+    } catch (error) {
+        message.className = "message error";
+        message.textContent = error.message;
+    }
+}
+
+async function loadFeedback() {
+    const area = document.getElementById("feedbackHistory");
+    if (!area) return;
+    if (!selectedProjectId) {
+        area.textContent = "Select an assigned project to view feedback.";
+        return;
+    }
+
+    area.textContent = "Loading feedback...";
+    try {
+        const data = await api(`/mentor/${mentorId}/projects/${selectedProjectId}/feedback`);
+        const items = data.feedback || [];
+        area.innerHTML = items.length ? items.map(item => `
+            <div class="row">
+                <strong>Rating: ${Number(item.Rating)}/5</strong>
+                <p>${escapeHtml(item.Feedback_Text)}</p>
+                <small>${escapeHtml(item.Feedback_Date || "")}</small>
+            </div>`).join("") : "<p>No feedback has been saved for this project yet.</p>";
+    } catch (error) {
+        area.innerHTML = `<p class="error">${escapeHtml(error.message)}</p>`;
+    }
+}
+
+function renderProfile() {
+    const content = document.getElementById("content");
+    content.innerHTML = `
+        <h1>My Profile</h1>
+        <p class="muted">Details registered for your mentor account.</p>
+        <div class="card">
+            <div class="row"><strong>Name:</strong> ${escapeHtml(mentor?.Name)}</div>
+            <div class="row"><strong>Email:</strong> ${escapeHtml(mentor?.Email)}</div>
+            <div class="row"><strong>Role:</strong> ${escapeHtml(mentor?.Role)}</div>
+            <div class="row"><strong>User ID:</strong> ${escapeHtml(mentor?.User_ID)}</div>
+        </div>
+    `;
+}
+
+function logout() {
+    [
+        "userId", "userName", "userEmail", "userRole", "role",
+        "skillsyncUser", "skillsyncProfile", "skillsyncSignup"
+    ].forEach(key => localStorage.removeItem(key));
+    window.location.href = "index.html";
+}
+
+loadInitialData();
+</script>
 </body>
 </html>
