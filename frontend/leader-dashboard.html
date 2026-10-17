@@ -1,390 +1,368 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSync - Team Leader</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillSync - Team Leader</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.profile-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+.profile-modal.show {
+    display: flex;
+}
+.profile-box {
+    background: white;
+    color: #222;
+    width: 100%;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 25px;
+    border-radius: 12px;
+}
+.profile-box h2 {
+    margin-top: 0;
+}
+.profile-row {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    overflow-wrap: anywhere;
+}
+.profile-row strong {
+    display: block;
+    margin-bottom: 5px;
+}
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+.profile-actions button,
+.profile-actions a {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.profile-link {
+    color: #174ea6;
+    text-decoration: underline;
+}
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.action-buttons button {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+.profile-message {
+    padding: 12px;
+    margin: 10px 0;
+    background: #f3f4f6;
+    border-radius: 6px;
+}
+.application-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 15px 0 20px;
+    padding: 16px;
+    background: #f5f7fb;
+    border-radius: 10px;
+}
+.application-filters input,
+.application-filters select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+}
+.filter-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.filter-buttons button {
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.filter-count {
+    margin: 0 0 12px;
+    color: #555;
+}
+</style>
 </head>
 
 <body>
-
 <div class="dashboard">
 
     <div class="sidebar">
-
         <h2>SkillSync</h2>
-
-        <a href="#" onclick="showSection('create-project')">
-            Create Project
-        </a>
-
-        <a href="#" onclick="showSection('your-projects')">
-            Your Projects
-        </a>
-
-        <a href="#" onclick="showSection('team-management'); loadTeamProjects()">
-            Team Management
-        </a>
-
-        <a href="#" onclick="showSection('feedback')">
-            Feedback
-        </a>
-
-        <a href="index.html" class="logout" onclick="logout()">
-            Exit
-        </a>
-
+        <a href="#" onclick="showSection('create-project'); return false;">Create Project</a>
+        <a href="#" onclick="showSection('your-projects'); loadProjects(); return false;">Your Projects</a>
+        <a href="#" onclick="showSection('team-management'); loadTeamProjects(); return false;">Team Management</a>
+        <a href="#" onclick="showSection('feedback'); return false;">Feedback</a>
+        <a href="index.html" class="logout" onclick="logout()">Exit</a>
     </div>
 
     <div class="main-content">
 
         <div id="create-project" class="dashboard-section">
-
             <h1>Create Project</h1>
-
-            <p class="welcome">
-                Create a new project and find the right team members.
-            </p>
+            <p class="welcome">Create a new project and find the right team members.</p>
 
             <div class="project-form">
+                <label for="projectName">Project Name</label>
+                <input type="text" id="projectName" placeholder="Enter project name">
 
-                <label for="projectName">
-                    Project Name
-                </label>
+                <label for="projectDescription">Project Description</label>
+                <textarea id="projectDescription" rows="5" placeholder="Describe your project"></textarea>
 
-                <input
-                    type="text"
-                    id="projectName"
-                    placeholder="Enter project name"
-                >
+                <label for="membersRequired">Members Required</label>
+                <input type="number" id="membersRequired" min="1" placeholder="Enter number of members">
 
-                <label for="projectDescription">
-                    Project Description
-                </label>
+                <label for="skillsRequired">Skills Required</label>
+                <input type="text" id="skillsRequired" placeholder="Python, Java, SQL">
 
-                <textarea
-                    id="projectDescription"
-                    rows="5"
-                    placeholder="Describe your project, its purpose, features, and requirements..."
-                ></textarea>
+                <label for="projectTimeline">Timeline</label>
+                <input type="date" id="projectTimeline">
 
-                <label for="membersRequired">
-                    Members Required
-                </label>
-
-                <input
-                    type="number"
-                    id="membersRequired"
-                    placeholder="Enter number of members"
-                    min="1"
-                >
-
-                <label for="skillsRequired">
-                    Skills Required
-                </label>
-
-                <input
-                    type="text"
-                    id="skillsRequired"
-                    placeholder="Example: Python, Java, SQL"
-                >
-
-                <label for="projectTimeline">
-                    Timeline
-                </label>
-
-                <input
-                    type="date"
-                    id="projectTimeline"
-                >
-
-                <button
-                    type="button"
-                    class="login-btn"
-                    onclick="sendProject()"
-                >
-                    SEND
-                </button>
-
+                <button type="button" class="login-btn" onclick="sendProject()">SEND</button>
             </div>
-
         </div>
 
-
         <div id="your-projects" class="dashboard-section hidden">
-
             <h1>Your Projects</h1>
-
-            <p class="welcome">
-                View and manage your projects.
-            </p>
+            <p class="welcome">View and manage your projects.</p>
 
             <div class="project-table-container">
-
                 <table class="project-table">
-
                     <thead>
-
                         <tr>
                             <th>Project</th>
                             <th>Members</th>
                             <th>Status</th>
                         </tr>
-
                     </thead>
-
-                    <tbody id="projectTableBody">
-                    </tbody>
-
+                    <tbody id="projectTableBody"></tbody>
                 </table>
-
             </div>
-
         </div>
 
-
         <div id="team-management" class="dashboard-section hidden">
-
             <h1>Team Management</h1>
-
-            <p class="welcome">
-                Manage your project members and applications.
-            </p>
+            <p class="welcome">Manage your project members and applications.</p>
 
             <div class="project-form">
-
-                <label for="teamProjectSelect">
-                    Select Project
-                </label>
-
+                <label for="teamProjectSelect">Select Project</label>
                 <select id="teamProjectSelect" onchange="loadTeamMembers()">
-                    <option value="">
-                        Select a project
-                    </option>
+                    <option value="">Select a project</option>
                 </select>
-
             </div>
-
 
             <div id="teamDetails" class="hidden">
 
                 <h2>Team Overview</h2>
-
                 <div class="project-table-container">
-
                     <table class="project-table">
-
                         <thead>
-
                             <tr>
                                 <th>Team Size</th>
                                 <th>Members Required</th>
                                 <th>Available Positions</th>
                             </tr>
-
                         </thead>
-
-                        <tbody id="teamSummaryBody">
-                        </tbody>
-
+                        <tbody id="teamSummaryBody"></tbody>
                     </table>
-
                 </div>
-
 
                 <h2>Current Members</h2>
-
                 <div class="project-table-container">
-
                     <table class="project-table">
-
                         <thead>
-
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
-
                         </thead>
-
                         <tbody id="currentMembersBody">
-
-                            <tr>
-                                <td colspan="4">
-                                    No team members found.
-                                </td>
-                            </tr>
-
+                            <tr><td colspan="4">Select a project to view members.</td></tr>
                         </tbody>
-
                     </table>
-
                 </div>
 
+                <h2>Student Applications</h2>
+                <p>Filter applications and view a student's profile before accepting or rejecting.</p>
 
-                <h2>Pending Applications</h2>
+                <div class="application-filters">
+                    <input
+                        type="search"
+                        id="filterSearch"
+                        placeholder="Search name, email, skills..."
+                        oninput="filterApplications()"
+                    >
+
+                    <select id="filterBranch" onchange="filterApplications()">
+                        <option value="">All Branches</option>
+                        <option value="cse">CSE</option>
+                        <option value="ece">ECE</option>
+                        <option value="it">IT</option>
+                        <option value="other">Other Branches</option>
+                    </select>
+
+                    <select id="filterYear" onchange="filterApplications()">
+                        <option value="">All Years</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+
+                    <select id="filterStatus" onchange="filterApplications()">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+
+                    <div class="filter-buttons">
+                        <button type="button" onclick="resetApplicationFilters()">Reset Filters</button>
+                    </div>
+                </div>
+
+                <p id="applicationFilterCount" class="filter-count"></p>
 
                 <div class="project-table-container">
-
                     <table class="project-table">
-
                         <thead>
-
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
-
                         </thead>
-
                         <tbody id="pendingApplicationsBody">
-
-                            <tr>
-                                <td colspan="4">
-                                    No pending applications.
-                                </td>
-                            </tr>
-
+                            <tr><td colspan="4">Select a project to view applications.</td></tr>
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
-
         </div>
 
-
         <div id="feedback" class="dashboard-section hidden">
-
             <h1>Feedback</h1>
-
-            <p class="welcome">
-                Share your feedback about SkillSync.
-            </p>
+            <p class="welcome">Share your feedback about SkillSync.</p>
 
             <div class="project-form">
-
-                <label for="feedbackText">
-                    Your Feedback
-                </label>
-
-                <textarea
-                    id="feedbackText"
-                    placeholder="Write your feedback here..."
-                    rows="6"
-                ></textarea>
-
-                <button
-                    type="button"
-                    class="login-btn"
-                    onclick="sendFeedback()"
-                >
-                    SEND FEEDBACK
-                </button>
-
+                <label for="feedbackText">Your Feedback</label>
+                <textarea id="feedbackText" rows="6" placeholder="Write your feedback here"></textarea>
+                <button type="button" class="login-btn" onclick="sendFeedback()">SEND FEEDBACK</button>
             </div>
-
         </div>
 
     </div>
-
 </div>
 
+<div id="profileModal" class="profile-modal" onclick="closeProfileOutside(event)">
+    <div class="profile-box" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <h2 id="profileTitle">Student Profile</h2>
+        <div id="profileContent"></div>
+        <div class="profile-actions">
+            <button type="button" onclick="closeProfile()">CLOSE</button>
+        </div>
+    </div>
+</div>
 
 <script>
+const API = "http://127.0.0.1:8000";
+const applicationProfiles = {};
+let allApplications = [];
 
 function showSection(sectionId) {
-
-    const sections =
-        document.querySelectorAll(".dashboard-section");
-
-    sections.forEach(function(section) {
+    document.querySelectorAll(".dashboard-section").forEach(section => {
         section.classList.add("hidden");
     });
 
-    document
-        .getElementById(sectionId)
-        .classList.remove("hidden");
+    document.getElementById(sectionId).classList.remove("hidden");
 }
 
+async function readResponse(response) {
+    const text = await response.text();
+
+    let data;
+    try {
+        data = text ? JSON.parse(text) : {};
+    } catch {
+        data = { detail: text || "Unexpected server response." };
+    }
+
+    if (!response.ok) {
+        throw new Error(data.detail || "Request failed.");
+    }
+
+    return data;
+}
 
 async function sendProject() {
+    const projectName = document.getElementById("projectName").value.trim();
+    const description = document.getElementById("projectDescription").value.trim();
+    const members = document.getElementById("membersRequired").value;
+    const skills = document.getElementById("skillsRequired").value.trim();
+    const timeline = document.getElementById("projectTimeline").value;
+    const userId = localStorage.getItem("userId");
 
-    const projectName =
-        document.getElementById("projectName").value.trim();
-
-    const description =
-        document.getElementById("projectDescription").value.trim();
-
-    const members =
-        document.getElementById("membersRequired").value;
-
-    const skills =
-        document.getElementById("skillsRequired").value.trim();
-
-    const timeline =
-        document.getElementById("projectTimeline").value;
-
-    const userId =
-        localStorage.getItem("userId");
-
-    if (
-        projectName === "" ||
-        description === "" ||
-        members === "" ||
-        skills === "" ||
-        timeline === ""
-    ) {
+    if (!projectName || !description || !members || !skills || !timeline) {
         alert("Please fill all project details.");
         return;
     }
 
     if (!userId) {
-        alert("User session not found. Please login again.");
+        alert("Session expired. Please login again.");
         window.location.href = "index.html";
         return;
     }
 
+    if (Number(members) < 1) {
+        alert("Members required must be at least 1.");
+        return;
+    }
+
     try {
-
-        const response = await fetch(
-            "http://127.0.0.1:8000/projects/",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    project_name: projectName,
-                    project_description: description,
-                    members_required: parseInt(members),
-                    skill_required: skills,
-                    submission_date: timeline,
-                    user_id: parseInt(userId)
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-
-            alert(
-                data.detail ||
-                "Failed to create project."
-            );
-
-            return;
-        }
+        await readResponse(await fetch(`${API}/projects/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                project_name: projectName,
+                project_description: description,
+                members_required: Number(members),
+                skill_required: skills,
+                submission_date: timeline,
+                user_id: Number(userId)
+            })
+        }));
 
         alert("Project created successfully.");
 
@@ -395,592 +373,719 @@ async function sendProject() {
         document.getElementById("projectTimeline").value = "";
 
         await loadProjects();
-
         showSection("your-projects");
-
     } catch (error) {
-
-        console.error(
-            "Project creation error:",
-            error
-        );
-
-        alert(
-            "Unable to connect to the SkillSync backend."
-        );
+        alert(error.message || "Unable to create project.");
+        console.error(error);
     }
 }
-
 
 async function loadProjects() {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
 
-    const userId =
-        localStorage.getItem("userId");
-
-    if (!userId) {
-
-        console.error(
-            "User ID not found."
-        );
-
-        return;
-    }
+    const body = document.getElementById("projectTableBody");
+    body.innerHTML = "<tr><td colspan='3'>Loading projects...</td></tr>";
 
     try {
+        const data = await readResponse(await fetch(
+            `${API}/projects/user/${encodeURIComponent(userId)}`
+        ));
 
-        const response = await fetch(
-            `http://127.0.0.1:8000/projects/user/${userId}`
-        );
+        body.innerHTML = "";
+        const projects = data.projects || [];
 
-        const data =
-            await response.json();
-
-        console.log(
-            "Projects API response:",
-            data
-        );
-
-        if (!response.ok) {
-
-            console.error(
-                "Failed to load projects:",
-                data
-            );
-
+        if (!projects.length) {
+            body.innerHTML = "<tr><td colspan='3'>No projects found.</td></tr>";
             return;
         }
 
-        const tableBody =
-            document.getElementById("projectTableBody");
+        projects.forEach(project => {
+            const row = document.createElement("tr");
 
-        tableBody.innerHTML = "";
+            [
+                project.Project_Name || project.project_name || "Unnamed project",
+                project.Members_Required ?? project.members_required ?? "N/A",
+                project.Status || "Ongoing"
+            ].forEach(value => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
 
-        if (
-            !data.projects ||
-            data.projects.length === 0
-        ) {
-
-            tableBody.innerHTML = `
-                <tr>
-                    <td colspan="3">
-                        No projects found.
-                    </td>
-                </tr>
-            `;
-
-            return;
-        }
-
-        data.projects.forEach(function(project) {
-
-            const row =
-                document.createElement("tr");
-
-            row.innerHTML = `
-                <td>${project.Project_Name}</td>
-                <td>${project.Members_Required}</td>
-                <td>Ongoing</td>
-            `;
-
-            tableBody.appendChild(row);
-
+            body.appendChild(row);
         });
-
     } catch (error) {
-
-        console.error(
-            "Unable to load projects:",
-            error
-        );
+        body.innerHTML = "<tr><td colspan='3'>Unable to load projects.</td></tr>";
+        console.error(error);
     }
 }
-
 
 async function loadTeamProjects() {
+    const userId = localStorage.getItem("userId");
+    const select = document.getElementById("teamProjectSelect");
 
-    const userId =
-        localStorage.getItem("userId");
+    select.innerHTML = "<option value=''>Loading projects...</option>";
 
     if (!userId) {
-
-        alert("User session not found. Please login again.");
-
+        alert("Please login again.");
         window.location.href = "index.html";
-
         return;
     }
 
-    const select =
-        document.getElementById("teamProjectSelect");
-
-    select.innerHTML = `
-        <option value="">
-            Select a project
-        </option>
-    `;
-
     try {
+        const data = await readResponse(await fetch(
+            `${API}/projects/user/${encodeURIComponent(userId)}`
+        ));
 
-        const response = await fetch(
-            `http://127.0.0.1:8000/projects/user/${userId}`
-        );
+        select.innerHTML = "<option value=''>Select a project</option>";
+        const projects = data.projects || [];
 
-        const data =
-            await response.json();
-
-        if (!response.ok) {
-
-            alert("Unable to load your projects.");
-
+        if (!projects.length) {
+            select.innerHTML = "<option value=''>No projects available</option>";
+            document.getElementById("teamDetails").classList.add("hidden");
             return;
         }
 
-        if (
-            !data.projects ||
-            data.projects.length === 0
-        ) {
-
-            select.innerHTML = `
-                <option value="">
-                    No projects available
-                </option>
-            `;
-
-            return;
-        }
-
-        data.projects.forEach(function(project) {
-
-            const option =
-                document.createElement("option");
-
-            option.value =
-                project.Project_ID;
-
-            option.textContent =
-                project.Project_Name;
-
+        projects.forEach(project => {
+            const option = document.createElement("option");
+            option.value = project.Project_ID ?? project.project_id;
+            option.textContent = project.Project_Name || project.project_name || "Unnamed project";
             select.appendChild(option);
-
         });
 
+        if (select.value) {
+            await loadTeamMembers();
+        } else {
+            document.getElementById("teamDetails").classList.add("hidden");
+        }
     } catch (error) {
-
-        console.error(
-            "Team project loading error:",
-            error
-        );
-
-        alert(
-            "Unable to connect to the SkillSync backend."
-        );
+        select.innerHTML = "<option value=''>Unable to load projects</option>";
+        alert(error.message);
+        console.error(error);
     }
 }
-
 
 async function loadTeamMembers() {
+    const projectId = document.getElementById("teamProjectSelect").value;
+    const details = document.getElementById("teamDetails");
 
-    const projectId =
-        document.getElementById("teamProjectSelect").value;
-
-    const teamDetails =
-        document.getElementById("teamDetails");
+    allApplications = [];
+    filterApplications();
 
     if (!projectId) {
-
-        teamDetails.classList.add("hidden");
-
+        details.classList.add("hidden");
         return;
     }
 
-    teamDetails.classList.remove("hidden");
+    details.classList.remove("hidden");
 
-    const currentMembersBody =
-        document.getElementById("currentMembersBody");
+    document.getElementById("currentMembersBody").innerHTML =
+        "<tr><td colspan='4'>Loading members...</td></tr>";
 
-    const pendingApplicationsBody =
-        document.getElementById("pendingApplicationsBody");
-
-    currentMembersBody.innerHTML = `
-        <tr>
-            <td colspan="4">
-                Loading team members...
-            </td>
-        </tr>
-    `;
-
-    pendingApplicationsBody.innerHTML = `
-        <tr>
-            <td colspan="4">
-                Loading applications...
-            </td>
-        </tr>
-    `;
+    document.getElementById("pendingApplicationsBody").innerHTML =
+        "<tr><td colspan='4'>Loading applications...</td></tr>";
 
     try {
-
-        const response = await fetch(
-            `http://127.0.0.1:8000/projects/${projectId}/members`
-        );
-
-        const data =
-            await response.json();
-
-        if (!response.ok) {
-
-            currentMembersBody.innerHTML = `
-                <tr>
-                    <td colspan="4">
-                        Team management backend is not connected yet.
-                    </td>
-                </tr>
-            `;
-
-            pendingApplicationsBody.innerHTML = `
-                <tr>
-                    <td colspan="4">
-                        Team management backend is not connected yet.
-                    </td>
-                </tr>
-            `;
-
-            return;
-        }
+        const data = await readResponse(await fetch(
+            `${API}/projects/${encodeURIComponent(projectId)}/members`
+        ));
 
         updateTeamMembers(data);
-
     } catch (error) {
+        document.getElementById("currentMembersBody").innerHTML =
+            "<tr><td colspan='4'>Unable to load members.</td></tr>";
 
-        console.error(
-            "Team management error:",
-            error
-        );
+        document.getElementById("pendingApplicationsBody").innerHTML =
+            "<tr><td colspan='4'>Unable to load applications. Check the backend endpoint.</td></tr>";
 
-        currentMembersBody.innerHTML = `
-            <tr>
-                <td colspan="4">
-                    Unable to load team members.
-                </td>
-            </tr>
-        `;
-
-        pendingApplicationsBody.innerHTML = `
-            <tr>
-                <td colspan="4">
-                    Unable to load applications.
-                </td>
-            </tr>
-        `;
+        document.getElementById("applicationFilterCount").textContent = "";
+        console.error(error);
     }
 }
 
+function getValue(object, keys, fallback = "") {
+    for (const key of keys) {
+        if (object && object[key] !== undefined &&
+            object[key] !== null && object[key] !== "") {
+            return object[key];
+        }
+    }
+    return fallback;
+}
+
+function getStudentId(application) {
+    return getValue(application, [
+        "member_id", "Member_ID",
+        "application_id", "Application_ID",
+        "user_id", "User_ID",
+        "student_id", "Student_ID"
+    ]);
+}
+
+function getBranch(application) {
+    return String(getValue(application, [
+        "branch", "Branch",
+        "department", "Department"
+    ])).trim().toLowerCase();
+}
+
+function getYear(application) {
+    const raw = String(getValue(application, [
+        "year", "Year", "study_year", "Study_Year"
+    ])).trim().toLowerCase();
+
+    const match = raw.match(/[1-4]/);
+    return match ? match[0] : "";
+}
+
+function getApplicationStatus(application) {
+    return String(getValue(application, [
+        "status", "Status", "application_status", "Application_Status"
+    ], "Pending")).trim().toLowerCase();
+}
 
 function updateTeamMembers(data) {
+    const currentBody = document.getElementById("currentMembersBody");
+    const summaryBody = document.getElementById("teamSummaryBody");
 
-    const currentMembersBody =
-        document.getElementById("currentMembersBody");
+    const members = data.members || [];
+    const applications = data.applications || [];
+    const required = Number(data.members_required || 0);
 
-    const pendingApplicationsBody =
-        document.getElementById("pendingApplicationsBody");
+    summaryBody.innerHTML = "";
+    const summaryRow = document.createElement("tr");
 
-    const teamSummaryBody =
-        document.getElementById("teamSummaryBody");
+    [members.length, required, Math.max(required - members.length, 0)]
+        .forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            summaryRow.appendChild(cell);
+        });
 
-    const members =
-        data.members || [];
+    summaryBody.appendChild(summaryRow);
+    currentBody.innerHTML = "";
 
-    const applications =
-        data.applications || [];
-
-    const membersRequired =
-        data.members_required || 0;
-
-    const availablePositions =
-        Math.max(
-            membersRequired - members.length,
-            0
-        );
-
-    teamSummaryBody.innerHTML = `
-        <tr>
-            <td>${members.length}</td>
-            <td>${membersRequired}</td>
-            <td>${availablePositions}</td>
-        </tr>
-    `;
-
-    currentMembersBody.innerHTML = "";
-
-    if (members.length === 0) {
-
-        currentMembersBody.innerHTML = `
-            <tr>
-                <td colspan="4">
-                    No accepted members yet.
-                </td>
-            </tr>
-        `;
-
+    if (!members.length) {
+        currentBody.innerHTML =
+            "<tr><td colspan='4'>No accepted members yet.</td></tr>";
     } else {
+        members.forEach(member => {
+            const id = getValue(member, [
+                "member_id", "Member_ID", "user_id", "User_ID"
+            ]);
 
-        members.forEach(function(member) {
+            const row = document.createElement("tr");
+            const name = document.createElement("td");
+            name.textContent = getValue(member, ["name", "Name"], "Unknown");
 
-            const row =
-                document.createElement("tr");
+            const email = document.createElement("td");
+            email.textContent = getValue(member, ["email", "Email"], "N/A");
 
-            row.innerHTML = `
-                <td>${member.name || member.Name || "Unknown"}</td>
-                <td>${member.email || member.Email || "N/A"}</td>
-                <td>Accepted</td>
-                <td>
-                    <button
-                        type="button"
-                        onclick="removeMember(${member.member_id || member.Member_ID})"
-                    >
-                        REMOVE
-                    </button>
-                </td>
-            `;
+            const status = document.createElement("td");
+            status.textContent = "Accepted";
 
-            currentMembersBody.appendChild(row);
+            const actions = document.createElement("td");
+            const remove = document.createElement("button");
+            remove.textContent = "REMOVE";
+            remove.disabled = !id;
+            remove.onclick = () => removeMember(id);
 
+            actions.appendChild(remove);
+            row.append(name, email, status, actions);
+            currentBody.appendChild(row);
         });
     }
 
-    pendingApplicationsBody.innerHTML = "";
+    allApplications = applications.slice();
 
-    if (applications.length === 0) {
+    allApplications.forEach(application => {
+        const id = getStudentId(application);
+        if (id !== "") {
+            applicationProfiles[String(id)] = application;
+        }
+    });
 
-        pendingApplicationsBody.innerHTML = `
-            <tr>
-                <td colspan="4">
-                    No pending applications.
-                </td>
-            </tr>
-        `;
-
-    } else {
-
-        applications.forEach(function(application) {
-
-            const row =
-                document.createElement("tr");
-
-            const memberId =
-                application.member_id ||
-                application.Member_ID;
-
-            row.innerHTML = `
-                <td>
-                    ${application.name || application.Name || "Unknown"}
-                </td>
-
-                <td>
-                    ${application.email || application.Email || "N/A"}
-                </td>
-
-                <td>
-                    Pending
-                </td>
-
-                <td>
-
-                    <button
-                        type="button"
-                        onclick="acceptMember(${memberId})"
-                    >
-                        ACCEPT
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="rejectMember(${memberId})"
-                    >
-                        REJECT
-                    </button>
-
-                </td>
-            `;
-
-            pendingApplicationsBody.appendChild(row);
-
-        });
-    }
+    filterApplications();
 }
 
+function filterApplications() {
+    const search = document.getElementById("filterSearch").value
+        .trim().toLowerCase();
+
+    const branch = document.getElementById("filterBranch").value;
+    const year = document.getElementById("filterYear").value;
+    const status = document.getElementById("filterStatus").value;
+
+    const body = document.getElementById("pendingApplicationsBody");
+    body.innerHTML = "";
+
+    const filtered = allApplications.filter(application => {
+        const searchable = [
+            getValue(application, ["name", "Name", "student_name"]),
+            getValue(application, ["email", "Email", "student_email"]),
+            getValue(application, ["skills", "Skills", "skill", "Skill"]),
+            getValue(application, ["interests", "Interests"]),
+            getValue(application, ["branch", "Branch", "department", "Department"])
+        ].join(" ").toLowerCase();
+
+        const studentBranch = getBranch(application);
+        const studentYear = getYear(application);
+        const studentStatus = getApplicationStatus(application);
+
+        const matchesSearch = searchable.includes(search);
+
+        const matchesBranch = !branch ||
+            (branch === "other"
+                ? studentBranch !== "" &&
+                  !["cse", "computer science", "computer science and engineering",
+                    "ece", "electronics and communication", "it",
+                    "information technology"].some(item =>
+                        studentBranch === item || studentBranch.includes(item)
+                    )
+                : branch === "cse"
+                    ? ["cse", "computer science", "computer science and engineering"]
+                        .some(item => studentBranch.includes(item))
+                    : branch === "ece"
+                        ? ["ece", "electronics and communication"]
+                            .some(item => studentBranch.includes(item))
+                        : ["it", "information technology"]
+                            .some(item => studentBranch === item ||
+                                studentBranch.includes(item))
+            );
+
+        const matchesYear = !year || studentYear === year;
+        const matchesStatus = !status || studentStatus === status;
+
+        return matchesSearch && matchesBranch && matchesYear && matchesStatus;
+    });
+
+    document.getElementById("applicationFilterCount").textContent =
+        `Showing ${filtered.length} of ${allApplications.length} applications`;
+
+    if (!filtered.length) {
+        body.innerHTML =
+            "<tr><td colspan='4'>No applications match these filters.</td></tr>";
+        return;
+    }
+
+    filtered.forEach(application => {
+        const id = getStudentId(application);
+        const row = document.createElement("tr");
+
+        const name = document.createElement("td");
+        name.textContent = getValue(
+            application, ["name", "Name", "student_name"], "Unknown"
+        );
+
+        const email = document.createElement("td");
+        email.textContent = getValue(
+            application, ["email", "Email", "student_email"], "N/A"
+        );
+
+        const status = document.createElement("td");
+        status.textContent = getValue(
+            application, ["status", "Status", "application_status"],
+            "Pending"
+        );
+
+        const actions = document.createElement("td");
+        const buttons = document.createElement("div");
+        buttons.className = "action-buttons";
+
+        if (id !== "") {
+            const profileButton = document.createElement("button");
+            profileButton.textContent = "VIEW PROFILE";
+            profileButton.type = "button";
+            profileButton.onclick = () => viewStudentProfile(id);
+
+            const normalizedStatus = getApplicationStatus(application);
+
+            buttons.appendChild(profileButton);
+
+            if (normalizedStatus !== "accepted" &&
+                normalizedStatus !== "rejected") {
+                const acceptButton = document.createElement("button");
+                acceptButton.textContent = "ACCEPT";
+                acceptButton.type = "button";
+                acceptButton.onclick = () => acceptMember(id);
+
+                const rejectButton = document.createElement("button");
+                rejectButton.textContent = "REJECT";
+                rejectButton.type = "button";
+                rejectButton.onclick = () => rejectMember(id);
+
+                buttons.append(acceptButton, rejectButton);
+            }
+        } else {
+            buttons.textContent = "Application ID missing";
+        }
+
+        actions.appendChild(buttons);
+        row.append(name, email, status, actions);
+        body.append(row);
+    });
+}
+
+function resetApplicationFilters() {
+    document.getElementById("filterSearch").value = "";
+    document.getElementById("filterBranch").value = "";
+    document.getElementById("filterYear").value = "";
+    document.getElementById("filterStatus").value = "";
+    filterApplications();
+}
+
+
+function viewStudentProfile(id) {
+    const student = applicationProfiles[String(id)];
+
+    const modal = document.getElementById("profileModal");
+    const content = document.getElementById("profileContent");
+
+    if (!student) {
+        alert("Student details are not available. Please reload the applications.");
+        return;
+    }
+
+    content.innerHTML = "";
+
+    function findValue(keys) {
+        const sources = [
+            student,
+            student.profile,
+            student.credentials,
+            student.studentProfile,
+            student.student_profile
+        ].filter(source => source && typeof source === "object");
+
+        for (const source of sources) {
+            for (const key of keys) {
+                if (
+                    source[key] !== undefined &&
+                    source[key] !== null &&
+                    source[key] !== ""
+                ) {
+                    return source[key];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    function formatValue(value) {
+        if (value === null || value === undefined || value === "") {
+            return "Not provided";
+        }
+
+        if (Array.isArray(value)) {
+            if (value.length === 0) return "Not provided";
+
+            return value.map(item => {
+                if (typeof item === "object" && item !== null) {
+                    return item.name || item.title || JSON.stringify(item);
+                }
+
+                return String(item);
+            }).join(", ");
+        }
+
+        if (typeof value === "object") {
+            return value.name || value.title || JSON.stringify(value);
+        }
+
+        return String(value);
+    }
+
+    function addHeading(text) {
+        const heading = document.createElement("h3");
+        heading.textContent = text;
+        content.appendChild(heading);
+    }
+
+    function addField(label, keys) {
+        const row = document.createElement("div");
+        row.className = "profile-row";
+
+        const heading = document.createElement("strong");
+        heading.textContent = label;
+
+        const value = document.createElement("span");
+        value.textContent = formatValue(findValue(keys));
+
+        row.append(heading, value);
+        content.appendChild(row);
+    }
+
+    function addDocuments() {
+        const documents = findValue([
+            "documents",
+            "resumeFileNames",
+            "resume_file_names",
+            "certificates",
+            "resume",
+            "files",
+            "uploadedDocuments",
+            "uploaded_documents"
+        ]);
+
+        addHeading("Resume and Certificates");
+
+        if (!documents || (Array.isArray(documents) && documents.length === 0)) {
+            const row = document.createElement("div");
+            row.className = "profile-row";
+            row.textContent = "No document details available.";
+            content.appendChild(row);
+            return;
+        }
+
+        const files = Array.isArray(documents) ? documents : [documents];
+
+        files.forEach((file, index) => {
+            const row = document.createElement("div");
+            row.className = "profile-row";
+
+            let name = "";
+            let url = "";
+            let type = "";
+            let size = "";
+
+            if (typeof file === "string") {
+                name = file;
+
+                if (/^https?:\/\//i.test(file)) {
+                    url = file;
+                    name = "Uploaded document";
+                }
+            } else if (file && typeof file === "object") {
+                name = file.name || file.title || "Uploaded document";
+
+                url = file.url ||
+                    file.file_url ||
+                    file.document_url ||
+                    file.certificate_url ||
+                    file.resume_url ||
+                    file.link ||
+                    "";
+
+                type = file.type || file.mimeType || file.mime_type || "";
+                size = file.size || file.file_size || "";
+            }
+
+            const heading = document.createElement("strong");
+            heading.textContent = "Document " + (index + 1) + ": ";
+
+            const details = document.createElement("span");
+            details.textContent = name;
+
+            row.append(heading, details);
+            content.appendChild(row);
+
+            if (type || size) {
+                const info = document.createElement("div");
+                info.className = "profile-row";
+
+                const label = document.createElement("strong");
+                label.textContent = "File information: ";
+
+                const value = document.createElement("span");
+                const parts = [];
+
+                if (type) {
+                    parts.push("Type: " + type);
+                }
+
+                if (size) {
+                    const bytes = Number(size);
+
+                    parts.push(
+                        "Size: " +
+                        (
+                            Number.isFinite(bytes) && bytes >= 0
+                                ? (bytes / 1024).toFixed(2) + " KB"
+                                : String(size)
+                        )
+                    );
+                }
+
+                value.textContent = parts.join(" | ");
+                info.append(label, value);
+                content.appendChild(info);
+            }
+
+            if (url) {
+                try {
+                    const parsed = new URL(url, window.location.href);
+
+                    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+                        const linkRow = document.createElement("div");
+                        linkRow.className = "profile-row";
+
+                        const link = document.createElement("a");
+                        link.href = parsed.href;
+                        link.target = "_blank";
+                        link.rel = "noopener noreferrer";
+                        link.textContent = "View / Download Document";
+                        link.className = "profile-link";
+
+                        linkRow.appendChild(link);
+                        content.appendChild(linkRow);
+                    }
+                } catch (error) {
+                    console.error("Invalid document URL:", error);
+                }
+            }
+        });
+    }
+
+    addHeading("Student Details");
+
+    addField("Full Name", [
+        "name", "studentName", "student_name", "full_name"
+    ]);
+
+    addField("College Email", [
+        "email", "collegeEmail", "college_email"
+    ]);
+
+    addField("College / University", [
+        "college", "university"
+    ]);
+
+    addField("Branch", [
+        "branch", "department"
+    ]);
+
+    addField("Year of Study", [
+        "year", "yearOfStudy", "year_of_study"
+    ]);
+
+    addField("Current Semester", [
+        "semester", "currentSemester", "current_semester"
+    ]);
+
+    addHeading("Skills and Interests");
+
+    addField("Technical Skills", [
+        "skills", "technicalSkills", "technical_skills"
+    ]);
+
+    addField("Areas of Interest", [
+        "interests", "areasOfInterest", "areas_of_interest"
+    ]);
+
+    addField("GitHub Profile", [
+        "github", "githubProfile", "github_profile"
+    ]);
+
+    addField("Previous Project Experience", [
+        "experience",
+        "projectExperience",
+        "project_experience",
+        "previousProjectExperience"
+    ]);
+
+addDocuments();
+
+const debugSection = document.createElement("details");
+debugSection.style.marginTop = "20px";
+
+const debugTitle = document.createElement("summary");
+debugTitle.textContent = "View all data received from backend";
+
+const debugData = document.createElement("pre");
+debugData.textContent = JSON.stringify(student, null, 2);
+debugData.style.whiteSpace = "pre-wrap";
+debugData.style.overflowWrap = "anywhere";
+debugData.style.fontSize = "12px";
+debugData.style.background = "#f3f4f6";
+debugData.style.color = "#222";
+debugData.style.padding = "12px";
+debugData.style.borderRadius = "6px";
+
+debugSection.append(debugTitle, debugData);
+content.appendChild(debugSection);
+
+modal.classList.add("show");
+}
+function closeProfile() {
+    document.getElementById("profileModal").classList.remove("show");
+}
+
+function closeProfileOutside(event) {
+    if (event.target.id === "profileModal") closeProfile();
+}
 
 async function acceptMember(memberId) {
-
-    if (!confirm("Accept this student into the project?")) {
-        return;
-    }
+    if (!confirm("Accept this student into the project?")) return;
 
     try {
-
-        const response = await fetch(
-            `http://127.0.0.1:8000/projects/members/${memberId}/accept`,
-            {
-                method: "PUT"
-            }
-        );
-
-        const data =
-            await response.json();
-
-        if (!response.ok) {
-
-            alert(
-                data.detail ||
-                "Unable to accept member."
-            );
-
-            return;
-        }
+        await readResponse(await fetch(
+            `${API}/projects/members/${encodeURIComponent(memberId)}/accept`,
+            { method: "PUT" }
+        ));
 
         alert("Member accepted successfully.");
-
         await loadTeamMembers();
-
     } catch (error) {
-
-        console.error(
-            "Accept member error:",
-            error
-        );
-
-        alert(
-            "Unable to connect to the backend."
-        );
+        alert(error.message || "Unable to accept member.");
+        console.error(error);
     }
 }
-
 
 async function rejectMember(memberId) {
-
-    if (!confirm("Reject this application?")) {
-        return;
-    }
+    if (!confirm("Reject this application?")) return;
 
     try {
-
-        const response = await fetch(
-            `http://127.0.0.1:8000/projects/members/${memberId}/reject`,
-            {
-                method: "PUT"
-            }
-        );
-
-        const data =
-            await response.json();
-
-        if (!response.ok) {
-
-            alert(
-                data.detail ||
-                "Unable to reject application."
-            );
-
-            return;
-        }
+        await readResponse(await fetch(
+            `${API}/projects/members/${encodeURIComponent(memberId)}/reject`,
+            { method: "PUT" }
+        ));
 
         alert("Application rejected.");
-
         await loadTeamMembers();
-
     } catch (error) {
-
-        console.error(
-            "Reject member error:",
-            error
-        );
-
-        alert(
-            "Unable to connect to the backend."
-        );
+        alert(error.message || "Unable to reject application.");
+        console.error(error);
     }
 }
-
 
 async function removeMember(memberId) {
-
-    if (!confirm("Remove this member from the project?")) {
-        return;
-    }
+    if (!confirm("Remove this member from the project?")) return;
 
     try {
-
-        const response = await fetch(
-            `http://127.0.0.1:8000/projects/members/${memberId}`,
-            {
-                method: "DELETE"
-            }
-        );
-
-        const data =
-            await response.json();
-
-        if (!response.ok) {
-
-            alert(
-                data.detail ||
-                "Unable to remove member."
-            );
-
-            return;
-        }
+        await readResponse(await fetch(
+            `${API}/projects/members/${encodeURIComponent(memberId)}`,
+            { method: "DELETE" }
+        ));
 
         alert("Member removed successfully.");
-
         await loadTeamMembers();
-
     } catch (error) {
-
-        console.error(
-            "Remove member error:",
-            error
-        );
-
-        alert(
-            "Unable to connect to the backend."
-        );
+        alert(error.message || "Unable to remove member.");
+        console.error(error);
     }
 }
 
-
 function sendFeedback() {
+    const feedback = document.getElementById("feedbackText").value.trim();
 
-    const feedback =
-        document.getElementById("feedbackText").value.trim();
-
-    if (feedback === "") {
-
+    if (!feedback) {
         alert("Please enter your feedback.");
-
         return;
     }
 
     alert("Thank you for your feedback!");
-
     document.getElementById("feedbackText").value = "";
 }
 
-
 function logout() {
-
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userRole");
     localStorage.removeItem("userId");
-
 }
 
-
-window.onload = function() {
-
-    loadProjects();
-
-};
-
+window.addEventListener("load", loadProjects);
 </script>
-
 </body>
 </html>

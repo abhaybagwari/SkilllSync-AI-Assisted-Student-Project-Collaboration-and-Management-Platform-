@@ -5,8 +5,8 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes.auth import router as auth_router
-from routes.projects import router as projects_router
+from backend.routes.auth import router as auth_router
+from backend.routes.projects import router as projects_router
 
 
 app = FastAPI(title="SkillSync API")
