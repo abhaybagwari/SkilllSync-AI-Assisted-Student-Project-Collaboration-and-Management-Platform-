@@ -1,86 +1,495 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSync - Mentor Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Mentor Dashboard - SkillSync</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f3ef;
+            color: #333;
+        }
+
+        .sidebar {
+            width: 210px;
+            height: 100vh;
+            background: #5c4938;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 25px 15px;
+            box-sizing: border-box;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            padding: 13px 10px;
+            margin-bottom: 8px;
+            background: transparent;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .sidebar button:hover,
+        .sidebar button.active {
+            background: #80674f;
+        }
+
+        .main {
+            margin-left: 210px;
+            padding: 30px;
+        }
+
+        h1, h3 {
+            color: #5c4938;
+        }
+
+        .welcome {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            margin: 15px 0;
+            border-radius: 8px;
+            max-width: 750px;
+            box-shadow: 0 2px 8px #00000010;
+            overflow-x: auto;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+            max-width: 800px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #00000010;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            margin-top: 0;
+        }
+
+        .stat-card p {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        .present {
+            color: #39804a;
+        }
+
+        .absent {
+            color: #c44b4b;
+        }
+
+        .status {
+            display: inline-block;
+            color: #39804a;
+            background: #e6f4e9;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        input, textarea, select {
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .submit {
+            background: #5c4938;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit:hover {
+            background: #80674f;
+        }
+
+        .profile-row {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            min-width: 300px;
+        }
+
+        th {
+            background: #5c4938;
+            color: white;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 150px;
+                padding: 15px 8px;
+            }
+
+            .sidebar button {
+                font-size: 13px;
+                padding: 10px 6px;
+            }
+
+            .main {
+                margin-left: 150px;
+                padding: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="dashboard">
-
     <div class="sidebar">
+        <button class="active"
+            onclick="showPage('Dashboard', this)">Dashboard</button>
 
-        <h2>SkillSync</h2>
+        <button onclick="showPage('Projects', this)">Projects</button>
 
-        <a href="#">Dashboard</a>
-        <a href="#">My Profile</a>
-        <a href="#">Projects</a>
-        <a href="#">Teams</a>
-        <a href="#">Progress</a>
-        <a href="#">Feedback</a>
-        <a href="#">Reports</a>
-        <a href="#">Settings</a>
+        <button onclick="showPage('Students', this)">Student Teams</button>
 
-        <a href="index.html" class="logout">Logout</a>
+        <button onclick="showPage('Feedback', this)">Project Feedback</button>
 
+        <button onclick="showPage('Profile', this)">My Profile</button>
+
+        <button onclick="logout()">Logout</button>
     </div>
 
-    <div class="main-content">
+    <div class="main" id="content"></div>
 
-        <h1>Mentor Dashboard</h1>
-        <p class="welcome">Monitor student projects and provide guidance.</p>
+    <script>
+        const projects = {
+            campus: {
+                name: "Smart Campus Portal",
+                team: "Team 1",
+                interaction: "Project Progress Review",
+                completed: 5,
+                members: [
+                    { name: "Rahul Sharma", attendance: "Present" },
+                    { name: "Aman Verma", attendance: "Absent" },
+                    { name: "Priya Singh", attendance: "Present" }
+                ]
+            },
 
-        <div class="cards">
+            library: {
+                name: "Library Management System",
+                team: "Team 2",
+                interaction: "Design Discussion",
+                completed: 3,
+                members: [
+                    { name: "Neha Gupta", attendance: "Present" },
+                    { name: "Arjun Kumar", attendance: "Present" },
+                    { name: "Simran Kaur", attendance: "Absent" }
+                ]
+            }
+        };
 
-            <div class="card">
-                <h3>Assigned Projects</h3>
-                <p></p>
-            </div>
+        function makeAttendanceTable(project) {
+            let rows = "";
 
-            <div class="card">
-                <h3>Active Teams</h3>
-                <p></p>
-            </div>
+            project.members.forEach(function(member) {
+                const statusClass =
+                    member.attendance === "Present" ? "present" : "absent";
 
-            <div class="card">
-                <h3>Pending Reviews</h3>
-                <p></p>
-            </div>
+                rows += `
+                    <tr>
+                        <td>${member.name}</td>
+                        <td class="${statusClass}">${member.attendance}</td>
+                    </tr>
+                `;
+            });
 
-            <div class="card">
-                <h3>Feedback Given</h3>
-                <p></p>
-            </div>
+            return `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Attendance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            `;
+        }
 
-        </div>
+        function showPage(page, button) {
+            const content = document.getElementById("content");
 
-        <div class="section">
+            document.querySelectorAll(".sidebar button").forEach(function(btn) {
+                btn.classList.remove("active");
+            });
 
-            <h2>Project Monitoring</h2>
+            if (button) {
+                button.classList.add("active");
+            }
 
-            <div class="project">
-                <h3></h3>
-                <p></p>
-                <p class="match"></p>
-            </div>
+            if (page === "Dashboard") {
+                content.innerHTML = `
+                    <h1>Mentor Dashboard</h1>
+                    <p class="welcome">
+                        Manage projects, student teams and interactions.
+                    </p>
 
-        </div>
+                    <div class="stats">
+                        <div class="stat-card">
+                            <h3>Total Members</h3>
+                            <p>6</p>
+                        </div>
 
-        <div class="section">
+                        <div class="stat-card">
+                            <h3>Present Today</h3>
+                            <p class="present">4</p>
+                        </div>
 
-            <h2>Recent Feedback</h2>
+                        <div class="stat-card">
+                            <h3>Absent Today</h3>
+                            <p class="absent">2</p>
+                        </div>
 
-            <div class="task">
-                <span class="status"></span>
-            </div>
+                        <div class="stat-card">
+                            <h3>Interactions Done</h3>
+                            <p>8</p>
+                        </div>
 
-        </div>
+                        <div class="stat-card">
+                            <h3>Pending Interactions</h3>
+                            <p>2</p>
+                        </div>
 
-    </div>
+                        <div class="stat-card">
+                            <h3>Active Projects</h3>
+                            <p>2</p>
+                        </div>
+                    </div>
 
-</div>
+                    <div class="card">
+                        <h3>Smart Campus Portal</h3>
+                        <p><strong>Team:</strong> Team 1</p>
+                        <p><strong>Interaction:</strong> Project Progress Review</p>
+                        <p><strong>Interactions Completed:</strong> 5</p>
+                        ${makeAttendanceTable(projects.campus)}
+                    </div>
+
+                    <div class="card">
+                        <h3>Library Management System</h3>
+                        <p><strong>Team:</strong> Team 2</p>
+                        <p><strong>Interaction:</strong> Design Discussion</p>
+                        <p><strong>Interactions Completed:</strong> 3</p>
+                        ${makeAttendanceTable(projects.library)}
+                    </div>
+                `;
+            }
+
+            else if (page === "Projects") {
+                content.innerHTML = `
+                    <h1>Projects</h1>
+                    <p class="welcome">
+                        Select a project to view its team members and attendance.
+                    </p>
+
+                    <div class="card">
+                        <label for="projectSelect">Select Project</label>
+
+                        <select id="projectSelect" onchange="showProjectDetails()">
+                            <option value="">Choose a project</option>
+                            <option value="campus">Smart Campus Portal</option>
+                            <option value="library">Library Management System</option>
+                        </select>
+                    </div>
+
+                    <div id="projectDetails"></div>
+                `;
+            }
+
+            else if (page === "Students") {
+                content.innerHTML = `
+                    <h1>Student Teams</h1>
+                    <p class="welcome">Team members and their assigned projects.</p>
+
+                    <div class="card">
+                        <h3>Team 1</h3>
+                        <p><strong>Project:</strong> Smart Campus Portal</p>
+                        <ul>
+                            <li>Rahul Sharma</li>
+                            <li>Aman Verma</li>
+                            <li>Priya Singh</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h3>Team 2</h3>
+                        <p><strong>Project:</strong> Library Management System</p>
+                        <ul>
+                            <li>Neha Gupta</li>
+                            <li>Arjun Kumar</li>
+                            <li>Simran Kaur</li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            else if (page === "Feedback") {
+                content.innerHTML = `
+                    <h1>Project Feedback</h1>
+                    <p class="welcome">Give feedback on a project or team's work.</p>
+
+                    <div class="card">
+                        <h3>Submit Feedback</h3>
+
+                        <label for="feedbackProject">Select Project</label>
+                        <select id="feedbackProject">
+                            <option value="">Choose a project</option>
+                            <option value="Smart Campus Portal">Smart Campus Portal</option>
+                            <option value="Library Management System">Library Management System</option>
+                        </select>
+
+                        <label for="feedback">Feedback</label>
+                        <textarea id="feedback"
+                            placeholder="Write feedback for the project"></textarea>
+
+                        <button class="submit" onclick="giveFeedback()">
+                            Submit Feedback
+                        </button>
+
+                        <p id="message"></p>
+                    </div>
+                `;
+            }
+
+            else if (page === "Profile") {
+                content.innerHTML = `
+                    <h1>My Profile</h1>
+                    <p class="welcome">Your mentor information.</p>
+
+                    <div class="card">
+                        <h3>Personal Details</h3>
+                        <div class="profile-row">
+                            <strong>Name:</strong> Mentor Name
+                        </div>
+                        <div class="profile-row">
+                            <strong>Department:</strong> Computer Science
+                        </div>
+                        <div class="profile-row">
+                            <strong>Email:</strong> mentor@example.com
+                        </div>
+                        <div class="profile-row">
+                            <strong>Phone Number:</strong> 9876543210
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showProjectDetails() {
+            const projectKey = document.getElementById("projectSelect").value;
+            const details = document.getElementById("projectDetails");
+
+            if (!projectKey || !projects[projectKey]) {
+                details.innerHTML = "";
+                return;
+            }
+
+            const project = projects[projectKey];
+
+            let present = 0;
+            let absent = 0;
+
+            project.members.forEach(function(member) {
+                if (member.attendance === "Present") {
+                    present++;
+                } else {
+                    absent++;
+                }
+            });
+
+            details.innerHTML = `
+                <div class="card">
+                    <h3>${project.name}</h3>
+                    <p><strong>Team:</strong> ${project.team}</p>
+                    <p><strong>Interaction:</strong> ${project.interaction}</p>
+                    <p><strong>Interactions Completed:</strong> ${project.completed}</p>
+                    <p><strong>Attendance:</strong> ${present} present, ${absent} absent</p>
+
+                    <h3>Project Members and Attendance</h3>
+                    ${makeAttendanceTable(project)}
+                </div>
+            `;
+        }
+
+        function giveFeedback() {
+            const project = document.getElementById("feedbackProject").value;
+            const feedback = document.getElementById("feedback").value.trim();
+            const message = document.getElementById("message");
+
+            if (project === "" || feedback === "") {
+                alert("Please select a project and enter feedback.");
+                return;
+            }
+
+            message.textContent =
+                "Feedback submitted for " + project + " successfully!";
+        }
+
+        function logout() {
+            window.location.href = "index.html";
+        }
+
+        showPage("Dashboard", document.querySelector(".sidebar button"));
+    </script>
 
 </body>
 </html>
