@@ -1,3 +1,4 @@
+
 import sys
 from pathlib import Path
 
@@ -7,33 +8,31 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routes.auth import router as auth_router
 from backend.routes.projects import router as projects_router
-
+from backend.routes.mentor import router as mentor_router
 
 app = FastAPI(title="SkillSync API")
 
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
 app.include_router(auth_router)
 app.include_router(projects_router)
+app.include_router(mentor_router)
 
 
 @app.get("/")
 def root():
-    return {
-        "message": "SkillSync Backend is running"
-    }
+    return {"message": "SkillSync Backend is running"}
 
 
 @app.get("/health")
 def health():
-    return {
-        "status": "OK"
-    }
+    return {"status": "OK"}
