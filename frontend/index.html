@@ -36,7 +36,11 @@
         .logo span {
             color: #A88B5E;
         }
-
+        .auth-buttons {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
         .btn {
             display: inline-block;
             padding: 12px 23px;
@@ -135,10 +139,13 @@
 </head>
 <body>
     <header>
-        <div class="logo">Skill<span>Sync</span></div>
+    <div class="logo">Skill<span>Sync</span></div>
+
+    <div class="auth-buttons">
         <a href="login.html" class="btn">Login</a>
         <a href="signup.html" class="btn">Sign Up</a>
-    </header>
+    </div>
+</header>
 
     <main>
         <section class="intro">
