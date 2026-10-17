@@ -12,6 +12,7 @@ class ProjectCreate(BaseModel):
     skill_required: str
     submission_date: str
     user_id: int
+    mentor_id: int
 
 
 class JoinProjectRequest(BaseModel):
@@ -20,28 +21,43 @@ class JoinProjectRequest(BaseModel):
 
 @router.post("/")
 def create_project(project: ProjectCreate):
-
     if project.members_required < 1:
         raise HTTPException(
             status_code=400,
             detail="Members required must be at least 1"
         )
 
+    if not project.project_name.strip() or not project.project_description.strip():
+        raise HTTPException(status_code=400, detail="Project name and description are required")
+
+    if not project.skill_required.strip():
+        raise HTTPException(status_code=400, detail="At least one required skill is needed")
+
     connection = get_connection()
-    cursor = connection.cursor()
+    cursor = connection.cursor(dictionary=True)
 
     try:
         cursor.execute(
+            "SELECT User_ID FROM User WHERE User_ID = %s AND Role = 'Mentor'",
+            (project.mentor_id,)
+        )
+        mentor = cursor.fetchone()
+        if not mentor:
+            raise HTTPException(status_code=400, detail="Selected mentor does not exist")
+
+        cursor.execute(
+            "SELECT User_ID FROM User WHERE User_ID = %s",
+            (project.user_id,)
+        )
+        leader = cursor.fetchone()
+        if not leader:
+            raise HTTPException(status_code=400, detail="Project creator does not exist")
+
+        cursor.execute(
             """
             INSERT INTO Project_Details
-            (
-                Project_Name,
-                Project_Description,
-                Members_Required,
-                Skill_Required,
-                Submission_Date,
-                User_ID
-            )
+            (Project_Name, Project_Description, Members_Required,
+             Skill_Required, Submission_Date, User_ID)
             VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (
@@ -53,18 +69,47 @@ def create_project(project: ProjectCreate):
                 project.user_id
             )
         )
+        project_id = cursor.lastrowid
+
+        cursor.execute(
+            "INSERT INTO Mentor_Project (Mentor_ID, Project_ID) VALUES (%s, %s)",
+            (project.mentor_id, project_id)
+        )
 
         connection.commit()
-
         return {
-            "message": "Project created successfully",
-            "project_id": cursor.lastrowid
+            "message": "Project created and mentor assigned successfully",
+            "project_id": project_id,
+            "mentor_id": project.mentor_id
         }
-
+    except HTTPException:
+        connection.rollback()
+        raise
+    except Exception as error:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail=f"Unable to create project and assign mentor: {error}")
     finally:
         cursor.close()
         connection.close()
 
+
+@router.get("/mentors")
+def get_available_mentors():
+    connection = get_connection()
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            """
+            SELECT User_ID, Name, Email
+            FROM User
+            WHERE Role = 'Mentor'
+            ORDER BY Name, User_ID
+            """
+        )
+        return {"mentors": cursor.fetchall()}
+    finally:
+        cursor.close()
+        connection.close()
 
 @router.get("/")
 def get_all_projects():
