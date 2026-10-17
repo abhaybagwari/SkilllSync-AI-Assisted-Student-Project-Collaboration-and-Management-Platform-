@@ -7,6 +7,10 @@
     <title>Mentor Dashboard - SkillSync</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -22,7 +26,12 @@
             top: 0;
             left: 0;
             padding: 25px 15px;
-            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            color: white;
+            margin-bottom: 30px;
         }
 
         .sidebar button {
@@ -63,7 +72,6 @@
             padding: 22px;
             margin: 15px 0;
             border-radius: 8px;
-            max-width: 750px;
             box-shadow: 0 2px 8px #00000010;
             overflow-x: auto;
         }
@@ -72,7 +80,7 @@
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 15px;
-            max-width: 800px;
+            max-width: 1000px;
         }
 
         .stat-card {
@@ -101,41 +109,33 @@
             color: #c44b4b;
         }
 
-        .status {
-            display: inline-block;
-            color: #39804a;
-            background: #e6f4e9;
-            padding: 6px 10px;
-            border-radius: 5px;
-            font-size: 13px;
-        }
-
         input, textarea, select {
             display: block;
-            box-sizing: border-box;
             width: 100%;
             padding: 12px;
             margin: 12px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-family: Arial, sans-serif;
+            background: white;
         }
 
         textarea {
-            height: 100px;
+            min-height: 110px;
             resize: vertical;
         }
 
-        .submit {
+        .submit, .action-button {
             background: #5c4938;
             color: white;
             border: none;
             padding: 12px 20px;
             border-radius: 5px;
             cursor: pointer;
+            margin: 5px 5px 5px 0;
         }
 
-        .submit:hover {
+        .submit:hover, .action-button:hover {
             background: #80674f;
         }
 
@@ -162,10 +162,19 @@
             border-bottom: 1px solid #ddd;
         }
 
+        .message {
+            margin-top: 12px;
+            color: #39804a;
+        }
+
         @media (max-width: 700px) {
             .sidebar {
                 width: 150px;
                 padding: 15px 8px;
+            }
+
+            .sidebar h2 {
+                font-size: 18px;
             }
 
             .sidebar button {
@@ -193,6 +202,8 @@
 <body>
 
     <div class="sidebar">
+        <h2>SkillSync</h2>
+
         <button class="active"
             onclick="showPage('Dashboard', this)">Dashboard</button>
 
@@ -214,6 +225,7 @@
             campus: {
                 name: "Smart Campus Portal",
                 team: "Team 1",
+                leader: "Rahul Sharma",
                 interaction: "Project Progress Review",
                 completed: 5,
                 members: [
@@ -226,6 +238,7 @@
             library: {
                 name: "Library Management System",
                 team: "Team 2",
+                leader: "Neha Gupta",
                 interaction: "Design Discussion",
                 completed: 3,
                 members: [
@@ -235,6 +248,8 @@
                 ]
             }
         };
+
+        let selectedProject = "";
 
         function makeAttendanceTable(project) {
             let rows = "";
@@ -259,9 +274,7 @@
                             <th>Attendance</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        ${rows}
-                    </tbody>
+                    <tbody>${rows}</tbody>
                 </table>
             `;
         }
@@ -275,6 +288,19 @@
 
             if (button) {
                 button.classList.add("active");
+            } else {
+                const buttons = document.querySelectorAll(".sidebar button");
+                const pageButtons = {
+                    Dashboard: 0,
+                    Projects: 1,
+                    Students: 2,
+                    Feedback: 3,
+                    Profile: 4
+                };
+
+                if (pageButtons[page] !== undefined) {
+                    buttons[pageButtons[page]].classList.add("active");
+                }
             }
 
             if (page === "Dashboard") {
@@ -317,19 +343,19 @@
                     </div>
 
                     <div class="card">
-                        <h3>Smart Campus Portal</h3>
-                        <p><strong>Team:</strong> Team 1</p>
-                        <p><strong>Interaction:</strong> Project Progress Review</p>
-                        <p><strong>Interactions Completed:</strong> 5</p>
-                        ${makeAttendanceTable(projects.campus)}
-                    </div>
-
-                    <div class="card">
-                        <h3>Library Management System</h3>
-                        <p><strong>Team:</strong> Team 2</p>
-                        <p><strong>Interaction:</strong> Design Discussion</p>
-                        <p><strong>Interactions Completed:</strong> 3</p>
-                        ${makeAttendanceTable(projects.library)}
+                        <h3>Project Management</h3>
+                        <p>
+                            Select a project to view its leader, team members,
+                            attendance and interaction details.
+                        </p>
+                        <button class="action-button"
+                            onclick="showPage('Projects')">
+                            View Projects
+                        </button>
+                        <button class="action-button"
+                            onclick="showPage('Feedback')">
+                            Give Project Feedback
+                        </button>
                     </div>
                 `;
             }
@@ -338,7 +364,7 @@
                 content.innerHTML = `
                     <h1>Projects</h1>
                     <p class="welcome">
-                        Select a project to view its team members and attendance.
+                        Select a project to view its team details and provide feedback.
                     </p>
 
                     <div class="card">
@@ -358,34 +384,38 @@
             else if (page === "Students") {
                 content.innerHTML = `
                     <h1>Student Teams</h1>
-                    <p class="welcome">Team members and their assigned projects.</p>
+                    <p class="welcome">
+                        Team leaders and members assigned to each project.
+                    </p>
 
-                    <div class="card">
-                        <h3>Team 1</h3>
-                        <p><strong>Project:</strong> Smart Campus Portal</p>
-                        <ul>
-                            <li>Rahul Sharma</li>
-                            <li>Aman Verma</li>
-                            <li>Priya Singh</li>
-                        </ul>
-                    </div>
+                    ${Object.keys(projects).map(function(key) {
+                        const project = projects[key];
 
-                    <div class="card">
-                        <h3>Team 2</h3>
-                        <p><strong>Project:</strong> Library Management System</p>
-                        <ul>
-                            <li>Neha Gupta</li>
-                            <li>Arjun Kumar</li>
-                            <li>Simran Kaur</li>
-                        </ul>
-                    </div>
+                        return `
+                            <div class="card">
+                                <h3>${project.team}</h3>
+                                <p><strong>Project:</strong> ${project.name}</p>
+                                <p><strong>Team Leader:</strong> ${project.leader}</p>
+                                <p><strong>Members:</strong></p>
+                                <ul>
+                                    ${project.members.map(function(member) {
+                                        return `<li>${member.name}</li>`;
+                                    }).join("")}
+                                </ul>
+                            </div>
+                        `;
+                    }).join("")}
                 `;
             }
 
             else if (page === "Feedback") {
+                const currentProject = projects[selectedProject];
+
                 content.innerHTML = `
                     <h1>Project Feedback</h1>
-                    <p class="welcome">Give feedback on a project or team's work.</p>
+                    <p class="welcome">
+                        Provide feedback on a selected project or student team's work.
+                    </p>
 
                     <div class="card">
                         <h3>Submit Feedback</h3>
@@ -393,8 +423,14 @@
                         <label for="feedbackProject">Select Project</label>
                         <select id="feedbackProject">
                             <option value="">Choose a project</option>
-                            <option value="Smart Campus Portal">Smart Campus Portal</option>
-                            <option value="Library Management System">Library Management System</option>
+                            <option value="campus"
+                                ${selectedProject === "campus" ? "selected" : ""}>
+                                Smart Campus Portal
+                            </option>
+                            <option value="library"
+                                ${selectedProject === "library" ? "selected" : ""}>
+                                Library Management System
+                            </option>
                         </select>
 
                         <label for="feedback">Feedback</label>
@@ -405,7 +441,7 @@
                             Submit Feedback
                         </button>
 
-                        <p id="message"></p>
+                        <p id="message" class="message"></p>
                     </div>
                 `;
             }
@@ -417,15 +453,19 @@
 
                     <div class="card">
                         <h3>Personal Details</h3>
+
                         <div class="profile-row">
                             <strong>Name:</strong> Mentor Name
                         </div>
+
                         <div class="profile-row">
                             <strong>Department:</strong> Computer Science
                         </div>
+
                         <div class="profile-row">
                             <strong>Email:</strong> mentor@example.com
                         </div>
+
                         <div class="profile-row">
                             <strong>Phone Number:</strong> 9876543210
                         </div>
@@ -435,8 +475,12 @@
         }
 
         function showProjectDetails() {
-            const projectKey = document.getElementById("projectSelect").value;
+            const projectKey =
+                document.getElementById("projectSelect").value;
+
             const details = document.getElementById("projectDetails");
+
+            selectedProject = projectKey;
 
             if (!projectKey || !projects[projectKey]) {
                 details.innerHTML = "";
@@ -445,50 +489,69 @@
 
             const project = projects[projectKey];
 
-            let present = 0;
-            let absent = 0;
+            const present = project.members.filter(function(member) {
+                return member.attendance === "Present";
+            }).length;
 
-            project.members.forEach(function(member) {
-                if (member.attendance === "Present") {
-                    present++;
-                } else {
-                    absent++;
-                }
-            });
+            const absent = project.members.length - present;
 
             details.innerHTML = `
                 <div class="card">
                     <h3>${project.name}</h3>
+
                     <p><strong>Team:</strong> ${project.team}</p>
+                    <p><strong>Team Leader:</strong> ${project.leader}</p>
                     <p><strong>Interaction:</strong> ${project.interaction}</p>
                     <p><strong>Interactions Completed:</strong> ${project.completed}</p>
-                    <p><strong>Attendance:</strong> ${present} present, ${absent} absent</p>
+                    <p>
+                        <strong>Attendance:</strong>
+                        <span class="present">${present} present</span>,
+                        <span class="absent">${absent} absent</span>
+                    </p>
 
-                    <h3>Project Members and Attendance</h3>
+                    <h3>Team Members and Attendance</h3>
                     ${makeAttendanceTable(project)}
+
+                    <button class="action-button"
+                        onclick="showPage('Feedback')">
+                        Give Feedback for This Project
+                    </button>
                 </div>
             `;
         }
 
         function giveFeedback() {
-            const project = document.getElementById("feedbackProject").value;
-            const feedback = document.getElementById("feedback").value.trim();
+            const projectKey =
+                document.getElementById("feedbackProject").value;
+
+            const feedback =
+                document.getElementById("feedback").value.trim();
+
             const message = document.getElementById("message");
 
-            if (project === "" || feedback === "") {
-                alert("Please select a project and enter feedback.");
+            if (!projectKey || !feedback) {
+                message.style.color = "#c44b4b";
+                message.textContent =
+                    "Please select a project and enter feedback.";
                 return;
             }
 
+            selectedProject = projectKey;
+
+            message.style.color = "#39804a";
             message.textContent =
-                "Feedback submitted for " + project + " successfully!";
+                "Feedback submitted for " +
+                projects[projectKey].name +
+                " successfully!";
+
+            document.getElementById("feedback").value = "";
         }
 
         function logout() {
             window.location.href = "index.html";
         }
 
-        showPage("Dashboard", document.querySelector(".sidebar button"));
+        showPage("Dashboard");
     </script>
 
 </body>
