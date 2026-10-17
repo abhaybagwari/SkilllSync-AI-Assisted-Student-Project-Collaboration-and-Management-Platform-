@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,125 +7,37 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-.profile-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.65);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
-}
-.profile-modal.show {
-    display: flex;
-}
-.profile-box {
-    background: white;
-    color: #222;
-    width: 100%;
-    max-width: 600px;
-    max-height: 85vh;
-    overflow-y: auto;
-    padding: 25px;
-    border-radius: 12px;
-}
-.profile-box h2 {
-    margin-top: 0;
-}
-.profile-row {
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-    overflow-wrap: anywhere;
-}
-.profile-row strong {
-    display: block;
-    margin-bottom: 5px;
-}
-.profile-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-}
-.profile-actions button,
-.profile-actions a {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    text-decoration: none;
-}
-.profile-link {
-    color: #174ea6;
-    text-decoration: underline;
-}
-.action-buttons {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-.action-buttons button {
-    padding: 8px 10px;
-    cursor: pointer;
-}
-.profile-message {
-    padding: 12px;
-    margin: 10px 0;
-    background: #f3f4f6;
-    border-radius: 6px;
-}
-.application-filters {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin: 15px 0 20px;
-    padding: 16px;
-    background: #f5f7fb;
-    border-radius: 10px;
-}
-.application-filters input,
-.application-filters select {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    padding: 11px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background: white;
-}
-.filter-buttons {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-.filter-buttons button {
-    padding: 10px 12px;
-    border: 0;
-    border-radius: 6px;
-    cursor: pointer;
-}
-.filter-count {
-    margin: 0 0 12px;
-    color: #555;
-}
+.profile-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;justify-content:center;align-items:center;padding:15px}
+.profile-modal.show{display:flex}
+.profile-box{background:white;color:#222;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:25px;border-radius:12px}
+.profile-box h2{margin-top:0}
+.profile-row{padding:10px 0;border-bottom:1px solid #eee;overflow-wrap:anywhere}
+.profile-row strong{display:block;margin-bottom:5px}
+.profile-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.profile-actions button,.profile-actions a{padding:10px 15px;border:none;border-radius:6px;cursor:pointer;text-decoration:none}
+.profile-link{color:#174ea6;text-decoration:underline}
+.action-buttons{display:flex;gap:6px;flex-wrap:wrap}
+.action-buttons button{padding:8px 10px;cursor:pointer}
+.application-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:15px 0 20px;padding:16px;background:#f5f7fb;border-radius:10px}
+.application-filters input,.application-filters select{width:100%;min-width:0;box-sizing:border-box;padding:11px;border:1px solid #ccc;border-radius:6px;background:white}
+.filter-buttons{display:flex;gap:8px;align-items:center}
+.filter-buttons button{padding:10px 12px;border:0;border-radius:6px;cursor:pointer}
+.filter-count{margin:0 0 12px;color:#555}
 </style>
 </head>
 
 <body>
 <div class="dashboard">
-
     <div class="sidebar">
         <h2>SkillSync</h2>
-        <a href="#" onclick="showSection('create-project'); return false;">Create Project</a>
-        <a href="#" onclick="showSection('your-projects'); loadProjects(); return false;">Your Projects</a>
-        <a href="#" onclick="showSection('team-management'); loadTeamProjects(); return false;">Team Management</a>
-        <a href="#" onclick="showSection('feedback'); return false;">Feedback</a>
+        <a href="#" onclick="showSection('create-project');return false;">Create Project</a>
+        <a href="#" onclick="showSection('your-projects');loadProjects();return false;">Your Projects</a>
+        <a href="#" onclick="showSection('team-management');loadTeamProjects();return false;">Team Management</a>
+        <a href="#" onclick="showSection('feedback');return false;">Feedback</a>
         <a href="index.html" class="logout" onclick="logout()">Exit</a>
     </div>
 
     <div class="main-content">
-
         <div id="create-project" class="dashboard-section">
             <h1>Create Project</h1>
             <p class="welcome">Create a new project and find the right team members.</p>
@@ -147,6 +58,11 @@
                 <label for="projectTimeline">Timeline</label>
                 <input type="date" id="projectTimeline">
 
+                <label for="mentorSelect">Assign Mentor</label>
+                <select id="mentorSelect" required>
+                    <option value="">Loading mentors...</option>
+                </select>
+
                 <button type="button" class="login-btn" onclick="sendProject()">SEND</button>
             </div>
         </div>
@@ -154,16 +70,9 @@
         <div id="your-projects" class="dashboard-section hidden">
             <h1>Your Projects</h1>
             <p class="welcome">View and manage your projects.</p>
-
             <div class="project-table-container">
                 <table class="project-table">
-                    <thead>
-                        <tr>
-                            <th>Project</th>
-                            <th>Members</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Project</th><th>Members</th><th>Status</th></tr></thead>
                     <tbody id="projectTableBody"></tbody>
                 </table>
             </div>
@@ -181,17 +90,10 @@
             </div>
 
             <div id="teamDetails" class="hidden">
-
                 <h2>Team Overview</h2>
                 <div class="project-table-container">
                     <table class="project-table">
-                        <thead>
-                            <tr>
-                                <th>Team Size</th>
-                                <th>Members Required</th>
-                                <th>Available Positions</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Team Size</th><th>Members Required</th><th>Available Positions</th></tr></thead>
                         <tbody id="teamSummaryBody"></tbody>
                     </table>
                 </div>
@@ -199,14 +101,7 @@
                 <h2>Current Members</h2>
                 <div class="project-table-container">
                     <table class="project-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody id="currentMembersBody">
                             <tr><td colspan="4">Select a project to view members.</td></tr>
                         </tbody>
@@ -217,12 +112,7 @@
                 <p>Filter applications and view a student's profile before accepting or rejecting.</p>
 
                 <div class="application-filters">
-                    <input
-                        type="search"
-                        id="filterSearch"
-                        placeholder="Search name, email, skills..."
-                        oninput="filterApplications()"
-                    >
+                    <input type="search" id="filterSearch" placeholder="Search name, email, skills..." oninput="filterApplications()">
 
                     <select id="filterBranch" onchange="filterApplications()">
                         <option value="">All Branches</option>
@@ -256,14 +146,7 @@
 
                 <div class="project-table-container">
                     <table class="project-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody id="pendingApplicationsBody">
                             <tr><td colspan="4">Select a project to view applications.</td></tr>
                         </tbody>
@@ -275,14 +158,12 @@
         <div id="feedback" class="dashboard-section hidden">
             <h1>Feedback</h1>
             <p class="welcome">Share your feedback about SkillSync.</p>
-
             <div class="project-form">
                 <label for="feedbackText">Your Feedback</label>
                 <textarea id="feedbackText" rows="6" placeholder="Write your feedback here"></textarea>
                 <button type="button" class="login-btn" onclick="sendFeedback()">SEND FEEDBACK</button>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -302,28 +183,45 @@ const applicationProfiles = {};
 let allApplications = [];
 
 function showSection(sectionId) {
-    document.querySelectorAll(".dashboard-section").forEach(section => {
-        section.classList.add("hidden");
-    });
-
+    document.querySelectorAll(".dashboard-section").forEach(section => section.classList.add("hidden"));
     document.getElementById(sectionId).classList.remove("hidden");
 }
 
 async function readResponse(response) {
     const text = await response.text();
-
     let data;
+
     try {
         data = text ? JSON.parse(text) : {};
     } catch {
         data = { detail: text || "Unexpected server response." };
     }
 
-    if (!response.ok) {
-        throw new Error(data.detail || "Request failed.");
-    }
-
+    if (!response.ok) throw new Error(data.detail || "Request failed.");
     return data;
+}
+
+async function loadMentors() {
+    const select = document.getElementById("mentorSelect");
+
+    try {
+        const data = await readResponse(await fetch(`${API}/projects/mentors`));
+        select.innerHTML = '<option value="">Select a mentor</option>';
+
+        (data.mentors || []).forEach(mentor => {
+            const option = document.createElement("option");
+            option.value = mentor.User_ID;
+            option.textContent = `${mentor.Name} (${mentor.Email})`;
+            select.appendChild(option);
+        });
+
+        if (!data.mentors || data.mentors.length === 0) {
+            select.innerHTML = '<option value="">No mentors available</option>';
+        }
+    } catch (error) {
+        select.innerHTML = '<option value="">Unable to load mentors</option>';
+        console.error(error);
+    }
 }
 
 async function sendProject() {
@@ -332,10 +230,11 @@ async function sendProject() {
     const members = document.getElementById("membersRequired").value;
     const skills = document.getElementById("skillsRequired").value.trim();
     const timeline = document.getElementById("projectTimeline").value;
+    const mentorId = document.getElementById("mentorSelect").value;
     const userId = localStorage.getItem("userId");
 
-    if (!projectName || !description || !members || !skills || !timeline) {
-        alert("Please fill all project details.");
+    if (!projectName || !description || !members || !skills || !timeline || !mentorId) {
+        alert("Please fill all project details and select a mentor.");
         return;
     }
 
@@ -360,17 +259,19 @@ async function sendProject() {
                 members_required: Number(members),
                 skill_required: skills,
                 submission_date: timeline,
-                user_id: Number(userId)
+                user_id: Number(userId),
+                mentor_id: Number(mentorId)
             })
         }));
 
-        alert("Project created successfully.");
+        alert("Project created and mentor assigned successfully.");
 
         document.getElementById("projectName").value = "";
         document.getElementById("projectDescription").value = "";
         document.getElementById("membersRequired").value = "";
         document.getElementById("skillsRequired").value = "";
         document.getElementById("projectTimeline").value = "";
+        document.getElementById("mentorSelect").value = "";
 
         await loadProjects();
         showSection("your-projects");
@@ -388,10 +289,7 @@ async function loadProjects() {
     body.innerHTML = "<tr><td colspan='3'>Loading projects...</td></tr>";
 
     try {
-        const data = await readResponse(await fetch(
-            `${API}/projects/user/${encodeURIComponent(userId)}`
-        ));
-
+        const data = await readResponse(await fetch(`${API}/projects/user/${encodeURIComponent(userId)}`));
         body.innerHTML = "";
         const projects = data.projects || [];
 
@@ -424,7 +322,6 @@ async function loadProjects() {
 async function loadTeamProjects() {
     const userId = localStorage.getItem("userId");
     const select = document.getElementById("teamProjectSelect");
-
     select.innerHTML = "<option value=''>Loading projects...</option>";
 
     if (!userId) {
@@ -434,10 +331,7 @@ async function loadTeamProjects() {
     }
 
     try {
-        const data = await readResponse(await fetch(
-            `${API}/projects/user/${encodeURIComponent(userId)}`
-        ));
-
+        const data = await readResponse(await fetch(`${API}/projects/user/${encodeURIComponent(userId)}`));
         select.innerHTML = "<option value=''>Select a project</option>";
         const projects = data.projects || [];
 
@@ -454,11 +348,8 @@ async function loadTeamProjects() {
             select.appendChild(option);
         });
 
-        if (select.value) {
-            await loadTeamMembers();
-        } else {
-            document.getElementById("teamDetails").classList.add("hidden");
-        }
+        if (select.value) await loadTeamMembers();
+        else document.getElementById("teamDetails").classList.add("hidden");
     } catch (error) {
         select.innerHTML = "<option value=''>Unable to load projects</option>";
         alert(error.message);
@@ -479,26 +370,15 @@ async function loadTeamMembers() {
     }
 
     details.classList.remove("hidden");
-
-    document.getElementById("currentMembersBody").innerHTML =
-        "<tr><td colspan='4'>Loading members...</td></tr>";
-
-    document.getElementById("pendingApplicationsBody").innerHTML =
-        "<tr><td colspan='4'>Loading applications...</td></tr>";
+    document.getElementById("currentMembersBody").innerHTML = "<tr><td colspan='4'>Loading members...</td></tr>";
+    document.getElementById("pendingApplicationsBody").innerHTML = "<tr><td colspan='4'>Loading applications...</td></tr>";
 
     try {
-        const data = await readResponse(await fetch(
-            `${API}/projects/${encodeURIComponent(projectId)}/members`
-        ));
-
+        const data = await readResponse(await fetch(`${API}/projects/${encodeURIComponent(projectId)}/members`));
         updateTeamMembers(data);
     } catch (error) {
-        document.getElementById("currentMembersBody").innerHTML =
-            "<tr><td colspan='4'>Unable to load members.</td></tr>";
-
-        document.getElementById("pendingApplicationsBody").innerHTML =
-            "<tr><td colspan='4'>Unable to load applications. Check the backend endpoint.</td></tr>";
-
+        document.getElementById("currentMembersBody").innerHTML = "<tr><td colspan='4'>Unable to load members.</td></tr>";
+        document.getElementById("pendingApplicationsBody").innerHTML = "<tr><td colspan='4'>Unable to load applications. Check the backend endpoint.</td></tr>";
         document.getElementById("applicationFilterCount").textContent = "";
         console.error(error);
     }
@@ -506,8 +386,7 @@ async function loadTeamMembers() {
 
 function getValue(object, keys, fallback = "") {
     for (const key of keys) {
-        if (object && object[key] !== undefined &&
-            object[key] !== null && object[key] !== "") {
+        if (object && object[key] !== undefined && object[key] !== null && object[key] !== "") {
             return object[key];
         }
     }
@@ -515,40 +394,26 @@ function getValue(object, keys, fallback = "") {
 }
 
 function getStudentId(application) {
-    return getValue(application, [
-        "member_id", "Member_ID",
-        "application_id", "Application_ID",
-        "user_id", "User_ID",
-        "student_id", "Student_ID"
-    ]);
+    return getValue(application, ["member_id", "Member_ID", "application_id", "Application_ID", "user_id", "User_ID", "student_id", "Student_ID"]);
 }
 
 function getBranch(application) {
-    return String(getValue(application, [
-        "branch", "Branch",
-        "department", "Department"
-    ])).trim().toLowerCase();
+    return String(getValue(application, ["branch", "Branch", "department", "Department"])).trim().toLowerCase();
 }
 
 function getYear(application) {
-    const raw = String(getValue(application, [
-        "year", "Year", "study_year", "Study_Year"
-    ])).trim().toLowerCase();
-
+    const raw = String(getValue(application, ["year", "Year", "study_year", "Study_Year"])).trim().toLowerCase();
     const match = raw.match(/[1-4]/);
     return match ? match[0] : "";
 }
 
 function getApplicationStatus(application) {
-    return String(getValue(application, [
-        "status", "Status", "application_status", "Application_Status"
-    ], "Pending")).trim().toLowerCase();
+    return String(getValue(application, ["status", "Status", "application_status", "Application_Status"], "Pending")).trim().toLowerCase();
 }
 
 function updateTeamMembers(data) {
     const currentBody = document.getElementById("currentMembersBody");
     const summaryBody = document.getElementById("teamSummaryBody");
-
     const members = data.members || [];
     const applications = data.applications || [];
     const required = Number(data.members_required || 0);
@@ -556,41 +421,32 @@ function updateTeamMembers(data) {
     summaryBody.innerHTML = "";
     const summaryRow = document.createElement("tr");
 
-    [members.length, required, Math.max(required - members.length, 0)]
-        .forEach(value => {
-            const cell = document.createElement("td");
-            cell.textContent = value;
-            summaryRow.appendChild(cell);
-        });
+    [members.length, required, Math.max(required - members.length, 0)].forEach(value => {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        summaryRow.appendChild(cell);
+    });
 
     summaryBody.appendChild(summaryRow);
     currentBody.innerHTML = "";
 
     if (!members.length) {
-        currentBody.innerHTML =
-            "<tr><td colspan='4'>No accepted members yet.</td></tr>";
+        currentBody.innerHTML = "<tr><td colspan='4'>No accepted members yet.</td></tr>";
     } else {
         members.forEach(member => {
-            const id = getValue(member, [
-                "member_id", "Member_ID", "user_id", "User_ID"
-            ]);
-
+            const id = getValue(member, ["member_id", "Member_ID", "user_id", "User_ID"]);
             const row = document.createElement("tr");
             const name = document.createElement("td");
             name.textContent = getValue(member, ["name", "Name"], "Unknown");
-
             const email = document.createElement("td");
             email.textContent = getValue(member, ["email", "Email"], "N/A");
-
             const status = document.createElement("td");
             status.textContent = "Accepted";
-
             const actions = document.createElement("td");
             const remove = document.createElement("button");
             remove.textContent = "REMOVE";
             remove.disabled = !id;
             remove.onclick = () => removeMember(id);
-
             actions.appendChild(remove);
             row.append(name, email, status, actions);
             currentBody.appendChild(row);
@@ -601,22 +457,17 @@ function updateTeamMembers(data) {
 
     allApplications.forEach(application => {
         const id = getStudentId(application);
-        if (id !== "") {
-            applicationProfiles[String(id)] = application;
-        }
+        if (id !== "") applicationProfiles[String(id)] = application;
     });
 
     filterApplications();
 }
 
 function filterApplications() {
-    const search = document.getElementById("filterSearch").value
-        .trim().toLowerCase();
-
+    const search = document.getElementById("filterSearch").value.trim().toLowerCase();
     const branch = document.getElementById("filterBranch").value;
     const year = document.getElementById("filterYear").value;
     const status = document.getElementById("filterStatus").value;
-
     const body = document.getElementById("pendingApplicationsBody");
     body.innerHTML = "";
 
@@ -632,63 +483,39 @@ function filterApplications() {
         const studentBranch = getBranch(application);
         const studentYear = getYear(application);
         const studentStatus = getApplicationStatus(application);
-
         const matchesSearch = searchable.includes(search);
 
         const matchesBranch = !branch ||
             (branch === "other"
                 ? studentBranch !== "" &&
-                  !["cse", "computer science", "computer science and engineering",
-                    "ece", "electronics and communication", "it",
-                    "information technology"].some(item =>
-                        studentBranch === item || studentBranch.includes(item)
-                    )
+                  !["cse", "computer science", "computer science and engineering", "ece", "electronics and communication", "it", "information technology"].some(item =>
+                      studentBranch === item || studentBranch.includes(item))
                 : branch === "cse"
-                    ? ["cse", "computer science", "computer science and engineering"]
-                        .some(item => studentBranch.includes(item))
+                    ? ["cse", "computer science", "computer science and engineering"].some(item => studentBranch.includes(item))
                     : branch === "ece"
-                        ? ["ece", "electronics and communication"]
-                            .some(item => studentBranch.includes(item))
-                        : ["it", "information technology"]
-                            .some(item => studentBranch === item ||
-                                studentBranch.includes(item))
-            );
+                        ? ["ece", "electronics and communication"].some(item => studentBranch.includes(item))
+                        : ["it", "information technology"].some(item => studentBranch === item || studentBranch.includes(item)));
 
-        const matchesYear = !year || studentYear === year;
-        const matchesStatus = !status || studentStatus === status;
-
-        return matchesSearch && matchesBranch && matchesYear && matchesStatus;
+        return matchesSearch && matchesBranch && (!year || studentYear === year) && (!status || studentStatus === status);
     });
 
     document.getElementById("applicationFilterCount").textContent =
         `Showing ${filtered.length} of ${allApplications.length} applications`;
 
     if (!filtered.length) {
-        body.innerHTML =
-            "<tr><td colspan='4'>No applications match these filters.</td></tr>";
+        body.innerHTML = "<tr><td colspan='4'>No applications match these filters.</td></tr>";
         return;
     }
 
     filtered.forEach(application => {
         const id = getStudentId(application);
         const row = document.createElement("tr");
-
         const name = document.createElement("td");
-        name.textContent = getValue(
-            application, ["name", "Name", "student_name"], "Unknown"
-        );
-
+        name.textContent = getValue(application, ["name", "Name", "student_name"], "Unknown");
         const email = document.createElement("td");
-        email.textContent = getValue(
-            application, ["email", "Email", "student_email"], "N/A"
-        );
-
-        const status = document.createElement("td");
-        status.textContent = getValue(
-            application, ["status", "Status", "application_status"],
-            "Pending"
-        );
-
+        email.textContent = getValue(application, ["email", "Email", "student_email"], "N/A");
+        const statusCell = document.createElement("td");
+        statusCell.textContent = getValue(application, ["status", "Status", "application_status"], "Pending");
         const actions = document.createElement("td");
         const buttons = document.createElement("div");
         buttons.className = "action-buttons";
@@ -698,13 +525,11 @@ function filterApplications() {
             profileButton.textContent = "VIEW PROFILE";
             profileButton.type = "button";
             profileButton.onclick = () => viewStudentProfile(id);
+            buttons.appendChild(profileButton);
 
             const normalizedStatus = getApplicationStatus(application);
 
-            buttons.appendChild(profileButton);
-
-            if (normalizedStatus !== "accepted" &&
-                normalizedStatus !== "rejected") {
+            if (normalizedStatus !== "accepted" && normalizedStatus !== "rejected") {
                 const acceptButton = document.createElement("button");
                 acceptButton.textContent = "ACCEPT";
                 acceptButton.type = "button";
@@ -714,7 +539,6 @@ function filterApplications() {
                 rejectButton.textContent = "REJECT";
                 rejectButton.type = "button";
                 rejectButton.onclick = () => rejectMember(id);
-
                 buttons.append(acceptButton, rejectButton);
             }
         } else {
@@ -722,8 +546,8 @@ function filterApplications() {
         }
 
         actions.appendChild(buttons);
-        row.append(name, email, status, actions);
-        body.append(row);
+        row.append(name, email, statusCell, actions);
+        body.appendChild(row);
     });
 }
 
@@ -735,10 +559,8 @@ function resetApplicationFilters() {
     filterApplications();
 }
 
-
 function viewStudentProfile(id) {
     const student = applicationProfiles[String(id)];
-
     const modal = document.getElementById("profileModal");
     const content = document.getElementById("profileContent");
 
@@ -750,50 +572,24 @@ function viewStudentProfile(id) {
     content.innerHTML = "";
 
     function findValue(keys) {
-        const sources = [
-            student,
-            student.profile,
-            student.credentials,
-            student.studentProfile,
-            student.student_profile
-        ].filter(source => source && typeof source === "object");
+        const sources = [student, student.profile, student.credentials, student.studentProfile, student.student_profile]
+            .filter(source => source && typeof source === "object");
 
         for (const source of sources) {
             for (const key of keys) {
-                if (
-                    source[key] !== undefined &&
-                    source[key] !== null &&
-                    source[key] !== ""
-                ) {
-                    return source[key];
-                }
+                if (source[key] !== undefined && source[key] !== null && source[key] !== "") return source[key];
             }
         }
-
         return null;
     }
 
     function formatValue(value) {
-        if (value === null || value === undefined || value === "") {
-            return "Not provided";
-        }
-
+        if (value === null || value === undefined || value === "") return "Not provided";
         if (Array.isArray(value)) {
-            if (value.length === 0) return "Not provided";
-
-            return value.map(item => {
-                if (typeof item === "object" && item !== null) {
-                    return item.name || item.title || JSON.stringify(item);
-                }
-
-                return String(item);
-            }).join(", ");
+            if (!value.length) return "Not provided";
+            return value.map(item => typeof item === "object" && item !== null ? item.name || item.title || JSON.stringify(item) : String(item)).join(", ");
         }
-
-        if (typeof value === "object") {
-            return value.name || value.title || JSON.stringify(value);
-        }
-
+        if (typeof value === "object") return value.name || value.title || JSON.stringify(value);
         return String(value);
     }
 
@@ -806,29 +602,16 @@ function viewStudentProfile(id) {
     function addField(label, keys) {
         const row = document.createElement("div");
         row.className = "profile-row";
-
         const heading = document.createElement("strong");
         heading.textContent = label;
-
         const value = document.createElement("span");
         value.textContent = formatValue(findValue(keys));
-
         row.append(heading, value);
         content.appendChild(row);
     }
 
     function addDocuments() {
-        const documents = findValue([
-            "documents",
-            "resumeFileNames",
-            "resume_file_names",
-            "certificates",
-            "resume",
-            "files",
-            "uploadedDocuments",
-            "uploaded_documents"
-        ]);
-
+        const documents = findValue(["documents", "resumeFileNames", "resume_file_names", "certificates", "resume", "files", "uploadedDocuments", "uploaded_documents"]);
         addHeading("Resume and Certificates");
 
         if (!documents || (Array.isArray(documents) && documents.length === 0)) {
@@ -842,9 +625,6 @@ function viewStudentProfile(id) {
         const files = Array.isArray(documents) ? documents : [documents];
 
         files.forEach((file, index) => {
-            const row = document.createElement("div");
-            row.className = "profile-row";
-
             let name = "";
             let url = "";
             let type = "";
@@ -852,60 +632,38 @@ function viewStudentProfile(id) {
 
             if (typeof file === "string") {
                 name = file;
-
                 if (/^https?:\/\//i.test(file)) {
                     url = file;
                     name = "Uploaded document";
                 }
             } else if (file && typeof file === "object") {
                 name = file.name || file.title || "Uploaded document";
-
-                url = file.url ||
-                    file.file_url ||
-                    file.document_url ||
-                    file.certificate_url ||
-                    file.resume_url ||
-                    file.link ||
-                    "";
-
+                url = file.url || file.file_url || file.document_url || file.certificate_url || file.resume_url || file.link || "";
                 type = file.type || file.mimeType || file.mime_type || "";
                 size = file.size || file.file_size || "";
             }
 
+            const row = document.createElement("div");
+            row.className = "profile-row";
             const heading = document.createElement("strong");
-            heading.textContent = "Document " + (index + 1) + ": ";
-
+            heading.textContent = `Document ${index + 1}: `;
             const details = document.createElement("span");
             details.textContent = name;
-
             row.append(heading, details);
             content.appendChild(row);
 
             if (type || size) {
                 const info = document.createElement("div");
                 info.className = "profile-row";
-
                 const label = document.createElement("strong");
                 label.textContent = "File information: ";
-
                 const value = document.createElement("span");
                 const parts = [];
 
-                if (type) {
-                    parts.push("Type: " + type);
-                }
-
+                if (type) parts.push("Type: " + type);
                 if (size) {
                     const bytes = Number(size);
-
-                    parts.push(
-                        "Size: " +
-                        (
-                            Number.isFinite(bytes) && bytes >= 0
-                                ? (bytes / 1024).toFixed(2) + " KB"
-                                : String(size)
-                        )
-                    );
+                    parts.push("Size: " + (Number.isFinite(bytes) && bytes >= 0 ? (bytes / 1024).toFixed(2) + " KB" : String(size)));
                 }
 
                 value.textContent = parts.join(" | ");
@@ -916,18 +674,15 @@ function viewStudentProfile(id) {
             if (url) {
                 try {
                     const parsed = new URL(url, window.location.href);
-
                     if (parsed.protocol === "http:" || parsed.protocol === "https:") {
                         const linkRow = document.createElement("div");
                         linkRow.className = "profile-row";
-
                         const link = document.createElement("a");
                         link.href = parsed.href;
                         link.target = "_blank";
                         link.rel = "noopener noreferrer";
                         link.textContent = "View / Download Document";
                         link.className = "profile-link";
-
                         linkRow.appendChild(link);
                         content.appendChild(linkRow);
                     }
@@ -939,75 +694,39 @@ function viewStudentProfile(id) {
     }
 
     addHeading("Student Details");
-
-    addField("Full Name", [
-        "name", "studentName", "student_name", "full_name"
-    ]);
-
-    addField("College Email", [
-        "email", "collegeEmail", "college_email"
-    ]);
-
-    addField("College / University", [
-        "college", "university"
-    ]);
-
-    addField("Branch", [
-        "branch", "department"
-    ]);
-
-    addField("Year of Study", [
-        "year", "yearOfStudy", "year_of_study"
-    ]);
-
-    addField("Current Semester", [
-        "semester", "currentSemester", "current_semester"
-    ]);
+    addField("Full Name", ["name", "studentName", "student_name", "full_name"]);
+    addField("College Email", ["email", "collegeEmail", "college_email"]);
+    addField("College / University", ["college", "university"]);
+    addField("Branch", ["branch", "department"]);
+    addField("Year of Study", ["year", "yearOfStudy", "year_of_study"]);
+    addField("Current Semester", ["semester", "currentSemester", "current_semester"]);
 
     addHeading("Skills and Interests");
+    addField("Technical Skills", ["skills", "technicalSkills", "technical_skills"]);
+    addField("Areas of Interest", ["interests", "areasOfInterest", "areas_of_interest"]);
+    addField("GitHub Profile", ["github", "githubProfile", "github_profile"]);
+    addField("Previous Project Experience", ["experience", "projectExperience", "project_experience", "previousProjectExperience"]);
 
-    addField("Technical Skills", [
-        "skills", "technicalSkills", "technical_skills"
-    ]);
+    addDocuments();
 
-    addField("Areas of Interest", [
-        "interests", "areasOfInterest", "areas_of_interest"
-    ]);
-
-    addField("GitHub Profile", [
-        "github", "githubProfile", "github_profile"
-    ]);
-
-    addField("Previous Project Experience", [
-        "experience",
-        "projectExperience",
-        "project_experience",
-        "previousProjectExperience"
-    ]);
-
-addDocuments();
-
-const debugSection = document.createElement("details");
-debugSection.style.marginTop = "20px";
-
-const debugTitle = document.createElement("summary");
-debugTitle.textContent = "View all data received from backend";
-
-const debugData = document.createElement("pre");
-debugData.textContent = JSON.stringify(student, null, 2);
-debugData.style.whiteSpace = "pre-wrap";
-debugData.style.overflowWrap = "anywhere";
-debugData.style.fontSize = "12px";
-debugData.style.background = "#f3f4f6";
-debugData.style.color = "#222";
-debugData.style.padding = "12px";
-debugData.style.borderRadius = "6px";
-
-debugSection.append(debugTitle, debugData);
-content.appendChild(debugSection);
-
-modal.classList.add("show");
+    const debugSection = document.createElement("details");
+    debugSection.style.marginTop = "20px";
+    const debugTitle = document.createElement("summary");
+    debugTitle.textContent = "View all data received from backend";
+    const debugData = document.createElement("pre");
+    debugData.textContent = JSON.stringify(student, null, 2);
+    debugData.style.whiteSpace = "pre-wrap";
+    debugData.style.overflowWrap = "anywhere";
+    debugData.style.fontSize = "12px";
+    debugData.style.background = "#f3f4f6";
+    debugData.style.color = "#222";
+    debugData.style.padding = "12px";
+    debugData.style.borderRadius = "6px";
+    debugSection.append(debugTitle, debugData);
+    content.appendChild(debugSection);
+    modal.classList.add("show");
 }
+
 function closeProfile() {
     document.getElementById("profileModal").classList.remove("show");
 }
@@ -1020,11 +739,7 @@ async function acceptMember(memberId) {
     if (!confirm("Accept this student into the project?")) return;
 
     try {
-        await readResponse(await fetch(
-            `${API}/projects/members/${encodeURIComponent(memberId)}/accept`,
-            { method: "PUT" }
-        ));
-
+        await readResponse(await fetch(`${API}/projects/members/${encodeURIComponent(memberId)}/accept`, { method: "PUT" }));
         alert("Member accepted successfully.");
         await loadTeamMembers();
     } catch (error) {
@@ -1037,11 +752,7 @@ async function rejectMember(memberId) {
     if (!confirm("Reject this application?")) return;
 
     try {
-        await readResponse(await fetch(
-            `${API}/projects/members/${encodeURIComponent(memberId)}/reject`,
-            { method: "PUT" }
-        ));
-
+        await readResponse(await fetch(`${API}/projects/members/${encodeURIComponent(memberId)}/reject`, { method: "PUT" }));
         alert("Application rejected.");
         await loadTeamMembers();
     } catch (error) {
@@ -1054,11 +765,7 @@ async function removeMember(memberId) {
     if (!confirm("Remove this member from the project?")) return;
 
     try {
-        await readResponse(await fetch(
-            `${API}/projects/members/${encodeURIComponent(memberId)}`,
-            { method: "DELETE" }
-        ));
-
+        await readResponse(await fetch(`${API}/projects/members/${encodeURIComponent(memberId)}`, { method: "DELETE" }));
         alert("Member removed successfully.");
         await loadTeamMembers();
     } catch (error) {
@@ -1069,7 +776,6 @@ async function removeMember(memberId) {
 
 function sendFeedback() {
     const feedback = document.getElementById("feedbackText").value.trim();
-
     if (!feedback) {
         alert("Please enter your feedback.");
         return;
@@ -1085,7 +791,10 @@ function logout() {
     localStorage.removeItem("userId");
 }
 
-window.addEventListener("load", loadProjects);
+window.addEventListener("load", () => {
+    loadProjects();
+    loadMentors();
+});
 </script>
 </body>
 </html>
