@@ -456,10 +456,26 @@ function updateTeamMembers(data) {
     allApplications = applications.slice();
 
     allApplications.forEach(application => {
-        const id = getStudentId(application);
-        if (id !== "") applicationProfiles[String(id)] = application;
-    });
+    const ids = [
+        getStudentId(application),
+        application.User_ID,
+        application.user_id,
+        application.Student_ID,
+        application.student_id,
+        application.id,
+        application.ID,
+        application.Application_ID,
+        application.application_id,
+        application.ApplicationID,
+        application.applicationId
+    ];
 
+    ids.forEach(id => {
+        if (id !== undefined && id !== null && String(id).trim() !== "") {
+            applicationProfiles[String(id)] = application;
+        }
+    });
+});
     filterApplications();
 }
 
@@ -559,37 +575,63 @@ function resetApplicationFilters() {
     filterApplications();
 }
 
+
 function viewStudentProfile(id) {
     const student = applicationProfiles[String(id)];
     const modal = document.getElementById("profileModal");
     const content = document.getElementById("profileContent");
 
+    content.innerHTML = "";
+
     if (!student) {
-        alert("Student details are not available. Please reload the applications.");
+        content.textContent = "Student details not found. Reload the applications and try again.";
+        modal.style.display = "flex";
+        modal.classList.add("show");
         return;
     }
 
-    content.innerHTML = "";
-
-    function findValue(keys) {
-        const sources = [student, student.profile, student.credentials, student.studentProfile, student.student_profile]
-            .filter(source => source && typeof source === "object");
+    function getValue(keys) {
+        const sources = [
+            student,
+            student.profile,
+            student.credentials,
+            student.studentProfile,
+            student.student_profile,
+            student.user,
+            student.student
+        ].filter(source => source && typeof source === "object");
 
         for (const source of sources) {
             for (const key of keys) {
-                if (source[key] !== undefined && source[key] !== null && source[key] !== "") return source[key];
+                if (source[key] !== undefined && source[key] !== null && source[key] !== "") {
+                    return source[key];
+                }
             }
         }
+
         return null;
     }
 
-    function formatValue(value) {
-        if (value === null || value === undefined || value === "") return "Not provided";
-        if (Array.isArray(value)) {
-            if (!value.length) return "Not provided";
-            return value.map(item => typeof item === "object" && item !== null ? item.name || item.title || JSON.stringify(item) : String(item)).join(", ");
+    function displayValue(value) {
+        if (value === null || value === undefined || value === "") {
+            return "Not provided";
         }
-        if (typeof value === "object") return value.name || value.title || JSON.stringify(value);
+
+        if (Array.isArray(value)) {
+            return value.length
+                ? value.map(item => {
+                    if (typeof item === "object" && item !== null) {
+                        return item.name || item.title || item.skill || JSON.stringify(item);
+                    }
+                    return String(item);
+                }).join(", ")
+                : "Not provided";
+        }
+
+        if (typeof value === "object") {
+            return value.name || value.title || JSON.stringify(value);
+        }
+
         return String(value);
     }
 
@@ -602,135 +644,133 @@ function viewStudentProfile(id) {
     function addField(label, keys) {
         const row = document.createElement("div");
         row.className = "profile-row";
+
         const heading = document.createElement("strong");
-        heading.textContent = label;
+        heading.textContent = label + ": ";
+
         const value = document.createElement("span");
-        value.textContent = formatValue(findValue(keys));
+        value.textContent = displayValue(getValue(keys));
+
         row.append(heading, value);
         content.appendChild(row);
     }
 
     function addDocuments() {
-        const documents = findValue(["documents", "resumeFileNames", "resume_file_names", "certificates", "resume", "files", "uploadedDocuments", "uploaded_documents"]);
         addHeading("Resume and Certificates");
 
-        if (!documents || (Array.isArray(documents) && documents.length === 0)) {
-            const row = document.createElement("div");
-            row.className = "profile-row";
-            row.textContent = "No document details available.";
-            content.appendChild(row);
+        const documents = getValue([
+            "documents",
+            "resume",
+            "resume_url",
+            "resumeUrl",
+            "resume_file",
+            "resumeFile",
+            "certificates",
+            "certificate",
+            "certificate_url",
+            "certificateUrl",
+            "files",
+            "uploadedDocuments",
+            "uploaded_documents",
+            "credentials"
+        ]);
+
+        if (!documents) {
+            addField("Documents", ["document_url", "file_url", "certificate_url", "resume_url"]);
             return;
         }
 
         const files = Array.isArray(documents) ? documents : [documents];
 
         files.forEach((file, index) => {
+            const row = document.createElement("div");
+            row.className = "profile-row";
+
             let name = "";
             let url = "";
-            let type = "";
-            let size = "";
 
             if (typeof file === "string") {
                 name = file;
                 if (/^https?:\/\//i.test(file)) {
                     url = file;
-                    name = "Uploaded document";
                 }
             } else if (file && typeof file === "object") {
-                name = file.name || file.title || "Uploaded document";
-                url = file.url || file.file_url || file.document_url || file.certificate_url || file.resume_url || file.link || "";
-                type = file.type || file.mimeType || file.mime_type || "";
-                size = file.size || file.file_size || "";
+                name = file.name || file.title || file.filename || file.file_name || "Document " + (index + 1);
+                url = file.url || file.file_url || file.document_url ||
+                    file.certificate_url || file.resume_url || file.link || "";
             }
 
-            const row = document.createElement("div");
-            row.className = "profile-row";
-            const heading = document.createElement("strong");
-            heading.textContent = `Document ${index + 1}: `;
-            const details = document.createElement("span");
-            details.textContent = name;
-            row.append(heading, details);
+            const label = document.createElement("strong");
+            label.textContent = "Document " + (index + 1) + ": ";
+
+            const text = document.createElement("span");
+            text.textContent = name || "Uploaded document";
+
+            row.append(label, text);
             content.appendChild(row);
 
-            if (type || size) {
-                const info = document.createElement("div");
-                info.className = "profile-row";
-                const label = document.createElement("strong");
-                label.textContent = "File information: ";
-                const value = document.createElement("span");
-                const parts = [];
+            if (url && /^https?:\/\//i.test(url)) {
+                const linkRow = document.createElement("div");
+                linkRow.className = "profile-row";
 
-                if (type) parts.push("Type: " + type);
-                if (size) {
-                    const bytes = Number(size);
-                    parts.push("Size: " + (Number.isFinite(bytes) && bytes >= 0 ? (bytes / 1024).toFixed(2) + " KB" : String(size)));
-                }
+                const link = document.createElement("a");
+                link.href = url;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = "View / Download Document";
 
-                value.textContent = parts.join(" | ");
-                info.append(label, value);
-                content.appendChild(info);
-            }
-
-            if (url) {
-                try {
-                    const parsed = new URL(url, window.location.href);
-                    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
-                        const linkRow = document.createElement("div");
-                        linkRow.className = "profile-row";
-                        const link = document.createElement("a");
-                        link.href = parsed.href;
-                        link.target = "_blank";
-                        link.rel = "noopener noreferrer";
-                        link.textContent = "View / Download Document";
-                        link.className = "profile-link";
-                        linkRow.appendChild(link);
-                        content.appendChild(linkRow);
-                    }
-                } catch (error) {
-                    console.error("Invalid document URL:", error);
-                }
+                linkRow.appendChild(link);
+                content.appendChild(linkRow);
             }
         });
     }
 
     addHeading("Student Details");
-    addField("Full Name", ["name", "studentName", "student_name", "full_name"]);
-    addField("College Email", ["email", "collegeEmail", "college_email"]);
+    addField("Full Name", ["name", "Name", "studentName", "student_name", "full_name"]);
+    addField("Email", ["email", "Email", "collegeEmail", "college_email"]);
     addField("College / University", ["college", "university"]);
-    addField("Branch", ["branch", "department"]);
-    addField("Year of Study", ["year", "yearOfStudy", "year_of_study"]);
-    addField("Current Semester", ["semester", "currentSemester", "current_semester"]);
+    addField("Branch", ["branch", "Branch", "department", "Department"]);
+    addField("Year of Study", ["year", "Year", "yearOfStudy", "year_of_study"]);
+    addField("Semester", ["semester", "currentSemester", "current_semester"]);
 
     addHeading("Skills and Interests");
-    addField("Technical Skills", ["skills", "technicalSkills", "technical_skills"]);
-    addField("Areas of Interest", ["interests", "areasOfInterest", "areas_of_interest"]);
-    addField("GitHub Profile", ["github", "githubProfile", "github_profile"]);
-    addField("Previous Project Experience", ["experience", "projectExperience", "project_experience", "previousProjectExperience"]);
+    addField("Technical Skills", ["skills", "Skills", "technicalSkills", "technical_skills", "skill"]);
+    addField("Interests", ["interests", "Interests", "areasOfInterest", "areas_of_interest"]);
+    addField("GitHub", ["github", "githubProfile", "github_profile"]);
+    addField("Previous Projects / Experience", ["experience", "projectExperience", "project_experience", "previousProjectExperience"]);
 
     addDocuments();
 
-    const debugSection = document.createElement("details");
-    debugSection.style.marginTop = "20px";
-    const debugTitle = document.createElement("summary");
-    debugTitle.textContent = "View all data received from backend";
-    const debugData = document.createElement("pre");
-    debugData.textContent = JSON.stringify(student, null, 2);
-    debugData.style.whiteSpace = "pre-wrap";
-    debugData.style.overflowWrap = "anywhere";
-    debugData.style.fontSize = "12px";
-    debugData.style.background = "#f3f4f6";
-    debugData.style.color = "#222";
-    debugData.style.padding = "12px";
-    debugData.style.borderRadius = "6px";
-    debugSection.append(debugTitle, debugData);
-    content.appendChild(debugSection);
+    addHeading("Application Details");
+    addField("Application ID", ["Application_ID", "application_id", "ApplicationID", "applicationId"]);
+    addField("Student ID", ["User_ID", "user_id", "Student_ID", "student_id", "id"]);
+    addField("Application Status", ["Status", "status", "application_status"]);
+
+    const debug = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.textContent = "View all data received from backend";
+
+    const pre = document.createElement("pre");
+    pre.textContent = JSON.stringify(student, null, 2);
+    pre.style.whiteSpace = "pre-wrap";
+    pre.style.overflowWrap = "anywhere";
+    pre.style.fontSize = "12px";
+
+    debug.append(summary, pre);
+    content.appendChild(debug);
+
+    modal.style.display = "flex";
+    modal.style.visibility = "visible";
     modal.classList.add("show");
 }
 
-function closeProfile() {
-    document.getElementById("profileModal").classList.remove("show");
-}
 
+function closeProfile() {
+    const modal = document.getElementById("profileModal");
+    modal.classList.remove("show");
+    modal.style.display = "none";
+    modal.style.visibility = "hidden";
+}
 function closeProfileOutside(event) {
     if (event.target.id === "profileModal") closeProfile();
 }
