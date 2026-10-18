@@ -39,6 +39,16 @@ SKILL_ALIASES = {
     "Natural Language Processing": ["NLP"],
 }
 
+# Skills shown on the profile page -> words to look for in the certificate.
+# A selected skill counts as matched if ANY of these words is found.
+# Keys are lowercase.
+SKILL_SEARCH_TERMS = {
+    "html/css": ["HTML", "CSS"],
+    "dbms": ["DBMS", "SQL", "MySQL", "Database", "Databases"],
+    "dsa": ["DSA", "Data Structures", "Algorithms"],
+    "ui/ux": ["UI/UX", "UX", "User Interface", "User Experience"],
+}
+
 
 def normalize_text(text: str) -> str:
     text = text.lower()
@@ -81,6 +91,17 @@ def extract_skills(text: str):
                 found.append(skill)
 
     return found
+
+
+def _skill_matches(skill: str, text: str, extracted_normalized: set) -> bool:
+    """True if a selected skill is present in the certificate text."""
+    # Original rule: the skill itself was detected in the certificate.
+    if normalize_text(skill) in extracted_normalized:
+        return True
+
+    # Extra rule for the profile page skills (DBMS, DSA, HTML/CSS, UI/UX).
+    terms = SKILL_SEARCH_TERMS.get(skill.strip().lower(), [])
+    return any(_term_in_text(term, text) for term in terms)
 
 
 def name_matches(student_name: str, text: str):
@@ -138,12 +159,12 @@ def verify_certificate(text: str, selected_skills=None, student_name: str = ""):
 
     matched_skills = [
         skill for skill in selected_skills
-        if normalize_text(skill) in extracted_normalized
+        if _skill_matches(skill, text, extracted_normalized)
     ]
 
     missing_skills = [
         skill for skill in selected_skills
-        if normalize_text(skill) not in extracted_normalized
+        if not _skill_matches(skill, text, extracted_normalized)
     ]
 
     disclaimer = " This is a screening result, not proof of authenticity."
