@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.routes.auth import router as auth_router
 from backend.routes.projects import router as projects_router
 from backend.routes.mentor import router as mentor_router
+from backend.routes.profiles import router as profiles_router
 
 app = FastAPI(title="SkillSync API")
 
@@ -26,6 +27,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(projects_router)
 app.include_router(mentor_router)
+app.include_router(profiles_router)
 
 
 @app.get("/")
