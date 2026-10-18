@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -163,6 +164,33 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
+        .project {
+            position: relative;
+            padding-right: 125px;
+        }
+
+       .skill-match {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    min-width: 85px;
+    text-align: center;
+    color: inherit;
+    font-weight: bold;
+}
+
+        .skill-match span {
+            display: block;
+            font-size: 24px;
+        }
+
+        .skill-match small {
+            display: block;
+            color: #555;
+            font-weight: normal;
+            font-size: 11px;
+        }
+
         @media (max-width: 650px) {
             .profile-grid {
                 grid-template-columns: 1fr;
@@ -175,6 +203,16 @@
 
             .profile-card {
                 padding: 16px;
+            }
+
+            .project {
+                padding-right: 0;
+                padding-top: 75px;
+            }
+
+            .skill-match {
+                top: 12px;
+                right: 12px;
             }
         }
     </style>
@@ -598,12 +636,54 @@ document.getElementById("profileForm").addEventListener("submit", function(event
     document.getElementById("editProfileBtn").style.display = "inline-block";
     document.getElementById("profileMessage").textContent =
         "Profile saved successfully!";
+
+    renderAvailableProjects();
 });
 
 profileFields.forEach(fieldId => {
     document.getElementById(fieldId).addEventListener("input", updateProfileHeader);
     document.getElementById(fieldId).addEventListener("change", updateProfileHeader);
 });
+
+function calculateSkillMatch(project) {
+    let profile = {};
+
+    try {
+        profile = JSON.parse(
+            localStorage.getItem(getProfileStorageKey()) || "{}"
+        );
+    } catch (error) {
+        console.error("Unable to read profile skills:", error);
+    }
+
+    const studentSkills = [
+        profile.profileSkill1,
+        profile.profileSkill2,
+        profile.profileSkill3
+    ]
+        .filter(Boolean)
+        .map(skill => skill.trim().toLowerCase())
+        .filter(Boolean);
+
+    const rawRequiredSkills = project.Skill_Required || "";
+
+    const requiredSkills = rawRequiredSkills
+        .split(/[,;]+/)
+        .map(skill => skill.trim().toLowerCase())
+        .filter(Boolean);
+
+    if (requiredSkills.length === 0) {
+        return 0;
+    }
+
+    const matchedSkills = requiredSkills.filter(skill =>
+        studentSkills.includes(skill)
+    );
+
+    return Math.round(
+        (matchedSkills.length / requiredSkills.length) * 100
+    );
+}
 
 async function loadDashboard() {
     if (!userId) return;
@@ -676,6 +756,19 @@ function renderAvailableProjects() {
         const projectDiv = document.createElement("div");
         projectDiv.className = "project";
 
+        const matchPercentage = calculateSkillMatch(project);
+
+        const skillMatch = document.createElement("div");
+        skillMatch.className = "skill-match";
+
+        const matchValue = document.createElement("span");
+        matchValue.textContent = matchPercentage + "%";
+
+        const matchLabel = document.createElement("small");
+        matchLabel.textContent = "Skill Match";
+
+        skillMatch.append(matchValue, matchLabel);
+
         const title = document.createElement("h3");
         title.textContent = project.Project_Name || "Untitled Project";
 
@@ -710,6 +803,7 @@ function renderAvailableProjects() {
         button.onclick = () => applyToProject(projectId);
 
         projectDiv.append(
+            skillMatch,
             title,
             description,
             skills,
