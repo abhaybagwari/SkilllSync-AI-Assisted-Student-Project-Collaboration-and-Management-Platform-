@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -155,9 +154,15 @@
             color: #263238;
         }
 
+        .profile-actions button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         #profileMessage {
             margin: 12px 0;
             font-size: 14px;
+            overflow-wrap: anywhere;
         }
 
         .profile-nav-active {
@@ -169,15 +174,15 @@
             padding-right: 125px;
         }
 
-       .skill-match {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    min-width: 85px;
-    text-align: center;
-    color: inherit;
-    font-weight: bold;
-}
+        .skill-match {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            min-width: 85px;
+            text-align: center;
+            color: inherit;
+            font-weight: bold;
+        }
 
         .skill-match span {
             display: block;
@@ -223,10 +228,14 @@
 
     <aside class="sidebar">
         <h2>SkillSync</h2>
-        <a href="#" data-section="dashboard" onclick="showSection('dashboard'); return false;">Dashboard</a>
-        <a href="#profile" data-section="profile" onclick="showSection('profile'); return false;">My Profile</a>
-        <a href="#projects" data-section="projects" onclick="showSection('projects'); return false;">My Projects</a>
-        <a href="#team" data-section="team" onclick="showSection('team'); return false;">My Team</a>
+        <a href="#" data-section="dashboard"
+           onclick="showSection('dashboard'); return false;">Dashboard</a>
+        <a href="#profile" data-section="profile"
+           onclick="showSection('profile'); return false;">My Profile</a>
+        <a href="#projects" data-section="projects"
+           onclick="showSection('projects'); return false;">My Projects</a>
+        <a href="#team" data-section="team"
+           onclick="showSection('team'); return false;">My Team</a>
         <a href="index.html" class="logout" onclick="logout()">Logout</a>
     </aside>
 
@@ -290,8 +299,8 @@
                     <p>Manage your personal information and technical skills.</p>
                 </div>
 
-                <button type="button" class="profile-edit-btn" id="editProfileBtn"
-                    onclick="toggleProfileEdit()">
+                <button type="button" class="profile-edit-btn"
+                    id="editProfileBtn" onclick="toggleProfileEdit()">
                     Edit Profile
                 </button>
             </div>
@@ -325,14 +334,13 @@
 
                         <div class="profile-field">
                             <label for="profileStudentId">Student ID</label>
-                            <input type="text" id="profileStudentId"
-                                placeholder="Enter your student ID" disabled>
+                            <input type="text" id="profileStudentId" disabled>
                         </div>
 
                         <div class="profile-field">
-                            <label for="profileCourse">Course</label>
+                            <label for="profileCourse">Branch</label>
                             <input type="text" id="profileCourse"
-                                value="B.Tech CSE" disabled>
+                                value="CSE" disabled>
                         </div>
 
                         <div class="profile-field">
@@ -420,7 +428,6 @@
 
                 <div class="profile-card">
                     <h3>About Me</h3>
-
                     <textarea id="profileAbout" rows="4"
                         placeholder="Tell your teammates about yourself, your interests and the projects you want to build."
                         disabled></textarea>
@@ -437,7 +444,7 @@
                     </button>
                 </div>
 
-                <p id="profileMessage" role="status"></p>
+                <p id="profileMessage" role="status" aria-live="polite"></p>
             </form>
         </section>
 
@@ -448,56 +455,17 @@
 const API_URL = "http://127.0.0.1:8000";
 
 const userId = localStorage.getItem("userId");
-const userName = localStorage.getItem("userName");
 
 if (!userId) {
-    alert("Please login first.");
-    window.location.href = "index.html";
-}
-
-if (userName) {
-    document.getElementById("welcomeMessage").innerText =
-        `Welcome back, ${userName}! Find projects and work with the right team.`;
+    alert("Please log in first.");
+    window.location.href = "login.html";
 }
 
 let availableProjects = [];
 let myProjects = [];
 let applying = new Set();
-
-function showSection(sectionId) {
-    const dashboardSection = document.getElementById("dashboardSection");
-    const projectsSection = document.getElementById("projects");
-    const teamSection = document.getElementById("team");
-    const tasksSection = document.getElementById("tasks");
-    const profileSection = document.getElementById("profile");
-
-    dashboardSection.style.display = "none";
-    projectsSection.style.display = "none";
-    teamSection.style.display = "none";
-    tasksSection.style.display = "none";
-    profileSection.style.display = "none";
-
-    document.querySelectorAll(".sidebar a[data-section]").forEach(link => {
-        link.classList.toggle(
-            "profile-nav-active",
-            link.dataset.section === sectionId
-        );
-    });
-
-    if (sectionId === "dashboard") {
-        dashboardSection.style.display = "block";
-        projectsSection.style.display = "block";
-        teamSection.style.display = "block";
-        tasksSection.style.display = "block";
-    } else if (sectionId === "projects") {
-        projectsSection.style.display = "block";
-    } else if (sectionId === "team") {
-        teamSection.style.display = "block";
-    } else if (sectionId === "profile") {
-        profileSection.style.display = "block";
-        loadProfile();
-    }
-}
+let serverProfile = {};
+let profileOriginalData = {};
 
 const profileFields = [
     "profileName",
@@ -515,39 +483,68 @@ const profileFields = [
     "profileAbout"
 ];
 
-let profileOriginalData = {};
+const editableProfileFields = [
+    "profileCourse",
+    "profileSemester",
+    "profileSkill1",
+    "profileLevel1",
+    "profileSkill2",
+    "profileLevel2",
+    "profileSkill3",
+    "profileLevel3",
+    "profileAbout"
+];
 
 function getProfileStorageKey() {
-    return "skillSyncProfile_" + (userId || "guest");
+    return "skillSyncProfile_" + userId;
 }
 
-function loadProfile() {
-    let savedProfile = {};
+function showSection(sectionId) {
+    const sections = {
+        dashboard: document.getElementById("dashboardSection"),
+        projects: document.getElementById("projects"),
+        team: document.getElementById("team"),
+        tasks: document.getElementById("tasks"),
+        profile: document.getElementById("profile")
+    };
 
-    try {
-        savedProfile = JSON.parse(
-            localStorage.getItem(getProfileStorageKey()) || "{}"
-        );
-    } catch (error) {
-        console.error("Unable to read saved profile:", error);
-    }
-
-    document.getElementById("profileName").value =
-        savedProfile.profileName || localStorage.getItem("userName") || "";
-
-    document.getElementById("profileEmail").value =
-        savedProfile.profileEmail || localStorage.getItem("userEmail") || "";
-
-    profileFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-
-        if (savedProfile[fieldId] !== undefined) {
-            field.value = savedProfile[fieldId];
-        }
+    Object.values(sections).forEach(section => {
+        section.style.display = "none";
     });
 
-    updateProfileHeader();
-    saveOriginalProfileData();
+    document.querySelectorAll(".sidebar a[data-section]").forEach(link => {
+        link.classList.toggle(
+            "profile-nav-active",
+            link.dataset.section === sectionId
+        );
+    });
+
+    if (sectionId === "dashboard") {
+        sections.dashboard.style.display = "block";
+        sections.projects.style.display = "block";
+        sections.team.style.display = "block";
+        sections.tasks.style.display = "block";
+    } else if (sections[sectionId]) {
+        sections[sectionId].style.display = "block";
+    }
+
+    if (sectionId === "profile") {
+        loadProfile();
+    }
+}
+
+function ordinalSemester(value) {
+    const number = Number(value);
+
+    if (!number) {
+        return "";
+    }
+
+    const suffix = number % 100 >= 11 && number % 100 <= 13
+        ? "th"
+        : ({1: "st", 2: "nd", 3: "rd"}[number % 10] || "th");
+
+    return `${number}${suffix} Semester`;
 }
 
 function updateProfileHeader() {
@@ -566,6 +563,10 @@ function updateProfileHeader() {
 
     document.getElementById("profileAvatar").textContent =
         (name || "S").charAt(0).toUpperCase();
+
+    const userName = name || "Student";
+    document.getElementById("welcomeMessage").textContent =
+        `Welcome back, ${userName}! Find projects and work with the right team.`;
 }
 
 function saveOriginalProfileData() {
@@ -577,33 +578,114 @@ function saveOriginalProfileData() {
     });
 }
 
+async function loadProfile() {
+    const message = document.getElementById("profileMessage");
+    message.textContent = "Loading profile from database...";
+
+    try {
+        const response = await fetch(
+            `${API_URL}/profiles/${encodeURIComponent(userId)}`
+        );
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Unable to load your profile.");
+        }
+
+        serverProfile = data;
+
+        const skills = Array.isArray(data.Skills) ? data.Skills : [];
+        const semester = Number(data.Semester || 0);
+
+        let documentMetadata = data.Document_Metadata || [];
+
+        if (typeof documentMetadata === "string") {
+            try {
+                documentMetadata = JSON.parse(documentMetadata);
+            } catch {
+                documentMetadata = [];
+            }
+        }
+
+        document.getElementById("profileName").value = data.Name || "";
+        document.getElementById("profileEmail").value = data.Email || "";
+        document.getElementById("profileStudentId").value =
+            String(data.User_ID ?? userId);
+        document.getElementById("profileCourse").value = data.Branch || "";
+        document.getElementById("profileSemester").value =
+            ordinalSemester(semester);
+        document.getElementById("profileRole").value =
+            data.Role === "Team Member" ? "Student" : (data.Role || "Student");
+
+        document.getElementById("profileSkill1").value = skills[0] || "";
+        document.getElementById("profileSkill2").value = skills[1] || "";
+        document.getElementById("profileSkill3").value = skills[2] || "";
+
+        const localProfile = JSON.parse(
+            localStorage.getItem(getProfileStorageKey()) || "{}"
+        );
+
+        document.getElementById("profileLevel1").value =
+            localProfile.profileLevel1 || "";
+        document.getElementById("profileLevel2").value =
+            localProfile.profileLevel2 || "";
+        document.getElementById("profileLevel3").value =
+            localProfile.profileLevel3 || "";
+
+        const interests = data.Interests || "";
+        const experience = data.Project_Experience || "";
+
+        document.getElementById("profileAbout").value =
+            [interests, experience].filter(Boolean).join("\n\n");
+
+        profileFields.forEach(fieldId => {
+            document.getElementById(fieldId).disabled = true;
+        });
+
+        updateProfileHeader();
+        saveOriginalProfileData();
+        message.textContent = "";
+
+    } catch (error) {
+        console.error("Profile loading error:", error);
+
+        message.textContent =
+            error.message || "Could not load the profile from the database.";
+    }
+}
+
 function toggleProfileEdit() {
-    profileFields.forEach(fieldId => {
+    editableProfileFields.forEach(fieldId => {
         document.getElementById(fieldId).disabled = false;
     });
 
     document.getElementById("profileActions").style.display = "flex";
     document.getElementById("editProfileBtn").style.display = "none";
-    document.getElementById("profileMessage").textContent = "";
+
+    document.getElementById("profileMessage").textContent =
+        "Name, email, student ID, and role come from your account and cannot be changed here.";
 }
 
 function cancelProfileEdit() {
     profileFields.forEach(fieldId => {
-        document.getElementById(fieldId).value =
-            profileOriginalData[fieldId] || "";
-
-        document.getElementById(fieldId).disabled = true;
+        const field = document.getElementById(fieldId);
+        field.value = profileOriginalData[fieldId] || "";
+        field.disabled = true;
     });
 
     document.getElementById("profileActions").style.display = "none";
     document.getElementById("editProfileBtn").style.display = "inline-block";
+    document.getElementById("profileMessage").textContent = "";
 
     updateProfileHeader();
-    document.getElementById("profileMessage").textContent = "";
 }
 
-document.getElementById("profileForm").addEventListener("submit", function(event) {
+document.getElementById("profileForm").addEventListener("submit", async function(event) {
     event.preventDefault();
+
+    const message = document.getElementById("profileMessage");
+    const saveButton = document.querySelector(".profile-save-btn");
 
     const profileData = {};
 
@@ -612,32 +694,138 @@ document.getElementById("profileForm").addEventListener("submit", function(event
             document.getElementById(fieldId).value.trim();
     });
 
-    localStorage.setItem(
-        getProfileStorageKey(),
-        JSON.stringify(profileData)
-    );
+    const skills = [
+        profileData.profileSkill1,
+        profileData.profileSkill2,
+        profileData.profileSkill3
+    ].filter(Boolean);
 
-    if (profileData.profileName) {
-        localStorage.setItem("userName", profileData.profileName);
+    if (skills.length === 0) {
+        message.textContent = "Enter at least one skill before saving.";
+        return;
     }
 
-    if (profileData.profileEmail) {
-        localStorage.setItem("userEmail", profileData.profileEmail);
+    const semesterMatch = profileData.profileSemester.match(/^(\d+)/);
+    const semester = semesterMatch
+        ? Number(semesterMatch[1])
+        : Number(serverProfile.Semester || 1);
+
+    const aboutParts = profileData.profileAbout.split(/\n\s*\n/);
+    const interests = (aboutParts[0] || "").trim();
+
+    const projectExperience = aboutParts.length > 1
+        ? aboutParts.slice(1).join("\n\n").trim()
+        : (serverProfile.Project_Experience || "");
+
+    let documentMetadata = serverProfile.Document_Metadata || [];
+
+    if (typeof documentMetadata === "string") {
+        try {
+            documentMetadata = JSON.parse(documentMetadata);
+        } catch {
+            documentMetadata = [];
+        }
     }
 
-    profileFields.forEach(fieldId => {
-        document.getElementById(fieldId).disabled = true;
-    });
+    if (!Array.isArray(documentMetadata) || documentMetadata.length === 0) {
+        message.textContent =
+            "No document metadata is saved. Complete the credentials form first.";
+        return;
+    }
 
-    saveOriginalProfileData();
-    updateProfileHeader();
+    const apiProfile = {
+        college: serverProfile.College || "",
+        branch: profileData.profileCourse || serverProfile.Branch || "",
+        year_of_study: Math.max(
+            1,
+            Math.min(4, Number(serverProfile.Year_Of_Study || Math.ceil(semester / 2)))
+        ),
+        semester: Math.max(1, Math.min(8, semester)),
+        skills,
+        interests,
+        github_url: serverProfile.Github_URL || "",
+        project_experience: projectExperience,
+        document_metadata: documentMetadata
+    };
 
-    document.getElementById("profileActions").style.display = "none";
-    document.getElementById("editProfileBtn").style.display = "inline-block";
-    document.getElementById("profileMessage").textContent =
-        "Profile saved successfully!";
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+    message.textContent = "Saving profile to the database...";
 
-    renderAvailableProjects();
+    try {
+        const response = await fetch(
+            `${API_URL}/profiles/${encodeURIComponent(userId)}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(apiProfile)
+            }
+        );
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(result.detail || "Unable to save profile.");
+        }
+
+        const updatedLocalProfile = {
+            ...profileData,
+            name: profileData.profileName,
+            email: profileData.profileEmail,
+            college: apiProfile.college,
+            branch: apiProfile.branch,
+            year: String(apiProfile.year_of_study),
+            semester: String(apiProfile.semester),
+            skills,
+            interests,
+            github: apiProfile.github_url,
+            experience: projectExperience,
+            documents: documentMetadata,
+            resumeFileNames: documentMetadata
+                .map(document => document.name)
+                .filter(Boolean)
+        };
+
+        localStorage.setItem(
+            getProfileStorageKey(),
+            JSON.stringify(updatedLocalProfile)
+        );
+
+        localStorage.setItem(
+            "skillsyncProfile",
+            JSON.stringify(updatedLocalProfile)
+        );
+
+        serverProfile = {
+            ...serverProfile,
+            Branch: apiProfile.branch,
+            Year_Of_Study: apiProfile.year_of_study,
+            Semester: apiProfile.semester,
+            Skills: skills,
+            Interests: interests,
+            Project_Experience: projectExperience,
+            Document_Metadata: documentMetadata
+        };
+
+        profileFields.forEach(fieldId => {
+            document.getElementById(fieldId).disabled = true;
+        });
+
+        saveOriginalProfileData();
+        updateProfileHeader();
+
+        document.getElementById("profileActions").style.display = "none";
+        document.getElementById("editProfileBtn").style.display = "inline-block";
+        message.textContent = "Profile saved successfully!";
+    } catch (error) {
+        console.error("Profile save error:", error);
+        message.textContent = error.message || "Unable to save profile. Please try again.";
+    } finally {
+        saveButton.disabled = false;
+        saveButton.textContent = "Save Profile";
+    }
 });
 
 profileFields.forEach(fieldId => {
@@ -686,7 +874,9 @@ function calculateSkillMatch(project) {
 }
 
 async function loadDashboard() {
-    if (!userId) return;
+    if (!userId) {
+        return;
+    }
 
     const projectsContainer = document.getElementById("projectsContainer");
     const teamContainer = document.getElementById("teamContainer");
@@ -697,11 +887,11 @@ async function loadDashboard() {
     try {
         const [projectsResponse, myProjectsResponse] = await Promise.all([
             fetch(`${API_URL}/projects/`),
-            fetch(`${API_URL}/projects/member/${userId}`)
+            fetch(`${API_URL}/projects/member/${encodeURIComponent(userId)}`)
         ]);
 
         if (!projectsResponse.ok || !myProjectsResponse.ok) {
-            throw new Error("Unable to load projects. Please check the backend.");
+            throw new Error("Unable to load projects. Check the backend.");
         }
 
         const projectsData = await projectsResponse.json();
@@ -718,10 +908,10 @@ async function loadDashboard() {
             project => !appliedIds.has(Number(project.Project_ID))
         );
 
-        document.getElementById("projectCount").innerText =
+        document.getElementById("projectCount").textContent =
             myProjects.length;
 
-        document.getElementById("teamCount").innerText =
+        document.getElementById("teamCount").textContent =
             myProjects.reduce((total, project) => {
                 return total + Number(project.Members || 0);
             }, 0);
@@ -745,14 +935,12 @@ function renderAvailableProjects() {
     container.innerHTML = "";
 
     if (availableProjects.length === 0) {
-        container.innerHTML =
-            "<p>No new projects available to apply for.</p>";
+        container.innerHTML = "<p>No new projects available to apply for.</p>";
         return;
     }
 
     availableProjects.forEach(project => {
         const projectId = Number(project.Project_ID);
-
         const projectDiv = document.createElement("div");
         projectDiv.className = "project";
 
@@ -782,13 +970,11 @@ function renderAvailableProjects() {
 
         const members = document.createElement("p");
         members.textContent =
-            "Members Required: " +
-            (project.Members_Required ?? "Not specified");
+            "Members Required: " + (project.Members_Required ?? "Not specified");
 
         const date = document.createElement("p");
         date.textContent =
-            "Submission Date: " +
-            (project.Submission_Date || "Not specified");
+            "Submission Date: " + (project.Submission_Date || "Not specified");
 
         const leader = document.createElement("p");
         leader.textContent =
@@ -796,9 +982,7 @@ function renderAvailableProjects() {
 
         const button = document.createElement("button");
         button.className = "login-btn";
-        button.textContent = applying.has(projectId)
-            ? "Applying..."
-            : "Apply";
+        button.textContent = applying.has(projectId) ? "Applying..." : "Apply";
         button.disabled = applying.has(projectId);
         button.onclick = () => applyToProject(projectId);
 
@@ -822,8 +1006,7 @@ function renderMyProjects() {
     container.innerHTML = "";
 
     if (myProjects.length === 0) {
-        container.innerHTML =
-            "<p>You have not applied to any projects yet.</p>";
+        container.innerHTML = "<p>You have not applied to any projects yet.</p>";
         return;
     }
 
@@ -848,13 +1031,7 @@ function renderMyProjects() {
             "Application Status: " +
             (project.Status || project.Application_Status || "Applied");
 
-        projectDiv.append(
-            title,
-            description,
-            skills,
-            status
-        );
-
+        projectDiv.append(title, description, skills, status);
         container.appendChild(projectDiv);
     });
 }
@@ -862,11 +1039,11 @@ function renderMyProjects() {
 async function applyToProject(projectId) {
     const id = Number(projectId);
 
-    if (applying.has(id)) return;
+    if (applying.has(id)) {
+        return;
+    }
 
-    if (myProjects.some(project =>
-        Number(project.Project_ID) === id
-    )) {
+    if (myProjects.some(project => Number(project.Project_ID) === id)) {
         alert("You have already applied to this project.");
         return;
     }
@@ -875,25 +1052,20 @@ async function applyToProject(projectId) {
     renderAvailableProjects();
 
     try {
-        const response = await fetch(
-            `${API_URL}/projects/${id}/apply`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    user_id: Number(userId)
-                })
-            }
-        );
+        const response = await fetch(`${API_URL}/projects/${id}/apply`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                user_id: Number(userId)
+            })
+        });
 
         const result = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            throw new Error(
-                result.detail || "Application failed. Please try again."
-            );
+            throw new Error(result.detail || "Application failed. Please try again.");
         }
 
         await loadDashboard();
@@ -906,7 +1078,7 @@ async function applyToProject(projectId) {
             alert("Application submitted successfully!");
         } else {
             alert(
-                "Application submitted, but the project has not appeared in My Team yet. Please check your backend."
+                "Application submitted, but it has not appeared in My Team yet. Please check the backend."
             );
         }
 
@@ -921,13 +1093,20 @@ async function applyToProject(projectId) {
 }
 
 function logout() {
-    localStorage.removeItem("userId");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("role");
+    [
+        "userId",
+        "userName",
+        "userEmail",
+        "userRole",
+        "role",
+        "skillsyncUser",
+        "skillsyncSignup",
+        "skillsync_pending_credentials"
+    ].forEach(key => localStorage.removeItem(key));
+
+    window.location.href = "login.html";
 }
 
-loadProfile();
 loadDashboard();
 showSection("dashboard");
 </script>

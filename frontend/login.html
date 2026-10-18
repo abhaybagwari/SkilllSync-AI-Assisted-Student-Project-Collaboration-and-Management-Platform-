@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <div class="container">
     <div class="left">
         <h1>SkillSync</h1>
@@ -30,32 +29,40 @@
             </select>
 
             <label for="loginEmail">Email</label>
-            <input type="email" id="loginEmail" placeholder="Enter your email" required>
+            <input type="email" id="loginEmail"
+                   placeholder="Enter your email" required>
 
             <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+            <input type="password" id="loginPassword"
+                   placeholder="Enter your password" required>
 
-            <button type="submit" class="login-btn">Login</button>
+            <button type="submit" class="login-btn" id="loginButton">
+                Login
+            </button>
         </form>
+
+        <p id="message" role="status"></p>
 
         <p class="signup">
             Don't have an account?
             <a href="signup.html">Sign Up</a>
         </p>
-
-        <p id="message" role="status"></p>
     </div>
 </div>
 
 <script>
-document.getElementById("loginForm").addEventListener("submit", async function(event) {
+const loginForm = document.getElementById("loginForm");
+const loginButton = document.getElementById("loginButton");
+const message = document.getElementById("message");
+
+loginForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    const message = document.getElementById("message");
     const role = document.getElementById("loginRole").value;
     const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
 
+    loginButton.disabled = true;
     message.textContent = "Logging in...";
 
     try {
@@ -65,38 +72,71 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                email: email,
-                password: password,
-                role: role
+                email,
+                password,
+                role
             })
         });
 
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            message.textContent = data.detail || "Login failed.";
-            return;
+            throw new Error(data.detail || "Login failed.");
         }
 
-       const loggedInUser = data.user;
+        const user = data.user;
 
-localStorage.setItem("skillsyncUser", JSON.stringify(loggedInUser));
-localStorage.setItem("userId", loggedInUser.user_id);
-localStorage.setItem("userRole", loggedInUser.role);
+        if (!user || user.user_id == null || !user.role) {
+            throw new Error("The server returned incomplete user details.");
+        }
 
-if (loggedInUser.role === "Team Leader") {
-    window.location.href = "leader-dashboard.html";
-} else if (loggedInUser.role === "Mentor") {
-    window.location.href = "mentor-dashboard.html";
-} else {
-    window.location.href = "student-dashboard.html";
-}
+        if (!["Team Member", "Team Leader", "Mentor"].includes(user.role)) {
+            throw new Error("The server returned an unexpected account role.");
+        }
+
+        const session = {
+            user_id: user.user_id,
+            name: user.name || "",
+            email: user.email || email,
+            role: user.role
+        };
+
+        const sessionKeys = [
+            "userId",
+            "userName",
+            "userEmail",
+            "userRole",
+            "role",
+            "skillsyncUser",
+            "skillsyncSignup",
+            "skillsync_pending_credentials"
+        ];
+
+        sessionKeys.forEach(key => localStorage.removeItem(key));
+
+        localStorage.setItem("skillsyncUser", JSON.stringify(session));
+        localStorage.setItem("userId", String(session.user_id));
+        localStorage.setItem("userName", session.name);
+        localStorage.setItem("userEmail", session.email);
+        localStorage.setItem("userRole", session.role);
+        localStorage.setItem("role", session.role);
+
+        if (session.role === "Mentor") {
+            window.location.href = "mentor-dashboard.html";
+        } else if (session.role === "Team Leader") {
+            window.location.href = "leader-dashboard.html";
+        } else {
+            window.location.href = "student-dashboard.html";
+        }
+
     } catch (error) {
-        message.textContent = "Unable to connect to the server. Check that the backend is running.";
-        console.error(error);
+        message.textContent =
+            error.message || "Unable to connect to the server.";
+        console.error("Login error:", error);
+    } finally {
+        loginButton.disabled = false;
     }
 });
 </script>
-
 </body>
 </html>
