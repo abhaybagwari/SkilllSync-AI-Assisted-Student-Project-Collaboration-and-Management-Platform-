@@ -173,6 +173,7 @@ function renderDashboard() {
             <p><strong>Pending Interactions:</strong> ${Number(p.Pending_Interactions || 0)}</p>
             <button class="action" onclick="showPage('Students')">View Student Team</button>
             <button class="action" onclick="showPage('Feedback')">Give Feedback</button>
+            ${completeButton(p)}
         </div>` : `
         <div class="card"><h3>No assigned projects</h3>
         <p>No projects are assigned to this mentor yet. A project must be added to the Mentor_Project table before it appears here.</p></div>`}
@@ -203,6 +204,7 @@ function renderProjects() {
                 <p><strong>Accepted members:</strong> ${Number(p.Total_Members || 0)}</p>
                 <button class="action" onclick="selectProject('${p.Project_ID}','Students')">View Team</button>
                 <button class="action" onclick="selectProject('${p.Project_ID}','Feedback')">Project Feedback</button>
+                ${completeButton(p)}
             </div>`).join("") :
             '<div class="card"><p>No projects have been assigned to you yet.</p></div>'}
     `;
@@ -354,6 +356,23 @@ function logout() {
         "skillsyncUser", "skillsyncProfile", "skillsyncSignup"
     ].forEach(key => localStorage.removeItem(key));
     window.location.href = "index.html";
+}
+
+function completeButton(p) {
+    if (p.Project_Status === "Completed") {
+        return '<span class="muted">Project completed</span>';
+    }
+    return '<button class="action" onclick="completeProject(' + Number(p.Project_ID) + ')">Mark as Completed</button>';
+}
+
+async function completeProject(projectId) {
+    if (!confirm("Mark this project as completed? Team members can then review each other. This cannot be undone.")) return;
+    try {
+        await api(`/workflow/mentors/${mentorId}/projects/${projectId}/complete`, { method: "POST" });
+        location.reload();
+    } catch (error) {
+        alert(error.message);
+    }
 }
 
 loadInitialData();
