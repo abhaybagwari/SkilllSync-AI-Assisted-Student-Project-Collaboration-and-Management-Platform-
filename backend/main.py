@@ -11,6 +11,7 @@ from backend.routes.mentor import router as mentor_router
 from backend.routes.profiles import router as profiles_router
 from backend.routes.public import router as public_router
 from backend.routes.certificates import router as certificates_router
+from backend.routes.workflow import router as workflow_router
 
 app = FastAPI(title="SkillSync API")
 
@@ -31,6 +32,7 @@ app.include_router(mentor_router)
 app.include_router(profiles_router)
 app.include_router(public_router)
 app.include_router(certificates_router)
+app.include_router(workflow_router)
 
 
 @app.get("/")
