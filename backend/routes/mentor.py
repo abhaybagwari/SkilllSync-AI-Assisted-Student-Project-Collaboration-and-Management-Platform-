@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from database.connection import get_connection
@@ -70,6 +69,7 @@ def get_projects(mentor_id: int):
                 p.Project_Description,
                 p.Skill_Required,
                 p.Submission_Date,
+                p.Project_Status,
                 u.Name AS Leader_Name,
                 (
                     SELECT COUNT(*)
