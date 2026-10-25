@@ -107,6 +107,7 @@
         <a href="#" onclick="showSection('your-projects');loadProjects();return false;">Your Projects</a>
         <a href="#" onclick="showSection('team-management');loadTeamProjects();return false;">Team Management</a>
         <a href="#" onclick="showSection('feedback');return false;">Feedback</a>
+        <a href="#" onclick="showSection('team-reviews');loadReviews();return false;">Team Reviews</a>
         <a href="index.html" class="logout" onclick="logout()">Exit</a>
     </div>
 
@@ -242,6 +243,12 @@
             </div>
         </div>
 
+        <div id="team-reviews" class="dashboard-section hidden">
+            <h1>Team Reviews</h1>
+            <p class="welcome">Review your teammates for completed projects.</p>
+            <div id="reviewsArea"></div>
+        </div>
+        
         <div id="feedback" class="dashboard-section hidden">
             <h1>Feedback</h1>
             <p class="welcome">Share your feedback about SkillSync.</p>
@@ -952,5 +959,6 @@ window.addEventListener("load", () => {
     loadMentors();
 });
 </script>
+<script src="reviews.js"></script>
 </body>
 </html>
