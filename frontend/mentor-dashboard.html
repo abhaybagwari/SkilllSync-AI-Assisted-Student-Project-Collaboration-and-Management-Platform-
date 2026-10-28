@@ -47,10 +47,11 @@ th{background:#5c4938;color:white}
 </aside>
 <main class="main" id="content"><h1>Loading mentor dashboard...</h1></main>
 
+<script src="session.js"></script>
 <script>
 const API = "http://127.0.0.1:8000";
-const mentorId = Number(localStorage.getItem("userId"));
-const account = JSON.parse(localStorage.getItem("skillsyncUser") || "{}");
+const mentorSession = requireRole(["Mentor"]);
+const mentorId = mentorSession ? Number(mentorSession.user_id) : NaN;
 let mentor = null;
 let projects = [];
 let selectedProjectId = "";
@@ -111,9 +112,6 @@ async function loadInitialData() {
         if (!mentor || mentor.Role !== "Mentor") {
             throw new Error("This account is not registered as a mentor.");
         }
-
-        localStorage.setItem("userName", mentor.Name);
-        localStorage.setItem("userEmail", mentor.Email);
 
         const projectData = await api(`/mentor/${mentorId}/projects`);
         projects = projectData.projects || [];
@@ -348,14 +346,6 @@ function renderProfile() {
             <div class="row"><strong>User ID:</strong> ${escapeHtml(mentor?.User_ID)}</div>
         </div>
     `;
-}
-
-function logout() {
-    [
-        "userId", "userName", "userEmail", "userRole", "role",
-        "skillsyncUser", "skillsyncProfile", "skillsyncSignup"
-    ].forEach(key => localStorage.removeItem(key));
-    window.location.href = "index.html";
 }
 
 function completeButton(p) {
