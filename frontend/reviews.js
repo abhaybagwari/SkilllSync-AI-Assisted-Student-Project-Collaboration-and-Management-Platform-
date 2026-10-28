@@ -1,4 +1,4 @@
-// reviews.js - peer review UI (student + leader dashboards). No custom colours: uses existing page classes.
+ // reviews.js - peer review UI (student + leader dashboards). No custom colours: uses existing page classes.
 (function () {
     const API = "http://127.0.0.1:8000";
     const userId = localStorage.getItem("userId");
