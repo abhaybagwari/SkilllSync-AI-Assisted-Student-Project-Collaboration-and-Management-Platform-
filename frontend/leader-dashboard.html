@@ -9,954 +9,953 @@
 
 <style>
 .profile-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.65);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,.65);
+z-index: 9999;
+justify-content: center;
+align-items: center;
+padding: 15px;
 }
 .profile-modal.show { display: flex; }
 .profile-box {
-    background: white;
-    color: #222;
-    width: 100%;
-    max-width: 600px;
-    max-height: 85vh;
-    overflow-y: auto;
-    padding: 25px;
-    border-radius: 12px;
+background: white;
+color: #222;
+width: 100%;
+max-width: 600px;
+max-height: 85vh;
+overflow-y: auto;
+padding: 25px;
+border-radius: 12px;
 }
 .profile-box h2 { margin-top: 0; }
 .profile-row {
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-    overflow-wrap: anywhere;
+padding: 10px 0;
+border-bottom: 1px solid #eee;
+overflow-wrap: anywhere;
 }
 .profile-row strong {
-    display: block;
-    margin-bottom: 5px;
+display: block;
+margin-bottom: 5px;
 }
 .profile-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 20px;
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+margin-top: 20px;
 }
 .profile-actions button,
 .profile-actions a {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    text-decoration: none;
+padding: 10px 15px;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+text-decoration: none;
 }
 .action-buttons {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
+display: flex;
+gap: 6px;
+flex-wrap: wrap;
 }
 .action-buttons button {
-    padding: 8px 10px;
-    cursor: pointer;
+padding: 8px 10px;
+cursor: pointer;
 }
 .application-filters {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin: 15px 0 20px;
-    padding: 16px;
-    background: #f5f7fb;
-    border-radius: 10px;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+gap: 12px;
+margin: 15px 0 20px;
+padding: 16px;
+background: #f5f7fb;
+border-radius: 10px;
 }
 .application-filters input,
 .application-filters select {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    padding: 11px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background: white;
+width: 100%;
+min-width: 0;
+box-sizing: border-box;
+padding: 11px;
+border: 1px solid #ccc;
+border-radius: 6px;
+background: white;
 }
 .filter-buttons {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+display: flex;
+gap: 8px;
+align-items: center;
 }
 .filter-buttons button {
-    padding: 10px 12px;
-    border: 0;
-    border-radius: 6px;
-    cursor: pointer;
+padding: 10px 12px;
+border: 0;
+border-radius: 6px;
+cursor: pointer;
 }
 .filter-count {
-    margin: 0 0 12px;
-    color: #555;
+margin: 0 0 12px;
+color: #555;
 }
 </style>
 </head>
 
 <body>
 <div class="dashboard">
-    <div class="sidebar">
-        <h2>SkillSync</h2>
-        <a href="#" onclick="showSection('create-project');return false;">Create Project</a>
-        <a href="#" onclick="showSection('your-projects');loadProjects();return false;">Your Projects</a>
-        <a href="#" onclick="showSection('team-management');loadTeamProjects();return false;">Team Management</a>
-        <a href="#" onclick="showSection('feedback');return false;">Feedback</a>
-        <a href="#" onclick="showSection('team-reviews');loadReviews();return false;">Team Reviews</a>
-        <a href="index.html" class="logout" onclick="logout()">Exit</a>
+<div class="sidebar">
+    <h2>SkillSync</h2>
+    <a href="#" onclick="showSection('create-project');return false;">Create Project</a>
+    <a href="#" onclick="showSection('your-projects');loadProjects();return false;">Your Projects</a>
+    <a href="#" onclick="showSection('team-management');loadTeamProjects();return false;">Team Management</a>
+    <a href="#" onclick="showSection('feedback');return false;">Feedback</a>
+    <a href="#" onclick="showSection('team-reviews');loadReviews();return false;">Team Reviews</a>
+    <a href="login.html" class="logout" onclick="logout(); return false;">Exit</a>
+</div>
+
+<div class="main-content">
+    <div id="create-project" class="dashboard-section">
+        <h1>Create Project</h1>
+        <p class="welcome">Create a new project and find the right team members.</p>
+
+        <div class="project-form">
+            <label for="projectName">Project Name</label>
+            <input type="text" id="projectName" placeholder="Enter project name">
+
+            <label for="projectDescription">Project Description</label>
+            <textarea id="projectDescription" rows="5" placeholder="Describe your project"></textarea>
+
+            <label for="membersRequired">Members Required</label>
+            <input type="number" id="membersRequired" min="1" placeholder="Enter number of members">
+
+            <label for="skillsRequired">Skills Required</label>
+            <input type="text" id="skillsRequired" placeholder="Python, Java, SQL">
+
+            <label for="projectTimeline">Timeline</label>
+            <input type="date" id="projectTimeline">
+
+            <label for="mentorSelect">Assign Mentor</label>
+            <select id="mentorSelect" required>
+                <option value="">Loading mentors...</option>
+            </select>
+
+            <button type="button" class="login-btn" onclick="sendProject()">SEND</button>
+        </div>
     </div>
 
-    <div class="main-content">
-        <div id="create-project" class="dashboard-section">
-            <h1>Create Project</h1>
-            <p class="welcome">Create a new project and find the right team members.</p>
+    <div id="your-projects" class="dashboard-section hidden">
+        <h1>Your Projects</h1>
+        <p class="welcome">View and manage your projects.</p>
+        <div class="project-table-container">
+            <table class="project-table">
+                <thead>
+                    <tr><th>Project</th><th>Members</th><th>Status</th></tr>
+                </thead>
+                <tbody id="projectTableBody"></tbody>
+            </table>
+        </div>
+    </div>
 
-            <div class="project-form">
-                <label for="projectName">Project Name</label>
-                <input type="text" id="projectName" placeholder="Enter project name">
+    <div id="team-management" class="dashboard-section hidden">
+        <h1>Team Management</h1>
+        <p class="welcome">Manage your project members and applications.</p>
 
-                <label for="projectDescription">Project Description</label>
-                <textarea id="projectDescription" rows="5" placeholder="Describe your project"></textarea>
-
-                <label for="membersRequired">Members Required</label>
-                <input type="number" id="membersRequired" min="1" placeholder="Enter number of members">
-
-                <label for="skillsRequired">Skills Required</label>
-                <input type="text" id="skillsRequired" placeholder="Python, Java, SQL">
-
-                <label for="projectTimeline">Timeline</label>
-                <input type="date" id="projectTimeline">
-
-                <label for="mentorSelect">Assign Mentor</label>
-                <select id="mentorSelect" required>
-                    <option value="">Loading mentors...</option>
-                </select>
-
-                <button type="button" class="login-btn" onclick="sendProject()">SEND</button>
-            </div>
+        <div class="project-form">
+            <label for="teamProjectSelect">Select Project</label>
+            <select id="teamProjectSelect" onchange="loadTeamMembers()">
+                <option value="">Select a project</option>
+            </select>
         </div>
 
-        <div id="your-projects" class="dashboard-section hidden">
-            <h1>Your Projects</h1>
-            <p class="welcome">View and manage your projects.</p>
+        <div id="teamDetails" class="hidden">
+            <h2>Team Overview</h2>
             <div class="project-table-container">
                 <table class="project-table">
                     <thead>
-                        <tr><th>Project</th><th>Members</th><th>Status</th></tr>
+                        <tr>
+                            <th>Team Size</th>
+                            <th>Members Required</th>
+                            <th>Available Positions</th>
+                        </tr>
                     </thead>
-                    <tbody id="projectTableBody"></tbody>
+                    <tbody id="teamSummaryBody"></tbody>
+                </table>
+            </div>
+
+            <h2>Current Members</h2>
+            <div class="project-table-container">
+                <table class="project-table">
+                    <thead>
+                        <tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr>
+                    </thead>
+                    <tbody id="currentMembersBody">
+                        <tr><td colspan="4">Select a project to view members.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Student Applications</h2>
+            <p>Filter applications and view a student's profile before accepting or rejecting.</p>
+
+            <div class="application-filters">
+                <input type="search" id="filterSearch"
+                        placeholder="Search name, email, skills..."
+                        oninput="filterApplications()">
+
+                <select id="filterBranch" onchange="filterApplications()">
+                    <option value="">All Branches</option>
+                    <option value="cse">CSE</option>
+                    <option value="ece">ECE</option>
+                    <option value="it">IT</option>
+                    <option value="other">Other Branches</option>
+                </select>
+
+                <select id="filterYear" onchange="filterApplications()">
+                    <option value="">All Years</option>
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+
+                <select id="filterStatus" onchange="filterApplications()">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+
+                <div class="filter-buttons">
+                    <button type="button" onclick="resetApplicationFilters()">Reset Filters</button>
+                </div>
+            </div>
+
+            <p id="applicationFilterCount" class="filter-count"></p>
+
+            <div class="project-table-container">
+                <table class="project-table">
+                    <thead>
+                        <tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr>
+                    </thead>
+                    <tbody id="pendingApplicationsBody">
+                        <tr><td colspan="4">Select a project to view applications.</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
+    </div>
 
-        <div id="team-management" class="dashboard-section hidden">
-            <h1>Team Management</h1>
-            <p class="welcome">Manage your project members and applications.</p>
-
-            <div class="project-form">
-                <label for="teamProjectSelect">Select Project</label>
-                <select id="teamProjectSelect" onchange="loadTeamMembers()">
-                    <option value="">Select a project</option>
-                </select>
-            </div>
-
-            <div id="teamDetails" class="hidden">
-                <h2>Team Overview</h2>
-                <div class="project-table-container">
-                    <table class="project-table">
-                        <thead>
-                            <tr>
-                                <th>Team Size</th>
-                                <th>Members Required</th>
-                                <th>Available Positions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="teamSummaryBody"></tbody>
-                    </table>
-                </div>
-
-                <h2>Current Members</h2>
-                <div class="project-table-container">
-                    <table class="project-table">
-                        <thead>
-                            <tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr>
-                        </thead>
-                        <tbody id="currentMembersBody">
-                            <tr><td colspan="4">Select a project to view members.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h2>Student Applications</h2>
-                <p>Filter applications and view a student's profile before accepting or rejecting.</p>
-
-                <div class="application-filters">
-                    <input type="search" id="filterSearch"
-                           placeholder="Search name, email, skills..."
-                           oninput="filterApplications()">
-
-                    <select id="filterBranch" onchange="filterApplications()">
-                        <option value="">All Branches</option>
-                        <option value="cse">CSE</option>
-                        <option value="ece">ECE</option>
-                        <option value="it">IT</option>
-                        <option value="other">Other Branches</option>
-                    </select>
-
-                    <select id="filterYear" onchange="filterApplications()">
-                        <option value="">All Years</option>
-                        <option value="1">1st Year</option>
-                        <option value="2">2nd Year</option>
-                        <option value="3">3rd Year</option>
-                        <option value="4">4th Year</option>
-                    </select>
-
-                    <select id="filterStatus" onchange="filterApplications()">
-                        <option value="">All Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="accepted">Accepted</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-
-                    <div class="filter-buttons">
-                        <button type="button" onclick="resetApplicationFilters()">Reset Filters</button>
-                    </div>
-                </div>
-
-                <p id="applicationFilterCount" class="filter-count"></p>
-
-                <div class="project-table-container">
-                    <table class="project-table">
-                        <thead>
-                            <tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr>
-                        </thead>
-                        <tbody id="pendingApplicationsBody">
-                            <tr><td colspan="4">Select a project to view applications.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="team-reviews" class="dashboard-section hidden">
-            <h1>Team Reviews</h1>
-            <p class="welcome">Review your teammates for completed projects.</p>
-            <div id="reviewsArea"></div>
-        </div>
-        
-        <div id="feedback" class="dashboard-section hidden">
-            <h1>Feedback</h1>
-            <p class="welcome">Share your feedback about SkillSync.</p>
-            <div class="project-form">
-                <label for="feedbackText">Your Feedback</label>
-                <textarea id="feedbackText" rows="6" placeholder="Write your feedback here"></textarea>
-                <button type="button" class="login-btn" onclick="sendFeedback()">SEND FEEDBACK</button>
-            </div>
+    <div id="team-reviews" class="dashboard-section hidden">
+        <h1>Team Reviews</h1>
+        <p class="welcome">Review your teammates for completed projects.</p>
+        <div id="reviewsArea"></div>
+    </div>
+    
+    <div id="feedback" class="dashboard-section hidden">
+        <h1>Feedback</h1>
+        <p class="welcome">Share your feedback about SkillSync.</p>
+        <div class="project-form">
+            <label for="feedbackText">Your Feedback</label>
+            <textarea id="feedbackText" rows="6" placeholder="Write your feedback here"></textarea>
+            <button type="button" class="login-btn" onclick="sendFeedback()">SEND FEEDBACK</button>
         </div>
     </div>
+</div>
 </div>
 
 <div id="profileModal" class="profile-modal" onclick="closeProfileOutside(event)">
-    <div class="profile-box" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
-        <h2 id="profileTitle">Student Profile</h2>
-        <div id="profileContent"></div>
-        <div class="profile-actions">
-            <button type="button" onclick="closeProfile()">CLOSE</button>
-        </div>
+<div class="profile-box" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+    <h2 id="profileTitle">Student Profile</h2>
+    <div id="profileContent"></div>
+    <div class="profile-actions">
+        <button type="button" onclick="closeProfile()">CLOSE</button>
     </div>
 </div>
-
+</div>
+<script src="session.js"></script>  
 <script>
 const API = "http://127.0.0.1:8000";
 let allApplications = [];
 
 function showSection(sectionId) {
-    document.querySelectorAll(".dashboard-section")
-        .forEach(section => section.classList.add("hidden"));
+document.querySelectorAll(".dashboard-section")
+    .forEach(section => section.classList.add("hidden"));
 
-    document.getElementById(sectionId).classList.remove("hidden");
+document.getElementById(sectionId).classList.remove("hidden");
 }
 
 async function readResponse(response) {
-    const text = await response.text();
-    let data;
+const text = await response.text();
+let data;
 
-    try {
-        data = text ? JSON.parse(text) : {};
-    } catch {
-        data = { detail: text || "Unexpected server response." };
-    }
+try {
+    data = text ? JSON.parse(text) : {};
+} catch {
+    data = { detail: text || "Unexpected server response." };
+}
 
-    if (!response.ok) {
-        throw new Error(data.detail || "Request failed.");
-    }
+if (!response.ok) {
+    throw new Error(data.detail || "Request failed.");
+}
 
-    return data;
+return data;
 }
 
 function getValue(object, keys, fallback = "") {
-    for (const key of keys) {
-        if (object && object[key] !== undefined &&
-            object[key] !== null && object[key] !== "") {
-            return object[key];
-        }
+for (const key of keys) {
+    if (object && object[key] !== undefined &&
+        object[key] !== null && object[key] !== "") {
+        return object[key];
     }
-    return fallback;
+}
+return fallback;
 }
 
 function getApplicationId(application) {
-    return getValue(application, [
-        "Member_ID", "member_id",
-        "Application_ID", "application_id",
-        "ApplicationID", "applicationId"
-    ]);
+return getValue(application, [
+    "Member_ID", "member_id",
+    "Application_ID", "application_id",
+    "ApplicationID", "applicationId"
+]);
 }
 
 function getStudentId(application) {
-    return getValue(application, [
-        "User_ID", "user_id",
-        "Student_ID", "student_id",
-        "studentId", "student_id"
-    ]);
+return getValue(application, [
+    "User_ID", "user_id",
+    "Student_ID", "student_id",
+    "studentId", "student_id"
+]);
 }
 
 function getBranch(application) {
-    return String(getValue(application, [
-        "Branch", "branch", "Department", "department"
-    ])).trim().toLowerCase();
+return String(getValue(application, [
+    "Branch", "branch", "Department", "department"
+])).trim().toLowerCase();
 }
 
 function getYear(application) {
-    const raw = String(getValue(application, [
-        "Year_Of_Study", "year_of_study",
-        "year", "Year", "study_year", "Study_Year"
-    ])).trim();
+const raw = String(getValue(application, [
+    "Year_Of_Study", "year_of_study",
+    "year", "Year", "study_year", "Study_Year"
+])).trim();
 
-    const match = raw.match(/[1-4]/);
-    return match ? match[0] : "";
+const match = raw.match(/[1-4]/);
+return match ? match[0] : "";
 }
 
 function getApplicationStatus(application) {
-    return String(getValue(application, [
-        "Status", "status", "Application_Status", "application_status"
-    ], "Pending")).trim().toLowerCase();
+return String(getValue(application, [
+    "Status", "status", "Application_Status", "application_status"
+], "Pending")).trim().toLowerCase();
 }
 
 async function loadMentors() {
-    const select = document.getElementById("mentorSelect");
+const select = document.getElementById("mentorSelect");
 
-    try {
-        const data = await readResponse(
-            await fetch(`${API}/projects/mentors`)
-        );
+try {
+    const data = await readResponse(
+        await fetch(`${API}/projects/mentors`)
+    );
 
-        select.innerHTML = '<option value="">Select a mentor</option>';
+    select.innerHTML = '<option value="">Select a mentor</option>';
 
-        (data.mentors || []).forEach(mentor => {
-            const option = document.createElement("option");
-            option.value = mentor.User_ID;
-            option.textContent = `${mentor.Name} (${mentor.Email})`;
-            select.appendChild(option);
-        });
+    (data.mentors || []).forEach(mentor => {
+        const option = document.createElement("option");
+        option.value = mentor.User_ID;
+        option.textContent = `${mentor.Name} (${mentor.Email})`;
+        select.appendChild(option);
+    });
 
-        if (!data.mentors || data.mentors.length === 0) {
-            select.innerHTML = '<option value="">No mentors available</option>';
-        }
-    } catch (error) {
-        select.innerHTML = '<option value="">Unable to load mentors</option>';
-        console.error(error);
+    if (!data.mentors || data.mentors.length === 0) {
+        select.innerHTML = '<option value="">No mentors available</option>';
     }
+} catch (error) {
+    select.innerHTML = '<option value="">Unable to load mentors</option>';
+    console.error(error);
+}
 }
 
 async function sendProject() {
-    const projectName = document.getElementById("projectName").value.trim();
-    const description = document.getElementById("projectDescription").value.trim();
-    const members = document.getElementById("membersRequired").value;
-    const skills = document.getElementById("skillsRequired").value.trim();
-    const timeline = document.getElementById("projectTimeline").value;
-    const mentorId = document.getElementById("mentorSelect").value;
-    const userId = localStorage.getItem("userId");
+const projectName = document.getElementById("projectName").value.trim();
+const description = document.getElementById("projectDescription").value.trim();
+const members = document.getElementById("membersRequired").value;
+const skills = document.getElementById("skillsRequired").value.trim();
+const timeline = document.getElementById("projectTimeline").value;
+const mentorId = document.getElementById("mentorSelect").value;
+const session = getSession();
+const userId = session ? session.user_id : null;
 
-    if (!projectName || !description || !members || !skills || !timeline || !mentorId) {
-        alert("Please fill all project details and select a mentor.");
-        return;
-    }
+if (!projectName || !description || !members || !skills || !timeline || !mentorId) {
+    alert("Please fill all project details and select a mentor.");
+    return;
+}
 
-    if (!userId) {
-        alert("Session expired. Please login again.");
-        window.location.href = "index.html";
-        return;
-    }
+if (!userId) {
+    alert("Session expired. Please login again.");
+    window.location.href = "login.html";
+    return;
+}
 
-    if (Number(members) < 1) {
-        alert("Members required must be at least 1.");
-        return;
-    }
+if (Number(members) < 1) {
+    alert("Members required must be at least 1.");
+    return;
+}
 
-    try {
-        await readResponse(await fetch(`${API}/projects/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                project_name: projectName,
-                project_description: description,
-                members_required: Number(members),
-                skill_required: skills,
-                submission_date: timeline,
-                user_id: Number(userId),
-                mentor_id: Number(mentorId)
-            })
-        }));
+try {
+    await readResponse(await fetch(`${API}/projects/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            project_name: projectName,
+            project_description: description,
+            members_required: Number(members),
+            skill_required: skills,
+            submission_date: timeline,
+            user_id: Number(userId),
+            mentor_id: Number(mentorId)
+        })
+    }));
 
-        alert("Project created and mentor assigned successfully.");
+    alert("Project created and mentor assigned successfully.");
 
-        document.getElementById("projectName").value = "";
-        document.getElementById("projectDescription").value = "";
-        document.getElementById("membersRequired").value = "";
-        document.getElementById("skillsRequired").value = "";
-        document.getElementById("projectTimeline").value = "";
-        document.getElementById("mentorSelect").value = "";
+    document.getElementById("projectName").value = "";
+    document.getElementById("projectDescription").value = "";
+    document.getElementById("membersRequired").value = "";
+    document.getElementById("skillsRequired").value = "";
+    document.getElementById("projectTimeline").value = "";
+    document.getElementById("mentorSelect").value = "";
 
-        await loadProjects();
-        showSection("your-projects");
-    } catch (error) {
-        alert(error.message || "Unable to create project.");
-        console.error(error);
-    }
+    await loadProjects();
+    showSection("your-projects");
+} catch (error) {
+    alert(error.message || "Unable to create project.");
+    console.error(error);
+}
 }
 
 async function loadProjects() {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
+const session = getSession();
+const userId = session ? session.user_id : null;
+if (!userId) return;
 
-    const body = document.getElementById("projectTableBody");
-    body.innerHTML = "<tr><td colspan='3'>Loading projects...</td></tr>";
+const body = document.getElementById("projectTableBody");
+body.innerHTML = "<tr><td colspan='3'>Loading projects...</td></tr>";
 
-    try {
-        const data = await readResponse(
-            await fetch(`${API}/projects/user/${encodeURIComponent(userId)}`)
-        );
+try {
+    const data = await readResponse(
+        await fetch(`${API}/projects/user/${encodeURIComponent(userId)}`)
+    );
 
-        body.innerHTML = "";
-        const projects = data.projects || [];
+    body.innerHTML = "";
+    const projects = data.projects || [];
 
-        if (!projects.length) {
-            body.innerHTML = "<tr><td colspan='3'>No projects found.</td></tr>";
-            return;
-        }
-
-        projects.forEach(project => {
-            const row = document.createElement("tr");
-
-            [
-                project.Project_Name || project.project_name || "Unnamed project",
-                project.Members_Required ?? project.members_required ?? "N/A",
-                project.Status || "Ongoing"
-            ].forEach(value => {
-                const cell = document.createElement("td");
-                cell.textContent = value;
-                row.appendChild(cell);
-            });
-
-            body.appendChild(row);
-        });
-    } catch (error) {
-        body.innerHTML = "<tr><td colspan='3'>Unable to load projects.</td></tr>";
-        console.error(error);
+    if (!projects.length) {
+        body.innerHTML = "<tr><td colspan='3'>No projects found.</td></tr>";
+        return;
     }
+
+    projects.forEach(project => {
+        const row = document.createElement("tr");
+
+        [
+            project.Project_Name || project.project_name || "Unnamed project",
+            project.Members_Required ?? project.members_required ?? "N/A",
+            project.Project_Status || project.Status || "Unknown"
+        ].forEach(value => {
+            const cell = document.createElement("td");  
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        body.appendChild(row);
+    });
+} catch (error) {
+    body.innerHTML = "<tr><td colspan='3'>Unable to load projects.</td></tr>";
+    console.error(error);
+}
 }
 
 async function loadTeamProjects() {
-    const userId = localStorage.getItem("userId");
-    const select = document.getElementById("teamProjectSelect");
-    select.innerHTML = "<option value=''>Loading projects...</option>";
+const session = getSession();
+const userId = session ? session.user_id : null;
+const select = document.getElementById("teamProjectSelect");
+select.innerHTML = "<option value=''>Loading projects...</option>";
 
-    if (!userId) {
-        alert("Please login again.");
-        window.location.href = "index.html";
+if (!userId) {
+    alert("Please login again.");
+    window.location.href = "login.html";
+    return;
+}
+
+try {
+    const data = await readResponse(
+        await fetch(`${API}/projects/user/${encodeURIComponent(userId)}`)
+    );
+
+    select.innerHTML = "<option value=''>Select a project</option>";
+    const projects = data.projects || [];
+
+    if (!projects.length) {
+        select.innerHTML = "<option value=''>No projects available</option>";
+        document.getElementById("teamDetails").classList.add("hidden");
         return;
     }
 
-    try {
-        const data = await readResponse(
-            await fetch(`${API}/projects/user/${encodeURIComponent(userId)}`)
-        );
+    projects.forEach(project => {
+        const option = document.createElement("option");
+        option.value = project.Project_ID ?? project.project_id;
+        option.textContent = project.Project_Name || project.project_name || "Unnamed project";
+        select.appendChild(option);
+    });
 
-        select.innerHTML = "<option value=''>Select a project</option>";
-        const projects = data.projects || [];
-
-        if (!projects.length) {
-            select.innerHTML = "<option value=''>No projects available</option>";
-            document.getElementById("teamDetails").classList.add("hidden");
-            return;
-        }
-
-        projects.forEach(project => {
-            const option = document.createElement("option");
-            option.value = project.Project_ID ?? project.project_id;
-            option.textContent = project.Project_Name || project.project_name || "Unnamed project";
-            select.appendChild(option);
-        });
-
-        if (select.value) {
-            await loadTeamMembers();
-        } else {
-            document.getElementById("teamDetails").classList.add("hidden");
-        }
-    } catch (error) {
-        select.innerHTML = "<option value=''>Unable to load projects</option>";
-        alert(error.message);
-        console.error(error);
+    if (select.value) {
+        await loadTeamMembers();
+    } else {
+        document.getElementById("teamDetails").classList.add("hidden");
     }
+} catch (error) {
+    select.innerHTML = "<option value=''>Unable to load projects</option>";
+    alert(error.message);
+    console.error(error);
+}
 }
 
 async function loadTeamMembers() {
-    const projectId = document.getElementById("teamProjectSelect").value;
-    const details = document.getElementById("teamDetails");
+const projectId = document.getElementById("teamProjectSelect").value;
+const details = document.getElementById("teamDetails");
 
-    allApplications = [];
-    filterApplications();
+allApplications = [];
+filterApplications();
 
-    if (!projectId) {
-        details.classList.add("hidden");
-        return;
-    }
+if (!projectId) {
+    details.classList.add("hidden");
+    return;
+}
 
-    details.classList.remove("hidden");
+details.classList.remove("hidden");
+document.getElementById("currentMembersBody").innerHTML =
+    "<tr><td colspan='4'>Loading members...</td></tr>";
+document.getElementById("pendingApplicationsBody").innerHTML =
+    "<tr><td colspan='4'>Loading applications...</td></tr>";
+
+try {
+    const data = await readResponse(
+        await fetch(`${API}/projects/${encodeURIComponent(projectId)}/members`)
+    );
+    updateTeamMembers(data);
+} catch (error) {
     document.getElementById("currentMembersBody").innerHTML =
-        "<tr><td colspan='4'>Loading members...</td></tr>";
+        "<tr><td colspan='4'>Unable to load members.</td></tr>";
     document.getElementById("pendingApplicationsBody").innerHTML =
-        "<tr><td colspan='4'>Loading applications...</td></tr>";
-
-    try {
-        const data = await readResponse(
-            await fetch(`${API}/projects/${encodeURIComponent(projectId)}/members`)
-        );
-        updateTeamMembers(data);
-    } catch (error) {
-        document.getElementById("currentMembersBody").innerHTML =
-            "<tr><td colspan='4'>Unable to load members.</td></tr>";
-        document.getElementById("pendingApplicationsBody").innerHTML =
-            "<tr><td colspan='4'>Unable to load applications. Check the backend endpoint.</td></tr>";
-        document.getElementById("applicationFilterCount").textContent = "";
-        console.error(error);
-    }
+        "<tr><td colspan='4'>Unable to load applications. Check the backend endpoint.</td></tr>";
+    document.getElementById("applicationFilterCount").textContent = "";
+    console.error(error);
+}
 }
 
 function updateTeamMembers(data) {
-    const currentBody = document.getElementById("currentMembersBody");
-    const summaryBody = document.getElementById("teamSummaryBody");
-    const members = data.members || [];
-    allApplications = data.applications || [];
-    const required = Number(data.members_required || 0);
+const currentBody = document.getElementById("currentMembersBody");
+const summaryBody = document.getElementById("teamSummaryBody");
+const members = data.members || [];
+allApplications = data.applications || [];
+const required = Number(data.members_required || 0);
 
-    summaryBody.innerHTML = "";
-    const summaryRow = document.createElement("tr");
+summaryBody.innerHTML = "";
+const summaryRow = document.createElement("tr");
 
-    [members.length, required, Math.max(required - members.length, 0)]
-        .forEach(value => {
-            const cell = document.createElement("td");
-            cell.textContent = value;
-            summaryRow.appendChild(cell);
-        });
-
-    summaryBody.appendChild(summaryRow);
-    currentBody.innerHTML = "";
-
-    if (!members.length) {
-        currentBody.innerHTML =
-            "<tr><td colspan='4'>No accepted members yet.</td></tr>";
-    } else {
-        members.forEach(member => {
-            const memberId = getValue(member, ["Member_ID", "member_id"]);
-            const row = document.createElement("tr");
-
-            const name = document.createElement("td");
-            name.textContent = getValue(member, ["Name", "name"], "Unknown");
-
-            const email = document.createElement("td");
-            email.textContent = getValue(member, ["Email", "email"], "N/A");
-
-            const status = document.createElement("td");
-            status.textContent = "Accepted";
-
-            const actions = document.createElement("td");
-            const remove = document.createElement("button");
-            remove.textContent = "REMOVE";
-            remove.disabled = !memberId;
-            remove.onclick = () => removeMember(memberId);
-
-            actions.appendChild(remove);
-            row.append(name, email, status, actions);
-            currentBody.appendChild(row);
-        });
-    }
-
-    filterApplications();
-}
-
-function filterApplications() {
-    const search = document.getElementById("filterSearch").value.trim().toLowerCase();
-    const branch = document.getElementById("filterBranch").value;
-    const year = document.getElementById("filterYear").value;
-    const status = document.getElementById("filterStatus").value;
-    const body = document.getElementById("pendingApplicationsBody");
-
-    body.innerHTML = "";
-
-    const filtered = allApplications.filter(application => {
-        const searchable = [
-            getValue(application, ["Name", "name", "student_name"]),
-            getValue(application, ["Email", "email", "student_email"]),
-            getValue(application, ["Skills", "skills", "skill"]),
-            getValue(application, ["Interests", "interests"]),
-            getValue(application, ["Branch", "branch", "Department", "department"])
-        ].join(" ").toLowerCase();
-
-        const studentBranch = getBranch(application);
-        const studentYear = getYear(application);
-        const studentStatus = getApplicationStatus(application);
-        const matchesSearch = searchable.includes(search);
-
-        const matchesBranch = !branch ||
-            (branch === "other"
-                ? studentBranch !== "" &&
-                  !["cse", "computer science", "computer science and engineering",
-                    "ece", "electronics and communication", "it",
-                    "information technology"].some(item =>
-                        studentBranch === item || studentBranch.includes(item))
-                : branch === "cse"
-                    ? ["cse", "computer science", "computer science and engineering"]
-                        .some(item => studentBranch.includes(item))
-                    : branch === "ece"
-                        ? ["ece", "electronics and communication"]
-                            .some(item => studentBranch.includes(item))
-                        : ["it", "information technology"]
-                            .some(item => studentBranch === item || studentBranch.includes(item)));
-
-        return matchesSearch && matchesBranch &&
-            (!year || studentYear === year) &&
-            (!status || studentStatus === status);
+[members.length, required, Math.max(required - members.length, 0)]
+    .forEach(value => {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        summaryRow.appendChild(cell);
     });
 
-    document.getElementById("applicationFilterCount").textContent =
-        `Showing ${filtered.length} of ${allApplications.length} applications`;
+summaryBody.appendChild(summaryRow);
+currentBody.innerHTML = "";
 
-    if (!filtered.length) {
-        body.innerHTML = "<tr><td colspan='4'>No applications match these filters.</td></tr>";
-        return;
-    }
-
-    filtered.forEach(application => {
-        const studentId = getStudentId(application);
-        const memberId = getApplicationId(application);
+if (!members.length) {
+    currentBody.innerHTML =
+        "<tr><td colspan='4'>No accepted members yet.</td></tr>";
+} else {
+    members.forEach(member => {
+        const memberId = getValue(member, ["Member_ID", "member_id"]);
         const row = document.createElement("tr");
 
         const name = document.createElement("td");
-        name.textContent = getValue(application, ["Name", "name", "student_name"], "Unknown");
+        name.textContent = getValue(member, ["Name", "name"], "Unknown");
 
         const email = document.createElement("td");
-        email.textContent = getValue(application, ["Email", "email", "student_email"], "N/A");
+        email.textContent = getValue(member, ["Email", "email"], "N/A");
 
-        const statusCell = document.createElement("td");
-        statusCell.textContent = getValue(
-            application, ["Status", "status", "Application_Status", "application_status"], "Pending"
-        );
+        const status = document.createElement("td");
+        status.textContent = "Accepted";
 
         const actions = document.createElement("td");
-        const buttons = document.createElement("div");
-        buttons.className = "action-buttons";
+        const remove = document.createElement("button");
+        remove.textContent = "REMOVE";
+        remove.disabled = !memberId;
+        remove.onclick = () => removeMember(memberId);
 
-        if (studentId) {
-            const profileButton = document.createElement("button");
-            profileButton.textContent = "VIEW PROFILE";
-            profileButton.type = "button";
-            profileButton.onclick = () => viewStudentProfile(application);
-            buttons.appendChild(profileButton);
-        }
-
-        const normalizedStatus = getApplicationStatus(application);
-
-        if (memberId && normalizedStatus !== "accepted" && normalizedStatus !== "rejected") {
-            const acceptButton = document.createElement("button");
-            acceptButton.textContent = "ACCEPT";
-            acceptButton.type = "button";
-            acceptButton.onclick = () => acceptMember(memberId);
-
-            const rejectButton = document.createElement("button");
-            rejectButton.textContent = "REJECT";
-            rejectButton.type = "button";
-            rejectButton.onclick = () => rejectMember(memberId);
-
-            buttons.append(acceptButton, rejectButton);
-        }
-
-        actions.appendChild(buttons);
-        row.append(name, email, statusCell, actions);
-        body.appendChild(row);
+        actions.appendChild(remove);
+        row.append(name, email, status, actions);
+        currentBody.appendChild(row);
     });
 }
 
+filterApplications();
+}
+
+function filterApplications() {
+const search = document.getElementById("filterSearch").value.trim().toLowerCase();
+const branch = document.getElementById("filterBranch").value;
+const year = document.getElementById("filterYear").value;
+const status = document.getElementById("filterStatus").value;
+const body = document.getElementById("pendingApplicationsBody");
+
+body.innerHTML = "";
+
+const filtered = allApplications.filter(application => {
+    const searchable = [
+        getValue(application, ["Name", "name", "student_name"]),
+        getValue(application, ["Email", "email", "student_email"]),
+        getValue(application, ["Skills", "skills", "skill"]),
+        getValue(application, ["Interests", "interests"]),
+        getValue(application, ["Branch", "branch", "Department", "department"])
+    ].join(" ").toLowerCase();
+
+    const studentBranch = getBranch(application);
+    const studentYear = getYear(application);
+    const studentStatus = getApplicationStatus(application);
+    const matchesSearch = searchable.includes(search);
+
+    const matchesBranch = !branch ||
+        (branch === "other"
+            ? studentBranch !== "" &&
+                !["cse", "computer science", "computer science and engineering",
+                "ece", "electronics and communication", "it",
+                "information technology"].some(item =>
+                    studentBranch === item || studentBranch.includes(item))
+            : branch === "cse"
+                ? ["cse", "computer science", "computer science and engineering"]
+                    .some(item => studentBranch.includes(item))
+                : branch === "ece"
+                    ? ["ece", "electronics and communication"]
+                        .some(item => studentBranch.includes(item))
+                    : ["it", "information technology"]
+                        .some(item => studentBranch === item || studentBranch.includes(item)));
+
+    return matchesSearch && matchesBranch &&
+        (!year || studentYear === year) &&
+        (!status || studentStatus === status);
+});
+
+document.getElementById("applicationFilterCount").textContent =
+    `Showing ${filtered.length} of ${allApplications.length} applications`;
+
+if (!filtered.length) {
+    body.innerHTML = "<tr><td colspan='4'>No applications match these filters.</td></tr>";
+    return;
+}
+
+filtered.forEach(application => {
+    const studentId = getStudentId(application);
+    const memberId = getApplicationId(application);
+    const row = document.createElement("tr");
+
+    const name = document.createElement("td");
+    name.textContent = getValue(application, ["Name", "name", "student_name"], "Unknown");
+
+    const email = document.createElement("td");
+    email.textContent = getValue(application, ["Email", "email", "student_email"], "N/A");
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = getValue(
+        application, ["Status", "status", "Application_Status", "application_status"], "Pending"
+    );
+
+    const actions = document.createElement("td");
+    const buttons = document.createElement("div");
+    buttons.className = "action-buttons";
+
+    if (studentId) {
+        const profileButton = document.createElement("button");
+        profileButton.textContent = "VIEW PROFILE";
+        profileButton.type = "button";
+        profileButton.onclick = () => viewStudentProfile(application);
+        buttons.appendChild(profileButton);
+    }
+
+    const normalizedStatus = getApplicationStatus(application);
+
+    if (memberId && normalizedStatus !== "accepted" && normalizedStatus !== "rejected") {
+        const acceptButton = document.createElement("button");
+        acceptButton.textContent = "ACCEPT";
+        acceptButton.type = "button";
+        acceptButton.onclick = () => acceptMember(memberId);
+
+        const rejectButton = document.createElement("button");
+        rejectButton.textContent = "REJECT";
+        rejectButton.type = "button";
+        rejectButton.onclick = () => rejectMember(memberId);
+
+        buttons.append(acceptButton, rejectButton);
+    }
+
+    actions.appendChild(buttons);
+    row.append(name, email, statusCell, actions);
+    body.appendChild(row);
+});
+}
+
 function resetApplicationFilters() {
-    document.getElementById("filterSearch").value = "";
-    document.getElementById("filterBranch").value = "";
-    document.getElementById("filterYear").value = "";
-    document.getElementById("filterStatus").value = "";
-    filterApplications();
+document.getElementById("filterSearch").value = "";
+document.getElementById("filterBranch").value = "";
+document.getElementById("filterYear").value = "";
+document.getElementById("filterStatus").value = "";
+filterApplications();
 }
 
 function displayValue(value) {
-    if (value === null || value === undefined || value === "") {
-        return "Not provided";
-    }
+if (value === null || value === undefined || value === "") {
+    return "Not provided";
+}
 
-    if (Array.isArray(value)) {
-        return value.length
-            ? value.map(item => {
-                if (item && typeof item === "object") {
-                    return item.name || item.title || JSON.stringify(item);
-                }
-                return String(item);
-            }).join(", ")
-            : "Not provided";
-    }
+if (Array.isArray(value)) {
+    return value.length
+        ? value.map(item => {
+            if (item && typeof item === "object") {
+                return item.name || item.title || JSON.stringify(item);
+            }
+            return String(item);
+        }).join(", ")
+        : "Not provided";
+}
 
-    if (typeof value === "object") {
-        return JSON.stringify(value);
-    }
+if (typeof value === "object") {
+    return JSON.stringify(value);
+}
 
-    return String(value);
+return String(value);
 }
 
 function addProfileHeading(container, text) {
-    const heading = document.createElement("h3");
-    heading.textContent = text;
-    container.appendChild(heading);
+const heading = document.createElement("h3");
+heading.textContent = text;
+container.appendChild(heading);
 }
 
 function addProfileField(container, label, value) {
-    const row = document.createElement("div");
-    row.className = "profile-row";
+const row = document.createElement("div");
+row.className = "profile-row";
 
-    const heading = document.createElement("strong");
-    heading.textContent = label + ":";
+const heading = document.createElement("strong");
+heading.textContent = label + ":";
 
-    const span = document.createElement("span");
-    span.textContent = displayValue(value);
+const span = document.createElement("span");
+span.textContent = displayValue(value);
 
-    row.append(heading, span);
-    container.appendChild(row);
+row.append(heading, span);
+container.appendChild(row);
 }
 
 async function viewStudentProfile(application) {
-    const modal = document.getElementById("profileModal");
-    const content = document.getElementById("profileContent");
+const modal = document.getElementById("profileModal");
+const content = document.getElementById("profileContent");
 
-    modal.classList.add("show");
-    modal.style.display = "flex";
-    content.textContent = "Loading student's full profile...";
+modal.classList.add("show");
+modal.style.display = "flex";
+content.textContent = "Loading student's full profile...";
 
-    const studentId = getStudentId(application);
+const studentId = getStudentId(application);
 
-    if (!studentId) {
-        content.textContent = "Student User_ID was not found in the application data.";
-        return;
+if (!studentId) {
+    content.textContent = "Student User_ID was not found in the application data.";
+    return;
+}
+
+try {
+    const response = await fetch(
+        `${API}/profiles/${encodeURIComponent(studentId)}`
+    );
+    const profile = await readResponse(response);
+
+    // The database profile takes priority over application fields.
+    const student = { ...application, ...profile };
+    content.innerHTML = "";
+
+    addProfileHeading(content, "Student Details");
+    addProfileField(content, "Full Name",
+        getValue(student, ["Name", "name", "full_name"]));
+    addProfileField(content, "Email",
+        getValue(student, ["Email", "email"]));
+    addProfileField(content, "College / University",
+        getValue(student, ["College", "college", "university"]));
+    addProfileField(content, "Branch",
+        getValue(student, ["Branch", "branch", "Department"]));
+    addProfileField(content, "Year of Study",
+        getValue(student, ["Year_Of_Study", "year_of_study", "year"]));
+    addProfileField(content, "Semester",
+        getValue(student, ["Semester", "semester"]));
+
+    addProfileHeading(content, "Skills and Interests");
+    addProfileField(content, "Technical Skills",
+        getValue(student, ["Skills", "skills", "technical_skills"]));
+    addProfileField(content, "Interests",
+        getValue(student, ["Interests", "interests"]));
+
+    const github = getValue(student, ["Github_URL", "github_url", "github"]);
+    const githubRow = document.createElement("div");
+    githubRow.className = "profile-row";
+    const githubLabel = document.createElement("strong");
+    githubLabel.textContent = "GitHub:";
+    githubRow.appendChild(githubLabel);
+
+    if (github && /^https?:\/\//i.test(String(github))) {
+        const link = document.createElement("a");
+        link.href = github;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = github;
+        githubRow.appendChild(link);
+    } else {
+        const span = document.createElement("span");
+        span.textContent = displayValue(github);
+        githubRow.appendChild(span);
     }
+    content.appendChild(githubRow);
 
-    try {
-        const response = await fetch(
-            `${API}/profiles/${encodeURIComponent(studentId)}`
-        );
-        const profile = await readResponse(response);
+    addProfileField(content, "Previous Projects / Experience",
+        getValue(student, ["Project_Experience", "project_experience", "experience"]));
 
-        // The database profile takes priority over application fields.
-        const student = { ...application, ...profile };
-        content.innerHTML = "";
+    addProfileHeading(content, "Resume and Certificates");
+    const documents = getValue(student, [
+        "Document_Metadata", "document_metadata", "documents"
+    ], []);
 
-        addProfileHeading(content, "Student Details");
-        addProfileField(content, "Full Name",
-            getValue(student, ["Name", "name", "full_name"]));
-        addProfileField(content, "Email",
-            getValue(student, ["Email", "email"]));
-        addProfileField(content, "College / University",
-            getValue(student, ["College", "college", "university"]));
-        addProfileField(content, "Branch",
-            getValue(student, ["Branch", "branch", "Department"]));
-        addProfileField(content, "Year of Study",
-            getValue(student, ["Year_Of_Study", "year_of_study", "year"]));
-        addProfileField(content, "Semester",
-            getValue(student, ["Semester", "semester"]));
+    if (Array.isArray(documents) && documents.length) {
+        documents.forEach((file, index) => {
+            const fileName = typeof file === "string"
+                ? file
+                : getValue(file, ["name", "filename", "file_name"], `Document ${index + 1}`);
 
-        addProfileHeading(content, "Skills and Interests");
-        addProfileField(content, "Technical Skills",
-            getValue(student, ["Skills", "skills", "technical_skills"]));
-        addProfileField(content, "Interests",
-            getValue(student, ["Interests", "interests"]));
+            let description = fileName;
 
-        const github = getValue(student, ["Github_URL", "github_url", "github"]);
-        const githubRow = document.createElement("div");
-        githubRow.className = "profile-row";
-        const githubLabel = document.createElement("strong");
-        githubLabel.textContent = "GitHub:";
-        githubRow.appendChild(githubLabel);
-
-        if (github && /^https?:\/\//i.test(String(github))) {
-            const link = document.createElement("a");
-            link.href = github;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = github;
-            githubRow.appendChild(link);
-        } else {
-            const span = document.createElement("span");
-            span.textContent = displayValue(github);
-            githubRow.appendChild(span);
-        }
-        content.appendChild(githubRow);
-
-        addProfileField(content, "Previous Projects / Experience",
-            getValue(student, ["Project_Experience", "project_experience", "experience"]));
-
-        addProfileHeading(content, "Resume and Certificates");
-        const documents = getValue(student, [
-            "Document_Metadata", "document_metadata", "documents"
-        ], []);
-
-        if (Array.isArray(documents) && documents.length) {
-            documents.forEach((file, index) => {
-                const fileName = typeof file === "string"
-                    ? file
-                    : getValue(file, ["name", "filename", "file_name"], `Document ${index + 1}`);
-
-                let description = fileName;
-
-                if (file && typeof file === "object") {
-                    const size = Number(file.size);
-                    if (size > 0) {
-                        description += ` (${(size / 1024).toFixed(1)} KB)`;
-                    }
+            if (file && typeof file === "object") {
+                const size = Number(file.size);
+                if (size > 0) {
+                    description += ` (${(size / 1024).toFixed(1)} KB)`;
                 }
+            }
 
-                addProfileField(content, `Document ${index + 1}`, description);
-            });
+            addProfileField(content, `Document ${index + 1}`, description);
+        });
 
-            const note = document.createElement("p");
-            note.textContent = "Only document metadata is stored. The actual file cannot be downloaded unless file storage is implemented.";
-            content.appendChild(note);
-        } else {
-            addProfileField(content, "Documents", null);
-        }
-
-        addProfileHeading(content, "Application Details");
-        addProfileField(content, "Application ID",
-            getValue(application, ["Member_ID", "member_id", "Application_ID", "application_id"]));
-        addProfileField(content, "Student ID", studentId);
-        addProfileField(content, "Application Status",
-            getValue(application, ["Status", "status", "Application_Status", "application_status"], "Pending"));
-
-        const debug = document.createElement("details");
-        const summary = document.createElement("summary");
-        summary.textContent = "View all data received from backend";
-
-        const pre = document.createElement("pre");
-        pre.textContent = JSON.stringify({ application, profile }, null, 2);
-        pre.style.whiteSpace = "pre-wrap";
-        pre.style.overflowWrap = "anywhere";
-        pre.style.fontSize = "12px";
-
-        debug.append(summary, pre);
-        content.appendChild(debug);
-    } catch (error) {
-        content.textContent = "Unable to load the student's profile: " + error.message;
-        console.error("Student profile error:", error);
+        const note = document.createElement("p");
+        note.textContent = "Only document metadata is stored. The actual file cannot be downloaded unless file storage is implemented.";
+        content.appendChild(note);
+    } else {
+        addProfileField(content, "Documents", null);
     }
+
+    addProfileHeading(content, "Application Details");
+    addProfileField(content, "Application ID",
+        getValue(application, ["Member_ID", "member_id", "Application_ID", "application_id"]));
+    addProfileField(content, "Student ID", studentId);
+    addProfileField(content, "Application Status",
+        getValue(application, ["Status", "status", "Application_Status", "application_status"], "Pending"));
+
+    const debug = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.textContent = "View all data received from backend";
+
+    const pre = document.createElement("pre");
+    pre.textContent = JSON.stringify({ application, profile }, null, 2);
+    pre.style.whiteSpace = "pre-wrap";
+    pre.style.overflowWrap = "anywhere";
+    pre.style.fontSize = "12px";
+
+    debug.append(summary, pre);
+    content.appendChild(debug);
+} catch (error) {
+    content.textContent = "Unable to load the student's profile: " + error.message;
+    console.error("Student profile error:", error);
+}
 }
 
 function closeProfile() {
-    const modal = document.getElementById("profileModal");
-    modal.classList.remove("show");
-    modal.style.display = "none";
-    modal.style.visibility = "hidden";
+const modal = document.getElementById("profileModal");
+modal.classList.remove("show");
+modal.style.display = "none";
+modal.style.visibility = "hidden";
 }
 
 function closeProfileOutside(event) {
-    if (event.target.id === "profileModal") closeProfile();
+if (event.target.id === "profileModal") closeProfile();
 }
 
 async function acceptMember(memberId) {
-    if (!confirm("Accept this student into the project?")) return;
+if (!confirm("Accept this student into the project?")) return;
 
-    try {
-        await readResponse(await fetch(
-            `${API}/projects/members/${encodeURIComponent(memberId)}/accept`,
-            { method: "PUT" }
-        ));
-        alert("Member accepted successfully.");
-        await loadTeamMembers();
-    } catch (error) {
-        alert(error.message || "Unable to accept member.");
-        console.error(error);
-    }
+try {
+    await readResponse(await fetch(
+        `${API}/projects/members/${encodeURIComponent(memberId)}/accept`,
+        { method: "PUT" }
+    ));
+    alert("Member accepted successfully.");
+    await loadTeamMembers();
+} catch (error) {
+    alert(error.message || "Unable to accept member.");
+    console.error(error);
+}
 }
 
 async function rejectMember(memberId) {
-    if (!confirm("Reject this application?")) return;
+if (!confirm("Reject this application?")) return;
 
-    try {
-        await readResponse(await fetch(
-            `${API}/projects/members/${encodeURIComponent(memberId)}/reject`,
-            { method: "PUT" }
-        ));
-        alert("Application rejected.");
-        await loadTeamMembers();
-    } catch (error) {
-        alert(error.message || "Unable to reject application.");
-        console.error(error);
-    }
+try {
+    await readResponse(await fetch(
+        `${API}/projects/members/${encodeURIComponent(memberId)}/reject`,
+        { method: "PUT" }
+    ));
+    alert("Application rejected.");
+    await loadTeamMembers();
+} catch (error) {
+    alert(error.message || "Unable to reject application.");
+    console.error(error);
+}
 }
 
 async function removeMember(memberId) {
-    if (!confirm("Remove this member from the project?")) return;
+if (!confirm("Remove this member from the project?")) return;
 
-    try {
-        await readResponse(await fetch(
-            `${API}/projects/members/${encodeURIComponent(memberId)}`,
-            { method: "DELETE" }
-        ));
-        alert("Member removed successfully.");
-        await loadTeamMembers();
-    } catch (error) {
-        alert(error.message || "Unable to remove member.");
-        console.error(error);
-    }
+try {
+    await readResponse(await fetch(
+        `${API}/projects/members/${encodeURIComponent(memberId)}`,
+        { method: "DELETE" }
+    ));
+    alert("Member removed successfully.");
+    await loadTeamMembers();
+} catch (error) {
+    alert(error.message || "Unable to remove member.");
+    console.error(error);
+}
 }
 
 function sendFeedback() {
-    const feedback = document.getElementById("feedbackText").value.trim();
+const feedback = document.getElementById("feedbackText").value.trim();
 
-    if (!feedback) {
-        alert("Please enter your feedback.");
-        return;
-    }
-
-    alert("Thank you for your feedback!");
-    document.getElementById("feedbackText").value = "";
+if (!feedback) {
+    alert("Please enter your feedback.");
+    return;
 }
 
-function logout() {
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("userId");
+alert("Thank you for your feedback!");
+document.getElementById("feedbackText").value = "";
 }
 
 window.addEventListener("load", () => {
-    loadProjects();
-    loadMentors();
+const session = requireRole(["Team Leader"]);
+if (!session) return;
+loadProjects();
+loadMentors();
 });
 </script>
 <script src="reviews.js"></script>
