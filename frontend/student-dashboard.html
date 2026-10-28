@@ -236,7 +236,7 @@
            onclick="showSection('projects'); return false;">My Projects</a>
         <a href="#team" data-section="team"
            onclick="showSection('team'); return false;">My Team</a>
-        <a href="index.html" class="logout" onclick="logout()">Logout</a>
+        <a href="login.html" class="logout" onclick="logout(); return false;">Logout</a>
     </aside>
 
     <main class="main-content">
@@ -452,13 +452,19 @@
     </main>
 </div>
 
+<script src="session.js"></script>
 <script>
 const API_URL = "http://127.0.0.1:8000";
 
-const userId = localStorage.getItem("userId");
+const initialSession = requireRole(["Team Member", "Student"]);
+const userId = initialSession ? initialSession.user_id : null;
+
+function currentUserId() {
+    const session = getSession();
+    return session && session.user_id != null ? session.user_id : null;
+}
 
 if (!userId) {
-    alert("Please log in first.");
     window.location.href = "login.html";
 }
 
@@ -497,7 +503,7 @@ const editableProfileFields = [
 ];
 
 function getProfileStorageKey() {
-    return "skillSyncProfile_" + userId;
+    return "skillSyncProfile_" + currentUserId();
 }
 
 function showSection(sectionId) {
@@ -585,7 +591,7 @@ async function loadProfile() {
 
     try {
         const response = await fetch(
-            `${API_URL}/profiles/${encodeURIComponent(userId)}`
+            `${API_URL}/profiles/${encodeURIComponent(currentUserId())}`
         );
 
         const data = await response.json().catch(() => ({}));
@@ -612,7 +618,7 @@ async function loadProfile() {
         document.getElementById("profileName").value = data.Name || "";
         document.getElementById("profileEmail").value = data.Email || "";
         document.getElementById("profileStudentId").value =
-            String(data.User_ID ?? userId);
+            String(data.User_ID ?? currentUserId());
         document.getElementById("profileCourse").value = data.Branch || "";
         document.getElementById("profileSemester").value =
             ordinalSemester(semester);
@@ -755,7 +761,7 @@ document.getElementById("profileForm").addEventListener("submit", async function
 
     try {
         const response = await fetch(
-            `${API_URL}/profiles/${encodeURIComponent(userId)}`,
+            `${API_URL}/profiles/${encodeURIComponent(currentUserId())}`,
             {
                 method: "PUT",
                 headers: {
@@ -875,7 +881,7 @@ function calculateSkillMatch(project) {
 }
 
 async function loadDashboard() {
-    if (!userId) {
+    if (!currentUserId()) {
         return;
     }
 
@@ -888,7 +894,7 @@ async function loadDashboard() {
     try {
         const [projectsResponse, myProjectsResponse] = await Promise.all([
             fetch(`${API_URL}/projects/`),
-            fetch(`${API_URL}/projects/member/${encodeURIComponent(userId)}`)
+            fetch(`${API_URL}/projects/member/${encodeURIComponent(currentUserId())}`)
         ]);
 
         if (!projectsResponse.ok || !myProjectsResponse.ok) {
@@ -1059,7 +1065,7 @@ async function applyToProject(projectId) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                user_id: Number(userId)
+                user_id: Number(currentUserId())
             })
         });
 
@@ -1091,21 +1097,6 @@ async function applyToProject(projectId) {
         applying.delete(id);
         renderAvailableProjects();
     }
-}
-
-function logout() {
-    [
-        "userId",
-        "userName",
-        "userEmail",
-        "userRole",
-        "role",
-        "skillsyncUser",
-        "skillsyncSignup",
-        "skillsync_pending_credentials"
-    ].forEach(key => localStorage.removeItem(key));
-
-    window.location.href = "login.html";
 }
 
 loadDashboard();
