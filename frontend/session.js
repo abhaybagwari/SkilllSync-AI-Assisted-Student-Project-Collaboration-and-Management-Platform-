@@ -1,5 +1,5 @@
-
 const SESSION_KEY = "skillsync_session";
+const API_PATTERN = /^https?:\/\/(127\.0\.0\.1|localhost):8000\//;
 
 function setSession(user) {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
@@ -36,3 +36,32 @@ function requireRole(allowedRoles) {
 
     return user;
 }
+
+const originalFetch = window.fetch.bind(window);
+
+window.fetch = async function (input, init = {}) {
+    const url = typeof input === "string" ? input : input.url;
+    const user = getSession();
+    const isApiCall = API_PATTERN.test(url);
+    let sentToken = false;
+
+    if (isApiCall && user && user.token) {
+        const headers = new Headers(init.headers || (typeof input !== "string" ? input.headers : undefined));
+
+        if (!headers.has("Authorization")) {
+            headers.set("Authorization", "Bearer " + user.token);
+            sentToken = true;
+        }
+
+        init = { ...init, headers };
+    }
+
+    const response = await originalFetch(input, init);
+
+    if (sentToken && response.status === 401 && !url.includes("/auth/")) {
+        clearSession();
+        window.location.href = "login.html";
+    }
+
+    return response;
+};
