@@ -128,21 +128,27 @@ def mentor_projects(mentor_id: int):
 def project_page(project_id: int):
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)
+
     try:
         cursor.execute(
             """
             SELECT p.Project_ID, p.Project_Name, p.Completed_At,
-                   p.User_ID AS Leader_ID, leader.Name AS Leader_Name
+                   p.User_ID AS Leader_ID,
+                   leader.Name AS Leader_Name
             FROM Project_Details p
             JOIN User leader ON leader.User_ID = p.User_ID
-            WHERE p.Project_ID = %s AND p.Project_Status = 'Completed'
+            WHERE p.Project_ID = %s
+              AND p.Project_Status = 'Completed'
             """,
-            (project_id,),
+            (project_id,)
         )
+
         project = cursor.fetchone()
+
         if not project:
             raise HTTPException(
-                status_code=404, detail="Completed project not found"
+                status_code=404,
+                detail="Completed project not found"
             )
 
         cursor.execute(
@@ -155,19 +161,23 @@ def project_page(project_id: int):
               AND pm.User_ID <> %s
             ORDER BY u.Name
             """,
-            (project_id, project["Leader_ID"]),
+            (project_id, project["Leader_ID"])
         )
+
         team = [
             {
                 "User_ID": project["Leader_ID"],
                 "Name": project["Leader_Name"],
-                "Role": "Team Leader",
+                "Role": "Team Leader"
             }
         ]
+
         for row in cursor.fetchall():
-            team.append(
-                {"User_ID": row["User_ID"], "Name": row["Name"], "Role": "Member"}
-            )
+            team.append({
+                "User_ID": row["User_ID"],
+                "Name": row["Name"],
+                "Role": "Member"
+            })
 
         cursor.execute(
             """
@@ -175,43 +185,59 @@ def project_page(project_id: int):
             FROM Mentor_Project mp
             JOIN User u ON u.User_ID = mp.Mentor_ID
             WHERE mp.Project_ID = %s
-            ORDER BY u.Name
             """,
-            (project_id,),
+            (project_id,)
         )
+
         mentors = cursor.fetchall()
 
+        # Retrieve complete mentor feedback history
         cursor.execute(
             """
-            SELECT f.Rating, f.Feedback_Text, f.Feedback_Date,
-                   u.Name AS Mentor_Name
+            SELECT
+                f.Feedback_ID,
+                f.Rating,
+                f.Feedback_Text,
+                f.Feedback_Date,
+                u.Name AS Mentor_Name
             FROM Project_Feedback f
             JOIN User u ON u.User_ID = f.Mentor_ID
             WHERE f.Project_ID = %s
-            ORDER BY f.Feedback_Date DESC
+            ORDER BY f.Feedback_Date DESC, f.Feedback_ID DESC
             """,
-            (project_id,),
+            (project_id,)
         )
-        feedback_rows = cursor.fetchall()
+
+        feedback_history = cursor.fetchall()
+
         mentor_review = None
-        if feedback_rows:
-            ratings = [row["Rating"] for row in feedback_rows]
+
+        if feedback_history:
+            ratings = [
+                item["Rating"]
+                for item in feedback_history
+            ]
+
             mentor_review = {
-                "average_rating": round(sum(ratings) / len(ratings), 1),
+                "average_rating": round(
+                    sum(ratings) / len(ratings), 1
+                ),
                 "review_count": len(ratings),
-                "latest": feedback_rows[0],
+                "latest": feedback_history[0]
             }
 
         return {
             "project": {
                 "Project_ID": project["Project_ID"],
                 "Project_Name": project["Project_Name"],
-                "Completed_At": project["Completed_At"],
+                "Completed_At": project["Completed_At"]
             },
             "mentors": mentors,
             "team": team,
             "mentor_review": mentor_review,
+            "mentor_feedback": feedback_history
         }
+
     finally:
         cursor.close()
         connection.close()
@@ -316,8 +342,10 @@ def member_project(user_id: int, project_id: int, viewer_id: int = 0):
             reviews = cursor.fetchall()
 
         average = None
-        if len(reviews) >= 2:
-            average = round(sum(r["Rating"] for r in reviews) / len(reviews), 1)
+        if reviews:
+            average = round(
+                sum(r["Rating"] for r in reviews) / len(reviews), 1
+                )
 
         return {
             "member": member,
