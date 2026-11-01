@@ -91,10 +91,17 @@ def available_projects(mentor_id: int):
 
 @router.post("/mentors/{mentor_id}/projects/{project_id}/take")
 def take_project(mentor_id: int, project_id: int):
+
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)
+
     try:
+        connection.start_transaction()
+
+        # Step 1: Check mentor exists
         _check_mentor(cursor, mentor_id)
+
+        # Step 2: Lock project row
         cursor.execute(
             """
             SELECT Project_Status
@@ -102,34 +109,73 @@ def take_project(mentor_id: int, project_id: int):
             WHERE Project_ID = %s
             FOR UPDATE
             """,
-            (project_id,),
+            (project_id,)
         )
+
         project = cursor.fetchone()
+
         if not project:
-            raise HTTPException(status_code=404, detail="Project not found")
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found"
+            )
+
         if project["Project_Status"] == "Completed":
             raise HTTPException(
-                status_code=400, detail="This project is already completed"
+                status_code=400,
+                detail="This project is already completed"
             )
 
+        # Step 3: Check existing mentor assignment
         cursor.execute(
-            "SELECT 1 FROM Mentor_Project WHERE Project_ID = %s",
-            (project_id,),
+            """
+            SELECT Mentor_ID
+            FROM Mentor_Project
+            WHERE Project_ID = %s
+            """,
+            (project_id,)
         )
-        if cursor.fetchone():
+
+        existing = cursor.fetchone()
+
+        if existing:
             raise HTTPException(
-                status_code=409, detail="This project already has a mentor"
+                status_code=409,
+                detail="This project already has a mentor"
             )
 
+        # Step 4: Assign mentor
         cursor.execute(
-            "INSERT INTO Mentor_Project (Mentor_ID, Project_ID) VALUES (%s, %s)",
-            (mentor_id, project_id),
+            """
+            INSERT INTO Mentor_Project
+            (Mentor_ID, Project_ID)
+            VALUES (%s, %s)
+            """,
+            (mentor_id, project_id)
         )
+
         connection.commit()
-        return {"message": "Project assigned to you"}
-    except Exception:
+
+        return {"message": "Project assigned successfully"}
+
+    except HTTPException:
         connection.rollback()
         raise
+
+    except Exception as error:
+        connection.rollback()
+
+        if getattr(error, "errno", None) == 1062:
+            raise HTTPException(
+                status_code=409,
+                detail="This project already has a mentor"
+            )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to assign project"
+        ) from error
+
     finally:
         cursor.close()
         connection.close()
@@ -137,44 +183,88 @@ def take_project(mentor_id: int, project_id: int):
 
 @router.post("/mentors/{mentor_id}/projects/{project_id}/complete")
 def complete_project(mentor_id: int, project_id: int):
+
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)
+
     try:
-        _check_mentor(cursor, mentor_id)
+        connection.start_transaction()
+
+        # Step 1: Lock the project row
         cursor.execute(
             """
-            SELECT 1 FROM Mentor_Project
-            WHERE Mentor_ID = %s AND Project_ID = %s
+            SELECT Project_Status
+            FROM Project_Details
+            WHERE Project_ID = %s
+            FOR UPDATE
             """,
-            (mentor_id, project_id),
+            (project_id,)
         )
+
+        project = cursor.fetchone()
+
+        if not project:
+            raise HTTPException(
+                status_code=404,
+                detail="Project not found"
+            )
+
+        # Step 2: Check mentor assignment
+        cursor.execute(
+            """
+            SELECT 1
+            FROM Mentor_Project
+            WHERE Mentor_ID = %s
+              AND Project_ID = %s
+            """,
+            (mentor_id, project_id)
+        )
+
         if not cursor.fetchone():
             raise HTTPException(
                 status_code=403,
-                detail="This project is not assigned to this mentor",
+                detail="This project is not assigned to this mentor"
             )
 
+        # Step 3: Check completion status
+        if project["Project_Status"] == "Completed":
+            raise HTTPException(
+                status_code=400,
+                detail="Project is already completed"
+            )
+
+        # Step 4: Update project
         cursor.execute(
             """
             UPDATE Project_Details
-            SET Project_Status = 'Completed', Completed_At = NOW()
-            WHERE Project_ID = %s AND Project_Status <> 'Completed'
+            SET Project_Status = 'Completed',
+                Completed_At = NOW()
+            WHERE Project_ID = %s
             """,
-            (project_id,),
+            (project_id,)
         )
-        if cursor.rowcount == 0:
-            raise HTTPException(
-                status_code=400, detail="Project is already completed"
-            )
+
         connection.commit()
-        return {"message": "Project marked as completed"}
-    except Exception:
+
+        return {
+            "message": "Project marked as completed"
+        }
+
+    except HTTPException:
         connection.rollback()
         raise
+
+    except Exception as error:
+        connection.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to complete project"
+        ) from error
+
     finally:
         cursor.close()
         connection.close()
-
 
 @router.get("/projects/{project_id}/review-form")
 def review_form(project_id: int, user_id: int):
