@@ -236,6 +236,10 @@
            onclick="showSection('projects'); return false;">My Projects</a>
         <a href="#team" data-section="team"
            onclick="showSection('team'); return false;">My Team</a>
+           <a href="#mentorFeedback" data-section="mentorFeedback"
+                onclick="showSection('mentorFeedback'); return false;">
+            Mentor Feedback
+        </a>
         <a href="login.html" class="logout" onclick="logout(); return false;">Logout</a>
     </aside>
 
@@ -448,6 +452,12 @@
                 <p id="profileMessage" role="status" aria-live="polite"></p>
             </form>
         </section>
+                <section id="mentorFeedback" style="display: none;">
+            <h2>Mentor Feedback</h2>
+            <div id="mentorFeedbackArea">
+                <p>Loading mentor feedback...</p>
+            </div>
+        </section>
 
     </main>
 </div>
@@ -506,17 +516,21 @@ function getProfileStorageKey() {
     return "skillSyncProfile_" + currentUserId();
 }
 
+
 function showSection(sectionId) {
     const sections = {
         dashboard: document.getElementById("dashboardSection"),
         projects: document.getElementById("projects"),
         team: document.getElementById("team"),
         tasks: document.getElementById("tasks"),
-        profile: document.getElementById("profile")
+        profile: document.getElementById("profile"),
+        mentorFeedback: document.getElementById("mentorFeedback")
     };
 
     Object.values(sections).forEach(section => {
-        section.style.display = "none";
+        if (section) {
+            section.style.display = "none";
+        }
     });
 
     document.querySelectorAll(".sidebar a[data-section]").forEach(link => {
@@ -538,7 +552,12 @@ function showSection(sectionId) {
     if (sectionId === "profile") {
         loadProfile();
     }
+
+    if (sectionId === "mentorFeedback") {
+        loadMentorFeedback();
+    }
 }
+
 
 function ordinalSemester(value) {
     const number = Number(value);
@@ -906,6 +925,7 @@ async function loadDashboard() {
 
         const allProjects = projectsData.projects || [];
         myProjects = myProjectsData.projects || [];
+    
 
         const appliedIds = new Set(
             myProjects.map(project => Number(project.Project_ID))
@@ -934,6 +954,79 @@ async function loadDashboard() {
 
         teamContainer.innerHTML =
             "<p>Unable to load your applied projects.</p>";
+    }
+}
+
+
+async function loadMentorFeedback() {
+    const container = document.getElementById("mentorFeedbackArea");
+
+    if (!container) return;
+
+    container.innerHTML = "<p>Loading mentor feedback...</p>";
+
+    try {
+        const response = await fetch(
+            `${API_URL}/workflow/users/${encodeURIComponent(currentUserId())}/completed-projects`
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to load completed projects.");
+        }
+
+        const data = await response.json();
+        const completedProjects = data.projects || [];
+
+        if (completedProjects.length === 0) {
+            container.innerHTML =
+                "<p>You have no completed projects yet.</p>";
+            return;
+        }
+
+        const results = await Promise.all(
+            completedProjects.map(async project => {
+                const response = await fetch(
+                    `${API_URL}/public/projects/${project.Project_ID}`
+                );
+
+                if (!response.ok) {
+                    throw new Error("Unable to load project feedback.");
+                }
+
+                return await response.json();
+            })
+        );
+
+        container.innerHTML = results.map(data => {
+            const feedback = data.mentor_feedback || [];
+            const average = data.mentor_review?.average_rating;
+
+            return `
+                <div class="profile-card">
+                    <h3>${data.project.Project_Name}</h3>
+                    <p><strong>Average Mentor Rating:</strong>
+                        ${average ?? "Not rated"} / 5
+                    </p>
+                    ${
+                        feedback.length
+                        ? feedback.map(item => `
+                            <div class="feedback-item">
+                                <p><strong>Mentor:</strong> ${item.Mentor_Name}</p>
+                                <p><strong>Rating:</strong> ${item.Rating}/5</p>
+                                <p><strong>Comments:</strong> ${item.Feedback_Text}</p>
+                                <p><small>${item.Feedback_Date}</small></p>
+                            </div>
+                        `).join("")
+                        : "<p>No mentor feedback submitted yet.</p>"
+                    }
+                </div>
+            `;
+        }).join("");
+
+    } catch (error) {
+        console.error("Mentor feedback error:", error);
+        container.innerHTML =
+            "<p>Unable to load mentor feedback.</p>";
     }
 }
 
