@@ -328,58 +328,117 @@ def review_form(project_id: int, user_id: int):
 
 @router.post("/projects/{project_id}/reviews")
 def save_review(project_id: int, request: ReviewRequest):
+
     comment = request.comment.strip()
+
     if not comment:
-        raise HTTPException(status_code=400, detail="Review cannot be empty")
+        raise HTTPException(
+            status_code=400,
+            detail="Review cannot be empty"
+        )
+
     if request.reviewer_id == request.reviewee_id:
         raise HTTPException(
-            status_code=400, detail="You cannot review yourself"
+            status_code=400,
+            detail="You cannot review yourself"
         )
 
     connection = get_connection()
     cursor = connection.cursor(dictionary=True)
+
     try:
-        _completed_project(cursor, project_id)
-        team = _team_ids(cursor, project_id)
-        if request.reviewer_id not in team or request.reviewee_id not in team:
+        connection.start_transaction()
+
+        # Step 1: Lock project row
+        cursor.execute(
+            """
+            SELECT Project_ID, Project_Name, Project_Status
+            FROM Project_Details
+            WHERE Project_ID = %s
+            FOR UPDATE
+            """,
+            (project_id,)
+        )
+
+        project = cursor.fetchone()
+
+        if not project:
             raise HTTPException(
-                status_code=403,
-                detail="Both people must be members of this project",
+                status_code=404,
+                detail="Project not found"
             )
 
+        if project["Project_Status"] != "Completed":
+            raise HTTPException(
+                status_code=400,
+                detail="Reviews open only after the project is completed"
+            )
+
+        # Step 2: Verify both users belong to the project
+        team = _team_ids(cursor, project_id)
+
+        if (
+            request.reviewer_id not in team
+            or request.reviewee_id not in team
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail="Both people must be members of this project"
+            )
+
+        # Step 3: Check existing review
         cursor.execute(
             """
             SELECT Review_ID, Created_At
             FROM Peer_Review
-            WHERE Project_ID = %s AND Reviewer_ID = %s AND Reviewee_ID = %s
+            WHERE Project_ID = %s
+              AND Reviewer_ID = %s
+              AND Reviewee_ID = %s
             FOR UPDATE
             """,
-            (project_id, request.reviewer_id, request.reviewee_id),
+            (
+                project_id,
+                request.reviewer_id,
+                request.reviewee_id
+            )
         )
+
         existing = cursor.fetchone()
 
         if existing:
+
+            # Step 4: Check seven-day editing window
             if datetime.now() - existing["Created_At"] > timedelta(
                 days=EDIT_WINDOW_DAYS
             ):
                 raise HTTPException(
                     status_code=403,
-                    detail="The edit window for this review is over",
+                    detail="The edit window for this review is over"
                 )
+
             cursor.execute(
                 """
                 UPDATE Peer_Review
-                SET Rating = %s, Comment = %s, Edited_At = NOW()
+                SET Rating = %s,
+                    Comment = %s,
+                    Edited_At = NOW()
                 WHERE Review_ID = %s
                 """,
-                (request.rating, comment, existing["Review_ID"]),
+                (
+                    request.rating,
+                    comment,
+                    existing["Review_ID"]
+                )
             )
+
             message = "Review updated"
+
         else:
+            # Step 5: Insert new review
             cursor.execute(
                 """
                 INSERT INTO Peer_Review
-                    (Project_ID, Reviewer_ID, Reviewee_ID, Rating, Comment)
+                (Project_ID, Reviewer_ID, Reviewee_ID, Rating, Comment)
                 VALUES (%s, %s, %s, %s, %s)
                 """,
                 (
@@ -387,16 +446,34 @@ def save_review(project_id: int, request: ReviewRequest):
                     request.reviewer_id,
                     request.reviewee_id,
                     request.rating,
-                    comment,
-                ),
+                    comment
+                )
             )
+
             message = "Review saved"
 
         connection.commit()
+
         return {"message": message}
-    except Exception:
+
+    except HTTPException:
         connection.rollback()
         raise
+
+    except Exception as error:
+        connection.rollback()
+
+        if getattr(error, "errno", None) == 1062:
+            raise HTTPException(
+                status_code=409,
+                detail="A review for this teammate already exists"
+            )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to save review"
+        ) from error
+
     finally:
         cursor.close()
         connection.close()
