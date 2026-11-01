@@ -179,11 +179,15 @@ def apply_to_project(project_id: int, request: JoinProjectRequest):
     cursor = connection.cursor(dictionary=True)
 
     try:
+        connection.start_transaction()
+
+        # Step 1: Lock the project row
         cursor.execute(
             """
             SELECT Project_ID, User_ID, Members_Required
             FROM Project_Details
             WHERE Project_ID = %s
+            FOR UPDATE
             """,
             (project_id,)
         )
@@ -196,50 +200,39 @@ def apply_to_project(project_id: int, request: JoinProjectRequest):
                 detail="Project not found"
             )
 
+        # Step 2: Prevent leader from applying to own project
         if project["User_ID"] == request.user_id:
             raise HTTPException(
                 status_code=400,
                 detail="Project leader cannot apply to their own project"
             )
 
+        # Step 3: Check existing application
         cursor.execute(
             """
             SELECT Member_ID, Status
             FROM Project_Members
             WHERE Project_ID = %s AND User_ID = %s
+            FOR UPDATE
             """,
             (project_id, request.user_id)
         )
 
         existing = cursor.fetchone()
 
-        if existing:
-            if existing["Status"] == "Rejected":
-                cursor.execute(
-                    """
-                    UPDATE Project_Members
-                    SET Status = 'Pending'
-                    WHERE Member_ID = %s
-                    """,
-                    (existing["Member_ID"],)
-                )
-
-                connection.commit()
-
-                return {
-                    "message": "Application submitted again"
-                }
-
+        if existing and existing["Status"] != "Rejected":
             raise HTTPException(
                 status_code=400,
                 detail=f"You already have a {existing['Status'].lower()} application for this project"
             )
 
+        # Step 4: Check available team capacity
         cursor.execute(
             """
             SELECT COUNT(*) AS accepted_count
             FROM Project_Members
-            WHERE Project_ID = %s AND Status = 'Accepted'
+            WHERE Project_ID = %s
+            AND Status = 'Accepted'
             """,
             (project_id,)
         )
@@ -252,20 +245,52 @@ def apply_to_project(project_id: int, request: JoinProjectRequest):
                 detail="This project is already full"
             )
 
-        cursor.execute(
-            """
-            INSERT INTO Project_Members
-            (Project_ID, User_ID, Status)
-            VALUES (%s, %s, 'Pending')
-            """,
-            (project_id, request.user_id)
-        )
+        # Step 5: Resubmit rejected application or create new one
+        if existing:
+            cursor.execute(
+                """
+                UPDATE Project_Members
+                SET Status = 'Pending'
+                WHERE Member_ID = %s
+                """,
+                (existing["Member_ID"],)
+            )
+
+            message = "Application submitted again"
+
+        else:
+            cursor.execute(
+                """
+                INSERT INTO Project_Members
+                (Project_ID, User_ID, Status)
+                VALUES (%s, %s, 'Pending')
+                """,
+                (project_id, request.user_id)
+            )
+
+            message = "Application submitted successfully"
 
         connection.commit()
 
-        return {
-            "message": "Application submitted successfully"
-        }
+        return {"message": message}
+
+    except HTTPException:
+        connection.rollback()
+        raise
+
+    except Exception as error:
+        connection.rollback()
+
+        if getattr(error, "errno", None) == 1062:
+            raise HTTPException(
+                status_code=409,
+                detail="You have already applied to this project"
+            )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to submit application"
+        ) from error
 
     finally:
         cursor.close()
