@@ -1,9 +1,13 @@
-
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from database.connection import get_connection
+from backend.rate_limiter import TokenBucketLimiter, rate_limit
+from backend.access_control import create_session
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+signup_limiter = TokenBucketLimiter(capacity=10, refill_per_second=10 / 60)
+login_limiter = TokenBucketLimiter(capacity=10, refill_per_second=10 / 60)
 
 
 class SignupRequest(BaseModel):
@@ -20,7 +24,7 @@ role_map = {
 }
 
 
-@router.post("/signup")
+@router.post("/signup", dependencies=[Depends(rate_limit(signup_limiter))])
 def signup(user: SignupRequest):
     if user.role not in role_map:
         raise HTTPException(status_code=400, detail="Invalid role")
@@ -63,7 +67,8 @@ def signup(user: SignupRequest):
                 "user_id": user_id,
                 "name": user.name.strip(),
                 "role": db_role,
-                "email": user.email
+                "email": user.email,
+                "token": create_session(user_id, db_role)
             }
         }
 
@@ -78,7 +83,7 @@ class LoginRequest(BaseModel):
     role: str
 
 
-@router.post("/login")
+@router.post("/login", dependencies=[Depends(rate_limit(login_limiter))])
 def login(user: LoginRequest):
     expected_role = role_map.get(user.role)
 
@@ -129,7 +134,8 @@ def login(user: LoginRequest):
                 "user_id": user_id,
                 "name": name,
                 "email": user.email,
-                "role": role
+                "role": role,
+                "token": create_session(user_id, role)
             }
         }
 
