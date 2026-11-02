@@ -3,6 +3,7 @@ from pydantic import BaseModel, EmailStr
 from database.connection import get_connection
 from backend.rate_limiter import TokenBucketLimiter, rate_limit
 from backend.access_control import create_session
+from backend.utils.security import hash_password
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -54,7 +55,7 @@ def signup(user: SignupRequest):
                 user.name.strip(),
                 db_role,
                 user.email,
-                user.password
+                hash_password(user.password)
             )
         )
 
