@@ -3,6 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
+from backend.routes.ai_tools import router as ai_tools_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routes.auth import router as auth_router
@@ -26,6 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(ai_tools_router)
 app.include_router(auth_router)
 app.include_router(projects_router)
 app.include_router(mentor_router)
