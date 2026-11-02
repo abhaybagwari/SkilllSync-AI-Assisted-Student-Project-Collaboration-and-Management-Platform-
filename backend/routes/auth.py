@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, EmailStr
 from database.connection import get_connection
 from backend.rate_limiter import TokenBucketLimiter, rate_limit
-from backend.access_control import create_session
-from backend.utils.security import hash_password
+from backend.utils.jwt_handler import create_access_token
+from backend.utils.security import hash_password, verify_password
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -69,7 +69,7 @@ def signup(user: SignupRequest):
                 "name": user.name.strip(),
                 "role": db_role,
                 "email": user.email,
-                "token": create_session(user_id, db_role)
+                "token": create_access_token(user_id, db_role)
             }
         }
 
@@ -82,6 +82,7 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
     role: str
+
 
 
 @router.post("/login", dependencies=[Depends(rate_limit(login_limiter))])
@@ -117,7 +118,14 @@ def login(user: LoginRequest):
 
         user_id, name, role, password = db_user
 
-        if password != user.password:
+        is_legacy_password = not password.startswith("$argon2")
+
+        if is_legacy_password:
+            valid_password = password == user.password
+        else:
+            valid_password = verify_password(user.password, password)
+
+        if not valid_password:
             raise HTTPException(
                 status_code=401,
                 detail="Invalid email or password"
@@ -129,6 +137,13 @@ def login(user: LoginRequest):
                 detail="Selected role does not match this account"
             )
 
+        if is_legacy_password:
+            cursor.execute(
+                "UPDATE User SET Password = %s WHERE User_ID = %s",
+                (hash_password(user.password), user_id)
+            )
+            connection.commit()
+
         return {
             "message": "Login successful",
             "user": {
@@ -136,7 +151,7 @@ def login(user: LoginRequest):
                 "name": name,
                 "email": user.email,
                 "role": role,
-                "token": create_session(user_id, role)
+                "token": create_access_token(user_id, role)
             }
         }
 
