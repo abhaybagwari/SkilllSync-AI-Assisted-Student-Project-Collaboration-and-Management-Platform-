@@ -1,5 +1,4 @@
-from utils.security import hash_password, verify_password
-
+from backend.utils.security import hash_password, verify_password
 
 def test_hash_password():
     password = "hello123"
