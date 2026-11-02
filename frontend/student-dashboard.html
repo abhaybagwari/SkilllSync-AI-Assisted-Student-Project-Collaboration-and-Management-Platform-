@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,6 +197,133 @@
             font-size: 11px;
         }
 
+        /* AI Project Recommendations - Updated Design */
+
+        .ai-recommendations-section {
+            margin: 25px 0;
+        }
+
+        .ai-recommendations-section > p {
+            color: #777;
+            margin-bottom: 18px;
+        }
+
+        .ai-recommendation-card {
+            background: #FFFFFF;
+            border: 1px solid #E5DED1;
+            border-radius: 10px;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 7px rgba(41, 45, 45, 0.04);
+        }
+
+        .ai-recommendation-card h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #292D2D;
+            font-size: 19px;
+        }
+
+        .ai-project-description {
+            color: #70706B;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .ai-score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 9px;
+        }
+
+        .ai-score-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #292D2D;
+        }
+
+        .ai-match-score {
+            color: #527A61;
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .ai-progress-track {
+            width: 100%;
+            height: 9px;
+            background: #EAE5DC;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .ai-progress-fill {
+            height: 100%;
+            background: #527A61;
+            border-radius: 20px;
+            transition: width 0.4s ease;
+        }
+
+        .ai-skills-section {
+            margin-top: 15px;
+        }
+
+        .ai-skills-section strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        .ai-skills-section p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .ai-matched-skills strong,
+        .ai-matched-skills p {
+            color: #527A61;
+        }
+
+        .ai-missing-skills strong,
+        .ai-missing-skills p {
+            color: #B64B4B;
+        }
+
+        .ai-required-skills strong {
+            color: #555;
+        }
+
+        .ai-required-skills p {
+            color: #555;
+        }
+
+        .ai-recommendation-reason {
+            background: #F5F0E5;
+            border: 1px solid #E5DED1;
+            border-radius: 7px;
+            padding: 13px 15px;
+            margin-top: 18px;
+        }
+
+        .ai-recommendation-reason strong {
+            display: block;
+            color: #725D3F;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .ai-recommendation-reason p {
+            color: #555;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
         @media (max-width: 650px) {
             .profile-grid {
                 grid-template-columns: 1fr;
@@ -218,6 +346,10 @@
             .skill-match {
                 top: 12px;
                 right: 12px;
+            }
+
+            .ai-recommendation-card {
+                padding: 17px;
             }
         }
     </style>
@@ -251,6 +383,16 @@
             <p class="welcome" id="welcomeMessage">
                 Welcome back! Find projects and work with the right team.
             </p>
+
+            <!-- AI Project Recommendations -->
+            <section class="section ai-recommendations-section">
+                <h2>Recommended Projects For You</h2>
+                <p>AI-powered project recommendations based on your skills.</p>
+
+                <div id="aiRecommendationsContainer">
+                    <p>Finding the best projects for you...</p>
+                </div>
+            </section>
 
             <div class="cards">
                 <div class="card">
@@ -899,6 +1041,217 @@ function calculateSkillMatch(project) {
     );
 }
 
+
+/* AI PROJECT RECOMMENDATIONS - Updated Card Design */
+
+async function loadAIRecommendations() {
+    const container = document.getElementById(
+        "aiRecommendationsContainer"
+    );
+
+    if (!container || !currentUserId()) {
+        return;
+    }
+
+    container.innerHTML = "<p>Finding the best projects for you...</p>";
+
+    try {
+        let studentSkills = [];
+
+        // Fetch the student's actual skills from the database
+        const profileResponse = await fetch(
+            `${API_URL}/profiles/${encodeURIComponent(currentUserId())}`
+        );
+
+        if (profileResponse.ok) {
+            const profileData = await profileResponse.json();
+
+            if (Array.isArray(profileData.Skills)) {
+                studentSkills = profileData.Skills;
+            } else if (typeof profileData.Skills === "string") {
+                studentSkills = profileData.Skills.split(/[,;]+/);
+            }
+        }
+
+        // Use saved profile skills as fallback
+        if (studentSkills.length === 0) {
+            const savedProfile = JSON.parse(
+                localStorage.getItem(getProfileStorageKey()) || "{}"
+            );
+
+            studentSkills = [
+                savedProfile.profileSkill1,
+                savedProfile.profileSkill2,
+                savedProfile.profileSkill3
+            ];
+        }
+
+        studentSkills = [...new Set(
+            studentSkills
+                .filter(skill => typeof skill === "string")
+                .map(skill => skill.trim())
+                .filter(Boolean)
+        )];
+
+        if (studentSkills.length === 0) {
+            container.innerHTML =
+                "<p>Please add your skills in My Profile to get AI project recommendations.</p>";
+            return;
+        }
+
+        // Call the AI recommendation endpoint
+        const response = await fetch(
+            `${API_URL}/ai/recommendations`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    student_skills: studentSkills,
+                    top_n: 5
+                })
+            }
+        );
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                data.detail || "Unable to load AI recommendations."
+            );
+        }
+
+        const recommendations = data.recommendations || [];
+
+        if (recommendations.length === 0) {
+            container.innerHTML =
+                "<p>No project recommendations available right now.</p>";
+            return;
+        }
+
+        container.innerHTML = "";
+
+        recommendations.forEach(project => {
+            const card = document.createElement("div");
+            card.className = "ai-recommendation-card";
+
+            // Project name
+            const title = document.createElement("h3");
+            title.textContent = project.project_name || "Untitled Project";
+
+            // Project description
+            const description = document.createElement("p");
+            description.className = "ai-project-description";
+            description.textContent =
+                project.description || "No description available.";
+
+            // AI Match Score heading
+            const scoreHeader = document.createElement("div");
+            scoreHeader.className = "ai-score-header";
+
+            const scoreLabel = document.createElement("span");
+            scoreLabel.className = "ai-score-label";
+            scoreLabel.textContent = "AI Match Score";
+
+            const matchScore = document.createElement("span");
+            matchScore.className = "ai-match-score";
+
+            const percentage = Math.max(
+                0,
+                Math.min(100, Number(project.match_percentage) || 0)
+            );
+
+            matchScore.textContent = `${percentage}%`;
+
+            scoreHeader.append(scoreLabel, matchScore);
+
+            // Green progress bar
+            const progressTrack = document.createElement("div");
+            progressTrack.className = "ai-progress-track";
+
+            const progressFill = document.createElement("div");
+            progressFill.className = "ai-progress-fill";
+            progressFill.style.width = `${percentage}%`;
+
+            progressTrack.appendChild(progressFill);
+
+            // Helper function for skill information
+            function createSkillSection(className, heading, skills) {
+                const section = document.createElement("div");
+                section.className = `ai-skills-section ${className}`;
+
+                const sectionHeading = document.createElement("strong");
+                sectionHeading.textContent = heading;
+
+                const sectionText = document.createElement("p");
+                sectionText.textContent =
+                    Array.isArray(skills) && skills.length
+                        ? skills.join(", ")
+                        : "None";
+
+                section.append(sectionHeading, sectionText);
+                return section;
+            }
+
+            // Matched skills - Green
+            const matchedSkills = createSkillSection(
+                "ai-matched-skills",
+                "✓ Matched Skills",
+                project.matched_skills
+            );
+
+            // Missing skills - Red
+            const missingSkills = createSkillSection(
+                "ai-missing-skills",
+                "✕ Missing Skills",
+                project.missing_skills
+            );
+
+            // Required skills
+            const requiredSkills = createSkillSection(
+                "ai-required-skills",
+                "Required Skills",
+                project.required_skills
+            );
+
+            // Recommendation reason - Beige background
+            const reasonBox = document.createElement("div");
+            reasonBox.className = "ai-recommendation-reason";
+
+            const reasonHeading = document.createElement("strong");
+            reasonHeading.textContent = "Why recommended?";
+
+            const reasonText = document.createElement("p");
+            reasonText.textContent =
+                project.recommendation_reason || "Matches your skills.";
+
+            reasonBox.append(reasonHeading, reasonText);
+
+            // Add all elements to the recommendation card
+            card.append(
+                title,
+                description,
+                scoreHeader,
+                progressTrack,
+                matchedSkills,
+                missingSkills,
+                requiredSkills,
+                reasonBox
+            );
+
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("AI Recommendation Error:", error);
+
+        container.innerHTML =
+            "<p>Unable to load AI recommendations. Please check the backend and try again.</p>";
+    }
+}
+
+
 async function loadDashboard() {
     if (!currentUserId()) {
         return;
@@ -1194,8 +1547,10 @@ async function applyToProject(projectId) {
 
 loadDashboard();
 showSection("dashboard");
+loadAIRecommendations();
 </script>
 
 <script src="reviews.js"></script>
 </body>
 </html>
+```
