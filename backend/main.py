@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-
+from routes.ai_assistant import router as ai_assistant_router
 from backend.routes.ai_tools import router as ai_tools_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,7 +35,7 @@ app.include_router(profiles_router)
 app.include_router(public_router)
 app.include_router(certificates_router)
 app.include_router(workflow_router)
-
+app.include_router(ai_assistant_router)
 
 @app.get("/")
 def root():

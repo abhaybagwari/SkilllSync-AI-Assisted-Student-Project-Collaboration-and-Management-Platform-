@@ -50,6 +50,7 @@ class OrderedLockManager:
 # ---------------------------------------------------------------------------
 # 2. AVOIDANCE: Banker's algorithm
 # ---------------------------------------------------------------------------
+
 class BankersAlgorithm:
     """processes = teams, resources = e.g. [mentor slots, project slots, seats]."""
 
@@ -59,6 +60,28 @@ class BankersAlgorithm:
         self.allocation = [list(row) for row in allocation]
         self._lock = threading.Lock()
 
+    def _validate_process(self, pid):
+        if not isinstance(pid, int) or isinstance(pid, bool):
+            raise ValueError("Invalid process ID")
+
+        if pid < 0 or pid >= len(self.allocation):
+            raise ValueError("Process ID out of range")
+
+    def _validate_request(self, pid, req):
+        self._validate_process(pid)
+
+        if not isinstance(req, (list, tuple)):
+            raise ValueError("Request must be a list or tuple")
+
+        if len(req) != len(self.available):
+            raise ValueError("Incorrect resource vector length")
+
+        if any(not isinstance(r, int) or isinstance(r, bool) for r in req):
+            raise ValueError("Resources must be integers")
+
+        if any(r < 0 for r in req):
+            raise ValueError("Negative resource request not allowed")
+
     def _need(self, i):
         return [m - a for m, a in zip(self.max_need[i], self.allocation[i])]
 
@@ -67,17 +90,26 @@ class BankersAlgorithm:
         finished = [False] * len(allocation)
         sequence = []
         progress = True
+
         while progress:
             progress = False
             for i in range(len(allocation)):
                 if finished[i]:
                     continue
-                need = [m - a for m, a in zip(self.max_need[i], allocation[i])]
+
+                need = [
+                    m - a
+                    for m, a in zip(self.max_need[i], allocation[i])
+                ]
+
                 if all(n <= w for n, w in zip(need, work)):
-                    work = [w + a for w, a in zip(work, allocation[i])]
+                    work = [
+                        w + a for w, a in zip(work, allocation[i])
+                    ]
                     finished[i] = True
                     sequence.append(i)
                     progress = True
+
         return (all(finished), sequence if all(finished) else [])
 
     def is_safe(self):
@@ -87,16 +119,25 @@ class BankersAlgorithm:
     def request(self, pid, req):
         """Returns (granted, reason). State changes only if granted."""
         with self._lock:
+            self._validate_request(pid, req)
+
             if any(r > n for r, n in zip(req, self._need(pid))):
                 return False, "Request exceeds the maximum claim"
+
             if any(r > a for r, a in zip(req, self.available)):
                 return False, "Resources not available, must wait"
 
-            new_available = [a - r for a, r in zip(self.available, req)]
+            new_available = [
+                a - r for a, r in zip(self.available, req)
+            ]
+
             new_allocation = [list(row) for row in self.allocation]
-            new_allocation[pid] = [a + r for a, r in zip(new_allocation[pid], req)]
+            new_allocation[pid] = [
+                a + r for a, r in zip(new_allocation[pid], req)
+            ]
 
             safe, _ = self._safe_sequence(new_available, new_allocation)
+
             if not safe:
                 return False, "Unsafe state, request denied to avoid deadlock"
 
@@ -106,9 +147,12 @@ class BankersAlgorithm:
 
     def release(self, pid):
         with self._lock:
-            self.available = [a + x for a, x in zip(self.available, self.allocation[pid])]
-            self.allocation[pid] = [0] * len(self.available)
+            self._validate_process(pid)
 
+            self.available = [
+                a + x for a, x in zip(self.available, self.allocation[pid])
+            ]
+            self.allocation[pid] = [0] * len(self.available)
 
 # ---------------------------------------------------------------------------
 # 3. DETECTION: wait-for graph

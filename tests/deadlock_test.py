@@ -134,6 +134,60 @@ def test_wait_for_graph_cycle_clears_after_release():
     assert g.find_cycle() is not None
     g.remove_wait("B", "A")
     assert g.find_cycle() is None
+def test_bankers_rejects_negative_request():
+    b = BankersAlgorithm(
+        available=[3, 3],
+        max_need=[[5, 5]],
+        allocation=[[2, 2]]
+    )
+
+    try:
+        b.request(0, [-1, 1])
+        assert False, "Negative request was accepted"
+    except ValueError:
+        pass
+
+
+def test_bankers_rejects_invalid_pid():
+    b = BankersAlgorithm(
+        available=[3, 3],
+        max_need=[[5, 5]],
+        allocation=[[2, 2]]
+    )
+
+    try:
+        b.request(-1, [1, 1])
+        assert False, "Invalid PID was accepted"
+    except ValueError:
+        pass
+
+
+def test_bankers_rejects_wrong_vector_length():
+    b = BankersAlgorithm(
+        available=[3, 3],
+        max_need=[[5, 5]],
+        allocation=[[2, 2]]
+    )
+
+    try:
+        b.request(0, [1])
+        assert False, "Incorrect vector length was accepted"
+    except ValueError:
+        pass
+
+
+def test_bankers_rejects_non_integer_request():
+    b = BankersAlgorithm(
+        available=[3, 3],
+        max_need=[[5, 5]],
+        allocation=[[2, 2]]
+    )
+
+    try:
+        b.request(0, [1, "two"])
+        assert False, "Non-integer request was accepted"
+    except ValueError:
+        pass
 
 
 TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
@@ -149,3 +203,4 @@ if __name__ == "__main__":
             print(f"FAIL  {fn.__name__}: {type(e).__name__}: {e}")
     print(f"\n{len(TESTS) - failed}/{len(TESTS)} passed")
     sys.exit(1 if failed else 0)
+
