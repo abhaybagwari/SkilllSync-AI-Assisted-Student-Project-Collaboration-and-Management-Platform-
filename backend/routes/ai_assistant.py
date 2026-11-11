@@ -1,5 +1,6 @@
 
 import sys
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -10,6 +11,9 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from ai.project_assistant import ask_gemini
 from database.connection import get_connection
 from backend.utils.auth_dependency import get_current_user
+
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(
@@ -23,11 +27,16 @@ class AssistantRequest(BaseModel):
 
 
 def get_student_projects(user_id, role):
-    connection = get_connection()
-    cursor = connection.cursor(dictionary=True)
+
+    connection = None
+    cursor = None
 
     try:
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
         if role == "Team Member":
+
             query = """
                 SELECT
                     p.Project_Name,
@@ -42,6 +51,7 @@ def get_student_projects(user_id, role):
             """
 
         elif role == "Team Leader":
+
             query = """
                 SELECT
                     Project_Name,
@@ -53,6 +63,7 @@ def get_student_projects(user_id, role):
             """
 
         elif role == "Mentor":
+
             query = """
                 SELECT
                     p.Project_Name,
@@ -69,11 +80,16 @@ def get_student_projects(user_id, role):
             return []
 
         cursor.execute(query, (user_id,))
+
         return cursor.fetchall()
 
     finally:
-        cursor.close()
-        connection.close()
+
+        if cursor is not None:
+            cursor.close()
+
+        if connection is not None:
+            connection.close()
 
 
 @router.post("/chat")
@@ -81,42 +97,77 @@ def assistant_chat(
     request: AssistantRequest,
     current_user: dict = Depends(get_current_user)
 ):
+
     if not request.question.strip():
+
         raise HTTPException(
             status_code=400,
             detail="Question cannot be empty"
         )
 
+    user_id = current_user["user_id"]
+    role = current_user["role"]
+
+    projects = []
+
+    project_context = (
+        "Project information is currently unavailable."
+    )
+
+    # STEP 1: Fetch student project information
+
     try:
+
         projects = get_student_projects(
-            current_user["user_id"],
-            current_user["role"]
+            user_id,
+            role
         )
 
         if projects:
+
             project_context = str(projects)
+
         else:
+
             project_context = (
                 "No projects are currently associated "
                 "with this user."
             )
+
+    except Exception:
+
+        logger.exception(
+            "Failed to fetch student project information"
+        )
+
+    # STEP 2: Generate AI response
+
+    try:
 
         answer = ask_gemini(
             request.question,
             project_context
         )
 
+        if not answer or not answer.strip():
+
+            raise RuntimeError(
+                "AI returned an empty response"
+            )
+
         return {
             "success": True,
-            "answer": answer,
+            "answer": answer.strip(),
             "projects_found": len(projects)
         }
 
-    except HTTPException:
-        raise
+    except Exception as error:
 
-    except Exception:
+        logger.exception(
+            "SkillSync AI response generation failed"
+        )
+
         raise HTTPException(
             status_code=502,
-            detail="Unable to process AI assistant request"
-        )
+            detail="AI response generation failed. Please try again."
+        ) from error
