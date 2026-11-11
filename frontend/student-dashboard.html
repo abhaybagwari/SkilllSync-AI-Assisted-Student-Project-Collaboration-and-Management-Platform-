@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -197,131 +196,947 @@
             font-size: 11px;
         }
 
-        /* AI Project Recommendations - Updated Design */
-
-        .ai-recommendations-section {
-            margin: 25px 0;
+        /* ===== Recommended Projects (search + dropdown) ===== */
+        .rec-search {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            max-width: 680px;
+            margin: 10px auto 26px;
         }
 
-        .ai-recommendations-section > p {
-            color: #777;
-            margin-bottom: 18px;
+        .rec-search select,
+        .rec-search input {
+            padding: 11px 12px;
+            border: 1px solid #E5DED1;
+            border-radius: 8px;
+            font: inherit;
+            background: #FFFFFF;
+            color: #292D2D;
+            box-sizing: border-box;
         }
 
-        .ai-recommendation-card {
+        .rec-search input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rec-message {
+            text-align: center;
+            color: #70706B;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .rec-item {
             background: #FFFFFF;
             border: 1px solid #E5DED1;
             border-radius: 10px;
-            padding: 22px;
-            margin-bottom: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 7px rgba(41, 45, 45, 0.04);
+            overflow: hidden;
+        }
+
+        .rec-item-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            padding: 16px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font: inherit;
+            text-align: left;
+            color: #292D2D;
+        }
+
+        .rec-item-name {
+            flex: 1;
+            font-size: 17px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .rec-item-label {
+            min-width: 150px;
+            color: #527A61;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .rec-arrow {
+            font-size: 18px;
+            color: #365b49;
+            transition: transform 0.2s ease;
+        }
+
+        .rec-item.open .rec-arrow {
+            transform: rotate(180deg);
+        }
+
+        .rec-details {
+            display: none;
+            padding: 18px 20px 20px;
+            border-top: 1px solid #E5DED1;
+            background: #F5F0E5;
+        }
+
+        .rec-item.open .rec-details {
+            display: block;
+        }
+
+        .rec-details.rec-details-single {
+            display: block;
+            background: #FFFFFF;
+            border: 1px solid #E5DED1;
+            border-radius: 10px;
             box-shadow: 0 2px 7px rgba(41, 45, 45, 0.04);
         }
 
-        .ai-recommendation-card h3 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            color: #292D2D;
-            font-size: 19px;
-        }
-
-        .ai-project-description {
-            color: #70706B;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 18px;
-        }
-
-        .ai-score-header {
+        .rec-details-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            margin-bottom: 9px;
+            margin-bottom: 12px;
         }
 
-        .ai-score-label {
-            font-size: 14px;
-            font-weight: bold;
-            color: #292D2D;
-        }
-
-        .ai-match-score {
-            color: #527A61;
-            font-size: 21px;
-            font-weight: bold;
-        }
-
-        .ai-progress-track {
-            width: 100%;
-            height: 9px;
-            background: #EAE5DC;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .ai-progress-fill {
-            height: 100%;
-            background: #527A61;
-            border-radius: 20px;
-            transition: width 0.4s ease;
-        }
-
-        .ai-skills-section {
-            margin-top: 15px;
-        }
-
-        .ai-skills-section strong {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 7px;
-        }
-
-        .ai-skills-section p {
+        .rec-details-top h3 {
             margin: 0;
-            font-size: 14px;
-            line-height: 1.7;
+            color: #292D2D;
+            font-size: 19px;
             overflow-wrap: anywhere;
         }
 
-        .ai-matched-skills strong,
-        .ai-matched-skills p {
+        .rec-ask-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #4285f4 0%, #9b72cb 50%, #d96570 100%);
+            color: #FFFFFF;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(155, 114, 203, 0.45);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .rec-ask-btn:hover {
+            transform: translateY(-1px) scale(1.03);
+            box-shadow: 0 6px 20px rgba(155, 114, 203, 0.6);
+        }
+
+        .rec-desc-title {
+            margin: 0 0 6px;
             color: #527A61;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
         }
 
-        .ai-missing-skills strong,
-        .ai-missing-skills p {
-            color: #B64B4B;
-        }
-
-        .ai-required-skills strong {
+        .rec-description {
             color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0 0 16px;
+            overflow-wrap: anywhere;
         }
 
-        .ai-required-skills p {
-            color: #555;
+        .rec-actions {
+            display: flex;
+            justify-content: flex-end;
         }
 
-        .ai-recommendation-reason {
-            background: #F5F0E5;
-            border: 1px solid #E5DED1;
+        .rec-apply-btn {
+            padding: 9px 18px;
+            border: none;
             border-radius: 7px;
-            padding: 13px 15px;
+            background: #365b49;
+            color: #FFFFFF;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .rec-apply-btn:hover:not(:disabled) {
+            background: #2c4a3c;
+        }
+
+        .rec-apply-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        /* ===== Ask AI chat panel (galaxy theme) ===== */
+        .rec-chat {
+            display: none;
+            overflow: hidden;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            color: #FFFFFF;
+            background:
+                radial-gradient(1px 1px at 12% 22%, #fff, transparent 60%),
+                radial-gradient(1px 1px at 38% 72%, #fff, transparent 60%),
+                radial-gradient(1.5px 1.5px at 64% 30%, #fff, transparent 60%),
+                radial-gradient(1px 1px at 82% 82%, #fff, transparent 60%),
+                radial-gradient(1px 1px at 92% 14%, #fff, transparent 60%),
+                radial-gradient(1px 1px at 24% 90%, #fff, transparent 60%),
+                radial-gradient(circle at 15% 8%, rgba(66, 133, 244, 0.45), transparent 45%),
+                radial-gradient(circle at 92% 92%, rgba(217, 101, 112, 0.35), transparent 45%),
+                linear-gradient(160deg, #0b0e2e 0%, #1a1f52 50%, #2b1a5e 100%);
+            box-shadow: 0 10px 30px rgba(43, 26, 94, 0.35);
+        }
+
+        .rec-chat.open {
+            display: block;
+            animation: recChatIn 0.25s ease;
+        }
+
+        @keyframes recChatIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .rec-chat-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .rec-chat-avatar {
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            background: linear-gradient(135deg, #4285f4, #9b72cb, #d96570);
+            box-shadow: 0 0 14px rgba(155, 114, 203, 0.7);
+        }
+
+        .rec-chat-titles {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rec-chat-titles strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .rec-chat-titles span {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .rec-chat-close {
+            border: none;
+            background: rgba(255, 255, 255, 0.12);
+            color: #FFFFFF;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .rec-chat-log {
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 10px 16px 4px;
+        }
+
+        .rec-msg {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .rec-msg-user {
+            justify-content: flex-end;
+        }
+
+        .rec-bubble {
+            max-width: 85%;
+            padding: 10px 13px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.55;
+            overflow-wrap: anywhere;
+        }
+
+        .rec-msg-ai .rec-bubble {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-bottom-left-radius: 4px;
+        }
+
+        .rec-msg-user .rec-bubble {
+            background: linear-gradient(135deg, #4285f4, #9b72cb);
+            border-bottom-right-radius: 4px;
+        }
+
+        .rec-typing span {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            margin: 0 2px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            opacity: 0.5;
+            animation: recBounce 1s infinite ease-in-out;
+        }
+
+        .rec-typing span:nth-child(2) { animation-delay: 0.15s; }
+        .rec-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes recBounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-5px); opacity: 1; }
+        }
+
+        .rec-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 14px 16px 4px;
+        }
+
+        .rec-chip {
+            padding: 7px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #FFFFFF;
+            font: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .rec-chip:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .rec-chat-form {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px 16px;
+        }
+
+        .rec-chat-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 11px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFFFFF;
+            font: inherit;
+            outline: none;
+        }
+
+        .rec-chat-form input::placeholder {
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .rec-chat-form input:focus {
+            border-color: #9b72cb;
+            box-shadow: 0 0 0 2px rgba(155, 114, 203, 0.35);
+        }
+
+        .rec-chat-form button {
+            padding: 0 18px;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #4285f4, #9b72cb, #d96570);
+            color: #FFFFFF;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .rec-chat-form button:disabled,
+        .rec-chip:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        /* ===== Sidebar: SkillSync + dropdown menu ===== */
+        .dashboard .sidebar {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .brand-sync {
+            color: #6FA3DB;
+        }
+
+        .brand-name {
+            cursor: pointer;
+        }
+
+        .menu-toggle {
+            background: transparent;
+            border: none;
+            color: inherit;
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 6px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .sidebar.menu-open .menu-toggle {
+            transform: rotate(180deg);
+        }
+
+        .sidebar-menu {
+            display: none;
+            flex-direction: column;
+        }
+
+        .sidebar.menu-open .sidebar-menu {
+            display: flex;
+        }
+
+        .sidebar-tagline {
+            margin-top: auto;
+            padding: 22px 30px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* ===== Dashboard home (follows the hand-drawn layout) ===== */
+        .dashboard .sidebar {
+            width: 160px !important;
+            min-width: 160px;
+            flex: 0 0 160px;
+        }
+
+        .dashboard .sidebar .brand-row {
+            font-size: 18px;
+            gap: 4px;
+        }
+
+        .dashboard .sidebar .brand-row .brand-name {
+            font-size: 18px;
+        }
+
+        #profile {
+            max-width: 860px;
+            margin: 0 auto;
+            padding-top: 0;
+        }
+
+        #profile .profile-header {
+            margin-top: 0;
+        }
+
+        #profile .profile-header h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        #profile .profile-header p {
+            margin: 6px 0 0;
+        }
+
+        #profile .profile-card {
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .dashboard .main-content {
+            flex: 1;
+            min-width: 0;
+            padding: 32px 48px 40px !important;
+        }
+
+        #dashboardSection {
+            min-height: calc(100vh - 72px);
+            flex-direction: column;
+        }
+
+        #dashboardSection .hero-welcome {
+            margin: 0 0 2px;
+            font-size: 26px;
+            color: #FFFFFF;
+        }
+
+        #dashboardSection .hero-sub {
+            margin: 0 0 14px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        #dashboardSection .home-header h1 {
+            margin: 0 0 6px;
+            font-size: 32px;
+        }
+
+        #dashboardSection .home-header p {
+            margin: 0 0 24px;
+            font-size: 15px;
+            color: #70706B;
+        }
+
+        .profile-hero {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            padding: 22px 48px;
+            margin: -32px -48px 26px;
+            border-radius: 0;
+            background: linear-gradient(120deg, #2F5C8F 0%, #3B6EA5 55%, #5B8FC4 100%);
+            color: #FFFFFF;
+            box-shadow: 0 10px 26px rgba(59, 110, 165, 0.28);
+        }
+
+        .user-avatar {
+            position: relative;
+            width: 104px;
+            height: 104px;
+            min-width: 104px;
+            padding: 0;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .user-avatar.has-photo img {
+            display: block;
+        }
+
+        .user-avatar.has-photo svg {
+            display: none;
+        }
+
+        .user-avatar::after {
+            content: "Change";
+            position: absolute;
+            inset: auto 0 0 0;
+            padding: 5px 0;
+            text-align: center;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.45);
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .user-avatar:hover::after {
+            opacity: 1;
+        }
+
+        .hero-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .hero-line {
+            display: flex;
+            gap: 10px;
+            margin: 0 0 6px;
+            font-size: 18px;
+            overflow-wrap: anywhere;
+        }
+
+        .hero-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .hero-label {
+            min-width: 62px;
+            opacity: 0.85;
+        }
+
+        .hero-value {
+            font-weight: 700;
+        }
+
+        .edit-profile-btn {
+            align-self: flex-end;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 10px;
+            background: #F5F0E5;
+            color: #365b49;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .edit-profile-btn:hover {
+            background: #FFFFFF;
+            transform: translateY(-1px);
+        }
+
+        .home-card {
+            border-radius: 20px;
+            padding: 26px 32px;
+            border: 1px solid #E5DED1;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F5F0E5 100%);
+            border-top: 5px solid #365b49;
+            box-shadow: 0 6px 20px rgba(60, 45, 25, 0.08);
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #DCE8F5;
+        }
+
+        #certCard .card-icon {
+            background: #DDEBE3;
+        }
+
+        .resume-card .card-icon {
+            background: #FFFFFF;
+        }
+
+        .home-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 36px;
+        }
+
+        .home-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #292D2D;
+        }
+
+        .home-card-title h3 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .home-card-body {
             margin-top: 18px;
         }
 
-        .ai-recommendation-reason strong {
-            display: block;
-            color: #725D3F;
-            font-size: 14px;
-            margin-bottom: 5px;
+        .home-card.collapsed .home-card-body {
+            display: none;
         }
 
-        .ai-recommendation-reason p {
-            color: #555;
+        .card-toggle,
+        .view-all-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .card-toggle:hover,
+        .view-all-btn:hover:not(:disabled) {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .card-toggle svg,
+        .view-all-btn svg {
+            transition: transform 0.2s ease;
+        }
+
+        .view-all-btn.open svg {
+            transform: rotate(180deg);
+        }
+
+        .view-all-btn {
+            color: #365b49;
+            font-weight: 600;
+        }
+
+        .view-all-btn:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .small-file-btn {
+            padding: 10px 22px;
+            border: 1px solid #365b49;
+            border-radius: 10px;
+            background: #FFFFFF;
+            color: #365b49;
+            font-weight: 600;
+            font: inherit;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .small-file-btn:hover {
+            background: #365b49;
+            color: #FFFFFF;
+        }
+
+        .small-file-btn.solid {
+            background: #365b49;
+            color: #FFFFFF;
+            box-shadow: 0 4px 10px rgba(54, 91, 73, 0.3);
+        }
+
+        .small-file-btn.solid:hover:not(:disabled) {
+            background: #2d4c3d;
+        }
+
+        .small-file-btn:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        #certCard {
+            margin-bottom: 22px;
+            min-height: 340px;
+        }
+
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+        }
+
+        .cert-tile {
+            position: relative;
+            padding: 20px 20px 18px;
+            border-radius: 12px;
+            background: #FFFFFF;
+            border: 1px solid #E5DED1;
+            border-left: 5px solid #365b49;
+            box-shadow: 0 3px 10px rgba(60, 45, 25, 0.07);
+        }
+
+        .cert-name {
+            display: block;
+            margin: 0 24px 10px 0;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .cert-verified {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 11px;
+            border-radius: 999px;
+            background: #E4F3EA;
+            color: #1F6B40;
+            font-weight: 600;
             font-size: 13px;
-            line-height: 1.6;
+        }
+
+        .row-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            font-size: 15px;
+            padding: 2px 6px;
+        }
+
+        .row-remove:hover {
+            color: #B64B4B;
+        }
+
+        .home-note {
             margin: 0;
+            font-size: 15px;
+            color: #70706B;
+        }
+
+        .home-message {
+            margin: 12px 0 0;
+            font-size: 14px;
+            color: #B64B4B;
+        }
+
+        .home-message.ok {
+            color: #1F6B40;
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+            gap: 22px;
+            flex: 1;
+            align-items: start;
+        }
+
+        .home-grid .home-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .home-grid #skillsCard {
+            min-height: 0;
+            padding: 18px 24px;
+        }
+
+        .home-grid #skillsCard .home-card-title h3 {
+            font-size: 18px;
+        }
+
+        .home-grid #skillsCard .card-icon {
+            width: 36px;
+            height: 36px;
+        }
+
+        .home-grid .home-card.collapsed {
+            min-height: 0;
+        }
+
+        .home-grid .home-card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resume-card {
+            background: linear-gradient(180deg, #FFF3F0 0%, #F7DCD7 100%);
+            border-color: #E8C9C4;
+            border-top-color: #D9706A;
+        }
+
+        #skillsCard {
+            border-top-color: #3B6EA5;
+            background: linear-gradient(180deg, #FFFFFF 0%, #E8F0F9 100%);
+        }
+
+        #skillsCard .card-icon {
+            background: #D5E4F5;
+        }
+
+        .resume-center {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0 6px;
+        }
+
+        .resume-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .resume-center.empty {
+            opacity: 0.6;
+        }
+
+        .home-card-title {
+            cursor: pointer;
+        }
+
+        .resume-name {
+            font-weight: 600;
+            overflow-wrap: anywhere;
+            max-width: 100%;
+        }
+
+        .resume-meta {
+            font-size: 13px;
+            color: #70706B;
+        }
+
+        .resume-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        .link-btn {
+            align-self: flex-start;
+            padding: 0;
+            margin-top: 4px;
+            border: none;
+            background: transparent;
+            color: #B64B4B;
+            font: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .skill-list {
+            margin: 0;
+            padding-left: 22px;
+            font-size: 18px;
+            line-height: 2.1;
+            color: #292D2D;
+        }
+
+        .skill-list li::marker {
+            color: #365b49;
+        }
+
+        @media (max-width: 900px) {
+            .home-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-hero {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
         }
 
         @media (max-width: 650px) {
@@ -348,8 +1163,16 @@
                 right: 12px;
             }
 
-            .ai-recommendation-card {
-                padding: 17px;
+            .rec-search {
+                flex-wrap: wrap;
+            }
+
+            .rec-item-label {
+                min-width: 0;
+            }
+
+            .rec-item-header {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -357,74 +1180,123 @@
 <body>
 
 <div class="dashboard">
-
     <aside class="sidebar">
-        <h2>SkillSync</h2>
-        <a href="#" data-section="dashboard"
-           onclick="showSection('dashboard'); return false;">Dashboard</a>
-        <a href="#profile" data-section="profile"
-           onclick="showSection('profile'); return false;">My Profile</a>
-        <a href="#projects" data-section="projects"
-           onclick="showSection('projects'); return false;">My Projects</a>
-        <a href="#team" data-section="team"
-           onclick="showSection('team'); return false;">My Team</a>
-           <a href="#mentorFeedback" data-section="mentorFeedback"
-                onclick="showSection('mentorFeedback'); return false;">
-            Mentor Feedback
-        </a>
-        <a href="login.html" class="logout" onclick="logout(); return false;">Logout</a>
+        <h2 class="brand-row">
+            <span class="brand-name" id="brandHome">Skill<span class="brand-sync">Sync</span></span>
+            <button type="button" class="menu-toggle" id="menuToggle"
+                aria-label="Open menu" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+        </h2>
+
+        <nav class="sidebar-menu" id="sidebarMenu">
+            <a href="#profile" data-section="profile"
+               onclick="showSection('profile'); return false;">My Profile</a>
+            <a href="#projects" data-section="projects"
+               onclick="showSection('projects'); return false;">My Projects</a>
+            <a href="#team" data-section="team"
+               onclick="showSection('team'); return false;">My Team</a>
+            <a href="#recommended" data-section="recommended"
+               onclick="showSection('recommended'); return false;">Recommended Projects</a>
+            <a href="#mentorFeedback" data-section="mentorFeedback"
+               onclick="showSection('mentorFeedback'); return false;">Mentor Feedback</a>
+            <a href="login.html" class="logout" onclick="handleLogout(); return false;">Logout</a>
+        </nav>
+
+        <div class="sidebar-tagline">Build Your Team.<br>Build Your Project.</div>
     </aside>
 
     <main class="main-content">
 
         <div id="dashboardSection">
-            <h1>Student Dashboard</h1>
+            <section class="profile-hero" aria-label="Profile">
+                <button type="button" class="user-avatar" id="userAvatar" aria-label="Change profile photo">
+                    <img id="userAvatarImg" alt="">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="8" r="4"></circle>
+                        <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+                    </svg>
+                </button>
+                <input type="file" id="photoInput" accept="image/*" hidden>
 
-            <p class="welcome" id="welcomeMessage">
-                Welcome back! Find projects and work with the right team.
-            </p>
+                <div class="hero-info">
+                    <h1 class="hero-welcome">Welcome Back!</h1>
+                    <p class="hero-sub">Manage your learning journey with SkillSync</p>
+                    <p class="hero-line"><span class="hero-label">Name :</span><span class="hero-value" id="heroName">Member</span></p>
+                    <p class="hero-line"><span class="hero-label">Role :</span><span class="hero-value" id="heroRole">Student</span></p>
+                </div>
 
-            <!-- AI Project Recommendations -->
-            <section class="section ai-recommendations-section">
-                <h2>Recommended Projects For You</h2>
-                <p>AI-powered project recommendations based on your skills.</p>
+                <button type="button" class="edit-profile-btn" id="heroEditBtn">Edit Profile</button>
+            </section>
 
-                <div id="aiRecommendationsContainer">
-                    <p>Finding the best projects for you...</p>
+            <section class="home-card" id="certCard">
+                <div class="home-card-head">
+                    <div class="home-card-title">
+                        <span class="card-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3B6EA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6M8 13h8M8 17h6"></path></svg></span>
+                        <h3>Certificates</h3>
+                        <button type="button" class="card-toggle" data-card="certCard" aria-label="Show or hide Certificates" aria-expanded="true">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                    </div>
+                    <button type="button" class="view-all-btn" id="certViewAll">View All
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </div>
+                <div class="home-card-body">
+                    <button type="button" class="small-file-btn" id="certChooseBtn">Choose File</button>
+                    <input type="file" id="certInput" accept=".pdf,.docx,.txt" hidden>
+                    <p class="home-message" id="certMessage"></p>
+                    <div class="cert-grid" id="certList" style="margin-top: 18px;"></div>
                 </div>
             </section>
 
-            <div class="cards">
-                <div class="card">
-                    <h3>My Projects</h3>
-                    <p id="projectCount">0</p>
-                </div>
+            <div class="home-grid">
+                <section class="home-card resume-card" id="resumeCard">
+                    <div class="home-card-head">
+                        <div class="home-card-title">
+                            <span class="card-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3B6EA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path></svg></span>
+                            <h3>Resume</h3>
+                            <button type="button" class="card-toggle" data-card="resumeCard" aria-label="Show or hide Resume" aria-expanded="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="home-card-body">
+                        <div>
+                            <button type="button" class="small-file-btn" id="resumeChooseBtn">Choose File</button>
+                            <input type="file" id="resumeInput" accept=".pdf,.docx" hidden>
+                        </div>
+                        <div class="resume-center empty" id="resumeCenter"></div>
+                        <p class="home-message" id="resumeMessage"></p>
+                        <div>
+                            <button type="button" class="small-file-btn solid" id="viewResumeBtn" disabled>View Resume</button>
+                        </div>
+                    </div>
+                </section>
 
-                <div class="card">
-                    <h3>Team Members</h3>
-                    <p id="teamCount">0</p>
-                </div>
-
-                <div class="card">
-                    <h3>Pending Tasks</h3>
-                    <p>0</p>
-                </div>
-
-                <div class="card">
-                    <h3>Completed Tasks</h3>
-                    <p>0</p>
-                </div>
+                <section class="home-card collapsed" id="skillsCard">
+                    <div class="home-card-head">
+                        <div class="home-card-title">
+                            <span class="card-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3B6EA5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V10M12 21V4M19 21v-7"></path></svg></span>
+                            <h3>Major Skills</h3>
+                            <button type="button" class="card-toggle" data-card="skillsCard" aria-label="Show or hide Major Skills" aria-expanded="false">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="home-card-body">
+                        <div id="skillsList"></div>
+                    </div>
+                </section>
             </div>
         </div>
 
-        <section class="section" id="projects">
+        <section class="section" id="projects" style="display: none;">
             <h2>My Projects</h2>
             <div id="projectsContainer">
                 <p>Loading available projects...</p>
             </div>
         </section>
 
-        <section class="section" id="team">
+        <section class="section" id="team" style="display: none;">
             <h2>My Team</h2>
             <div id="teamContainer">
                 <p>Loading your applied projects...</p>
@@ -432,11 +1304,23 @@
             <div id="reviewsArea"></div>
         </section>
 
-        <section class="section" id="tasks">
+        <section class="section" id="tasks" style="display: none;">
             <h2>My Recent Tasks</h2>
             <div class="task">
                 No tasks assigned yet.
             </div>
+        </section>
+
+        <section class="section" id="recommended" style="display: none;">
+            <h2>Recommended Projects</h2>
+
+            <form class="rec-search" id="recSearchForm">
+                <input type="text" id="recSearchInput"
+                    placeholder="Search by project name or skill, then press Enter"
+                    autocomplete="off">
+            </form>
+
+            <div id="recResults"></div>
         </section>
 
         <section class="section profile-section" id="profile">
@@ -594,7 +1478,8 @@
                 <p id="profileMessage" role="status" aria-live="polite"></p>
             </form>
         </section>
-                <section id="mentorFeedback" style="display: none;">
+
+        <section id="mentorFeedback" style="display: none;">
             <h2>Mentor Feedback</h2>
             <div id="mentorFeedbackArea">
                 <p>Loading mentor feedback...</p>
@@ -604,22 +1489,135 @@
     </main>
 </div>
 
-<script src="session.js"></script>
+<script src="session.js" onerror="console.warn('session.js not found')"></script>
 <script>
 const API_URL = "http://127.0.0.1:8000";
 
-const initialSession = requireRole(["Team Member", "Student"]);
-const userId = initialSession ? initialSession.user_id : null;
+/*
+ * Gemini assistant endpoint (added by teammate in backend/routes/ai_assistant.py).
+ * It needs the logged-in user's token; the token is read from session.js
+ * or localStorage automatically.
+ */
+const AI_CHAT_PATH = "/ai/assistant/chat";
 
+/*
+ * Login is not required for this page. If session.js is present and has a
+ * logged-in user, that user id is used; otherwise the page still works
+ * with a default id.
+ */
+function idFromObject(value, depth = 0) {
+    if (!value || typeof value !== "object" || depth > 4) {
+        return null;
+    }
+
+    for (const key of ["user_id", "User_ID", "userId", "id"]) {
+        if (value[key] != null && /^\d+$/.test(String(value[key]))) {
+            return value[key];
+        }
+    }
+
+    for (const key of Object.keys(value)) {
+        const found = idFromObject(value[key], depth + 1);
+
+        if (found != null) {
+            return found;
+        }
+    }
+
+    return null;
+}
+
+function idFromToken(token) {
+    try {
+        const payload = JSON.parse(
+            atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+        );
+
+        return idFromObject(payload) ?? (/^\d+$/.test(String(payload.sub)) ? payload.sub : null);
+    } catch (error) {
+        return null;
+    }
+}
+
+/* The logged-in student's id: session first, then the login token. */
 function currentUserId() {
-    const session = getSession();
-    return session && session.user_id != null ? session.user_id : null;
+    try {
+        if (typeof getSession === "function") {
+            const session = getSession();
+            const fromSession = idFromObject(session);
+
+            if (fromSession != null) {
+                return fromSession;
+            }
+
+            const token = findJwt(session);
+            const fromToken = token ? idFromToken(token) : null;
+
+            if (fromToken != null) {
+                return fromToken;
+            }
+        }
+    } catch (error) {
+        console.warn("Session not available:", error);
+    }
+
+    try {
+        const token = getAuthToken();
+        const fromToken = token ? idFromToken(token) : null;
+
+        if (fromToken != null) {
+            return fromToken;
+        }
+    } catch (error) {
+        /* no token */
+    }
+
+    return 1;
 }
 
-if (!userId) {
-    window.location.href = "login.html";
+function handleLogout() {
+    if (typeof logout === "function") {
+        logout();
+    } else {
+        window.location.href = "login.html";
+    }
 }
 
+/* Sample projects, used only when the backend cannot be reached. */
+const DEMO_PROJECTS = [
+    {
+        Project_ID: 101,
+        Project_Name: "Project 1",
+        Skill_Required: "Python",
+        Project_Description: "Build a command line tool entirely in Python."
+    },
+    {
+        Project_ID: 102,
+        Project_Name: "Project 2",
+        Skill_Required: "Python, ML",
+        Project_Description: "Train and test a machine learning model using Python."
+    },
+    {
+        Project_ID: 103,
+        Project_Name: "Project 3",
+        Skill_Required: "Python, DBMS",
+        Project_Description: "Create a student record system with a database."
+    },
+    {
+        Project_ID: 104,
+        Project_Name: "Project 4",
+        Skill_Required: "MATLAB, Excel, Python",
+        Project_Description: "Signal analysis project where Python is needed only for small scripts."
+    },
+    {
+        Project_ID: 105,
+        Project_Name: "SkillSync",
+        Skill_Required: "HTML, CSS, JavaScript",
+        Project_Description: "A platform that matches students to the right projects."
+    }
+];
+
+let allProjects = [];
 let availableProjects = [];
 let myProjects = [];
 let applying = new Set();
@@ -660,11 +1658,14 @@ function getProfileStorageKey() {
 
 
 function showSection(sectionId) {
+    toggleSidebarMenu(false);
+
     const sections = {
         dashboard: document.getElementById("dashboardSection"),
         projects: document.getElementById("projects"),
         team: document.getElementById("team"),
         tasks: document.getElementById("tasks"),
+        recommended: document.getElementById("recommended"),
         profile: document.getElementById("profile"),
         mentorFeedback: document.getElementById("mentorFeedback")
     };
@@ -682,17 +1683,16 @@ function showSection(sectionId) {
         );
     });
 
-    if (sectionId === "dashboard") {
-        sections.dashboard.style.display = "block";
-        sections.projects.style.display = "block";
-        sections.team.style.display = "block";
-        sections.tasks.style.display = "block";
-    } else if (sections[sectionId]) {
+    if (sections[sectionId]) {
         sections[sectionId].style.display = "block";
     }
 
+    if (sectionId === "dashboard") {
+        loadDashboardHome();
+    }
+
     if (sectionId === "profile") {
-        loadProfile();
+        profileLoading = loadProfile();
     }
 
     if (sectionId === "mentorFeedback") {
@@ -731,10 +1731,6 @@ function updateProfileHeader() {
 
     document.getElementById("profileAvatar").textContent =
         (name || "S").charAt(0).toUpperCase();
-
-    const userName = name || "Student";
-    document.getElementById("welcomeMessage").textContent =
-        `Welcome back, ${userName}! Find projects and work with the right team.`;
 }
 
 function saveOriginalProfileData() {
@@ -745,6 +1741,8 @@ function saveOriginalProfileData() {
             document.getElementById(fieldId).value;
     });
 }
+
+let profileLoading = Promise.resolve();
 
 async function loadProfile() {
     const message = document.getElementById("profileMessage");
@@ -895,10 +1893,13 @@ document.getElementById("profileForm").addEventListener("submit", async function
         }
     }
 
-    if (!Array.isArray(documentMetadata) || documentMetadata.length === 0) {
-        message.textContent =
-            "No document metadata is saved. Complete the credentials form first.";
-        return;
+    if (!Array.isArray(documentMetadata)) {
+        documentMetadata = [];
+    }
+
+    if (documentMetadata.length === 0) {
+        // Older backends need one item here; the dashboard ignores it.
+        documentMetadata = [{ kind: "profile", name: "Profile created" }];
     }
 
     const apiProfile = {
@@ -935,7 +1936,7 @@ document.getElementById("profileForm").addEventListener("submit", async function
         const result = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            throw new Error(result.detail || "Unable to save profile.");
+            throw new Error(errorText(result.detail, "Unable to save profile."));
         }
 
         const updatedLocalProfile = {
@@ -986,7 +1987,8 @@ document.getElementById("profileForm").addEventListener("submit", async function
 
         document.getElementById("profileActions").style.display = "none";
         document.getElementById("editProfileBtn").style.display = "inline-block";
-        message.textContent = "Profile saved successfully!";
+        message.textContent = "";
+        showSection("dashboard");
     } catch (error) {
         console.error("Profile save error:", error);
         message.textContent = error.message || "Unable to save profile. Please try again.";
@@ -1042,214 +2044,640 @@ function calculateSkillMatch(project) {
 }
 
 
-/* AI PROJECT RECOMMENDATIONS - Updated Card Design */
+/* ================= RECOMMENDED PROJECTS ================= */
 
-async function loadAIRecommendations() {
-    const container = document.getElementById(
-        "aiRecommendationsContainer"
+let recState = { mode: null, query: "", exactProject: null };
+const recOpenIds = new Set();
+
+function normalizeText(value) {
+    return String(value || "").trim().toLowerCase();
+}
+
+function getRequiredSkills(project) {
+    return String(project.Skill_Required || "")
+        .split(/[,;]+/)
+        .map(skill => skill.trim())
+        .filter(Boolean);
+}
+
+function skillMatchesQuery(skill, query) {
+    const s = normalizeText(skill);
+
+    return s === query || (query.length >= 3 && s.includes(query));
+}
+
+/*
+ * Works out how important the searched skill is for a project.
+ * Higher score = the skill is the main language of the project.
+ *   100  only skill required            -> "Core Python"
+ *   90-  first skill, with others       -> "Python + ML"
+ *   60-  second skill                   -> "Python + <first skill>"
+ *   30   third or later skill           -> "Python Optional"
+ *   10   only mentioned in text         -> "Python Optional"
+ */
+function analyzeSkillRelevance(project, rawQuery) {
+    const query = normalizeText(rawQuery);
+    const skills = getRequiredSkills(project);
+    const index = skills.findIndex(skill => skillMatchesQuery(skill, query));
+
+    if (index >= 0) {
+        const name = skills[index];
+        const others = skills.filter((_, i) => i !== index);
+
+        if (others.length === 0) {
+            return { score: 100, label: `Core ${name}` };
+        }
+
+        if (index === 0) {
+            return {
+                score: 90 - (others.length - 1) * 5,
+                label: `${name} + ${others[0]}`
+            };
+        }
+
+        if (index === 1) {
+            return {
+                score: 60 - (others.length - 1) * 5,
+                label: `${name} + ${others[0]}`
+            };
+        }
+
+        return { score: 30, label: `${name} Optional` };
+    }
+
+    const text = normalizeText(
+        `${project.Project_Name || ""} ${project.Project_Description || ""}`
     );
 
-    if (!container || !currentUserId()) {
+    if (query.length >= 2 && text.includes(query)) {
+        return { score: 10, label: `${rawQuery.trim()} Optional` };
+    }
+
+    return null;
+}
+
+function searchBySkill(query) {
+    return allProjects
+        .map(project => {
+            const relevance = analyzeSkillRelevance(project, query);
+            return relevance ? { project, ...relevance } : null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => {
+            if (b.score !== a.score) {
+                return b.score - a.score;
+            }
+
+            const aCount = getRequiredSkills(a.project).length;
+            const bCount = getRequiredSkills(b.project).length;
+
+            if (aCount !== bCount) {
+                return aCount - bCount;
+            }
+
+            return String(a.project.Project_Name || "")
+                .localeCompare(String(b.project.Project_Name || ""));
+        });
+}
+
+function isProjectApplied(project) {
+    return myProjects.some(
+        mine => Number(mine.Project_ID) === Number(project.Project_ID)
+    );
+}
+
+function appendChatLine(log, className, text) {
+    const line = document.createElement("p");
+    line.className = className;
+    line.textContent = text;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+}
+
+const JWT_PATTERN = /^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/;
+
+/* Looks for a JWT inside any string / JSON value (any key name). */
+function findJwt(value, depth = 0) {
+    if (depth > 4 || value == null) {
+        return null;
+    }
+
+    if (typeof value === "string") {
+        const text = value.trim().replace(/^Bearer\s+/i, "");
+
+        if (JWT_PATTERN.test(text)) {
+            return text;
+        }
+
+        if (text.startsWith("{") || text.startsWith("[")) {
+            try {
+                return findJwt(JSON.parse(text), depth + 1);
+            } catch (error) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    if (typeof value === "object") {
+        for (const key of Object.keys(value)) {
+            const found = findJwt(value[key], depth + 1);
+
+            if (found) {
+                return found;
+            }
+        }
+    }
+
+    return null;
+}
+
+function getAuthToken() {
+    try {
+        if (typeof getSession === "function") {
+            const found = findJwt(getSession());
+
+            if (found) {
+                return found;
+            }
+        }
+    } catch (error) {
+        console.warn("Session token not available:", error);
+    }
+
+    for (const storage of [localStorage, sessionStorage]) {
+        try {
+            for (let i = 0; i < storage.length; i++) {
+                const found = findJwt(storage.getItem(storage.key(i)));
+
+                if (found) {
+                    return found;
+                }
+            }
+        } catch (error) {
+            /* storage blocked */
+        }
+    }
+
+    try {
+        for (const part of document.cookie.split(";")) {
+            const found = findJwt(decodeURIComponent(part.split("=").slice(1).join("=")));
+
+            if (found) {
+                return found;
+            }
+        }
+    } catch (error) {
+        /* cookies blocked */
+    }
+
+    return null;
+}
+
+function formatAiText(text) {
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/^\s*[*\-]\s+/gm, "• ")
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\n/g, "<br>");
+}
+
+function projectContextText(project) {
+    const skills = getRequiredSkills(project).join(", ") || "Not specified";
+
+    return `Project: ${project.Project_Name || "Untitled"}\n` +
+        `Description: ${project.Project_Description || "No description"}\n` +
+        `Required skills: ${skills}`;
+}
+
+function buildAiPrompt(project, question) {
+    return 'You are "SkillSync AI", a polite and knowledgeable project mentor for engineering students; faculty members may also use you. ' +
+        "Use a clear, professional tone with at most one or two relevant emojis. " +
+        "LANGUAGE RULE: reply in the same language as the Question. " +
+        "Use English by default; if the Question is written in Hinglish, reply in Hinglish; " +
+        "if it is written in another regional language (for example Hindi, Marathi, Tamil, Bengali), reply in that language. " +
+        "Answer directly and completely using the project details below. " +
+        "Never ask the user to log in or to do any setup. " +
+        "Keep the reply concise (about 120 words) and use bullet points for lists. " +
+        "You may end with one brief encouraging line.\n\n" +
+        `Project details:\n${projectContextText(project)}\n\n` +
+        `Question: ${question}`;
+}
+
+async function askProjectAI(project, question) {
+    const prompt = buildAiPrompt(project, question);
+    const token = getAuthToken();
+
+    const headers = { "Content-Type": "application/json" };
+
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    let response;
+
+    try {
+        response = await fetch(`${API_URL}${AI_CHAT_PATH}`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+                question: prompt,
+                message: prompt,
+                prompt: prompt,
+                query: prompt,
+                project_id: Number(project.Project_ID),
+                user_id: Number(currentUserId()),
+                project_name: project.Project_Name || "",
+                project_description: project.Project_Description || "",
+                required_skills: getRequiredSkills(project),
+                project_context: projectContextText(project)
+            })
+        });
+    } catch (error) {
+        throw new Error(
+            "Unable to reach the AI service. Please make sure the backend " +
+            "is running (port 8000) and try again."
+        );
+    }
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401 || response.status === 403) {
+        throw new Error(
+            "The AI service could not verify your session. " +
+            "Please log in again and retry."
+        );
+    }
+
+    if (response.status === 404) {
+        throw new Error(
+            `The AI endpoint (${AI_CHAT_PATH}) was not found. ` +
+            "Please pull the latest backend code and restart the server."
+        );
+    }
+
+    if (!response.ok) {
+        console.error("AI service error", response.status, data);
+
+        throw new Error(
+            "The AI assistant could not answer right now. " +
+            "Please try again in a moment."
+        );
+    }
+
+    return data.answer || data.response || data.reply
+        || data.message || data.text
+        || "I could not generate an answer this time. Please try rephrasing your question.";
+}
+
+function buildChatPanel(project) {
+    const panel = document.createElement("div");
+    panel.className = "rec-chat";
+
+    const head = document.createElement("div");
+    head.className = "rec-chat-head";
+    head.innerHTML =
+        '<div class="rec-chat-avatar">✨</div>' +
+        '<div class="rec-chat-titles"><strong>SkillSync AI</strong></div>';
+
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.className = "rec-chat-close";
+    closeButton.setAttribute("aria-label", "Close chat");
+    closeButton.textContent = "×";
+    head.appendChild(closeButton);
+
+    const chips = document.createElement("div");
+    chips.className = "rec-chips";
+
+    const log = document.createElement("div");
+    log.className = "rec-chat-log";
+
+    const form = document.createElement("form");
+    form.className = "rec-chat-form";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("aria-label", "Type your question");
+    input.autocomplete = "off";
+
+    const sendButton = document.createElement("button");
+    sendButton.type = "submit";
+    sendButton.textContent = "Send ➤";
+
+    form.append(input, sendButton);
+    panel.append(head, chips, log, form);
+
+    function addMessage(kind, html) {
+        const row = document.createElement("div");
+        row.className = `rec-msg rec-msg-${kind}`;
+
+        const bubble = document.createElement("div");
+        bubble.className = "rec-bubble";
+        bubble.innerHTML = html;
+
+        row.appendChild(bubble);
+        log.appendChild(row);
+        log.scrollTop = log.scrollHeight;
+
+        return row;
+    }
+
+    function setBusy(busy) {
+        sendButton.disabled = busy;
+        chips.querySelectorAll("button").forEach(btn => {
+            btn.disabled = busy;
+        });
+    }
+
+    async function send(text) {
+        const question = text.trim();
+
+        if (!question) {
+            return;
+        }
+
+        addMessage("user", formatAiText(question));
+        input.value = "";
+        setBusy(true);
+
+        const typing = addMessage(
+            "ai",
+            '<span class="rec-typing"><span></span><span></span><span></span></span>'
+        );
+
+        try {
+            const answer = await askProjectAI(project, question);
+            typing.remove();
+            addMessage("ai", formatAiText(answer));
+        } catch (error) {
+            console.error("Ask AI error:", error);
+            typing.remove();
+            addMessage(
+                "ai",
+                formatAiText(error.message || "The AI assistant is busy. Please try again shortly.")
+            );
+        } finally {
+            setBusy(false);
+            input.focus();
+        }
+    }
+
+    [
+        { icon: "🧠", label: "Explain this project" },
+        { icon: "🛠️", label: "Skills I need" },
+        { icon: "🚀", label: "Where do I start?" }
+    ].forEach(item => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "rec-chip";
+        chip.textContent = `${item.icon} ${item.label}`;
+        chip.onclick = () => send(item.label);
+        chips.appendChild(chip);
+    });
+
+    form.addEventListener("submit", event => {
+        event.preventDefault();
+        send(input.value);
+    });
+
+    closeButton.onclick = () => panel.classList.remove("open");
+
+    function open() {
+        panel.classList.add("open");
+        input.focus();
+    }
+
+    return { panel, open, close: () => panel.classList.remove("open") };
+}
+
+/* Title -> Ask AI -> Project Description -> Apply */
+function buildProjectDetails(project) {
+    const wrapper = document.createElement("div");
+
+    const top = document.createElement("div");
+    top.className = "rec-details-top";
+
+    const title = document.createElement("h3");
+    title.textContent = project.Project_Name || "Untitled Project";
+
+    const askButton = document.createElement("button");
+    askButton.type = "button";
+    askButton.className = "rec-ask-btn";
+    askButton.textContent = "✨ Ask AI";
+
+    top.append(title, askButton);
+
+    const chat = buildChatPanel(project);
+
+    askButton.onclick = () => {
+        if (chat.panel.classList.contains("open")) {
+            chat.close();
+        } else {
+            chat.open();
+        }
+    };
+
+    const descriptionTitle = document.createElement("p");
+    descriptionTitle.className = "rec-desc-title";
+    descriptionTitle.textContent = "Project Description";
+
+    const description = document.createElement("p");
+    description.className = "rec-description";
+    description.textContent =
+        project.Project_Description || "No description available.";
+
+    const projectId = Number(project.Project_ID);
+    const applied = isProjectApplied(project);
+
+    const actions = document.createElement("div");
+    actions.className = "rec-actions";
+
+    const applyButton = document.createElement("button");
+    applyButton.type = "button";
+    applyButton.className = "rec-apply-btn";
+    applyButton.textContent = applied
+        ? "Applied ✓"
+        : (applying.has(projectId) ? "Applying..." : "Apply");
+    applyButton.disabled = applied || applying.has(projectId);
+    applyButton.onclick = () => applyToProject(projectId);
+
+    actions.appendChild(applyButton);
+
+    wrapper.append(top, chat.panel, descriptionTitle, description, actions);
+
+    return wrapper;
+}
+
+function buildRecItem(project, label) {
+    const projectId = Number(project.Project_ID);
+
+    const item = document.createElement("div");
+    item.className = "rec-item";
+
+    if (recOpenIds.has(projectId)) {
+        item.classList.add("open");
+    }
+
+    const header = document.createElement("button");
+    header.type = "button";
+    header.className = "rec-item-header";
+    header.setAttribute("aria-expanded", recOpenIds.has(projectId));
+
+    const name = document.createElement("span");
+    name.className = "rec-item-name";
+    name.textContent = project.Project_Name || "Untitled Project";
+
+    const skillLabel = document.createElement("span");
+    skillLabel.className = "rec-item-label";
+    skillLabel.textContent = label || "";
+
+    const arrow = document.createElement("span");
+    arrow.className = "rec-arrow";
+    arrow.textContent = "\u25BE";
+
+    header.append(name, skillLabel, arrow);
+
+    const details = document.createElement("div");
+    details.className = "rec-details";
+    details.appendChild(buildProjectDetails(project));
+
+    header.onclick = () => {
+        const isOpen = item.classList.toggle("open");
+        header.setAttribute("aria-expanded", isOpen);
+
+        if (isOpen) {
+            recOpenIds.add(projectId);
+        } else {
+            recOpenIds.delete(projectId);
+        }
+    };
+
+    item.append(header, details);
+
+    return item;
+}
+
+function renderRecommended() {
+    const container = document.getElementById("recResults");
+
+    if (!container) {
         return;
     }
 
-    container.innerHTML = "<p>Finding the best projects for you...</p>";
-
-    try {
-        let studentSkills = [];
-
-        // Fetch the student's actual skills from the database
-        const profileResponse = await fetch(
-            `${API_URL}/profiles/${encodeURIComponent(currentUserId())}`
-        );
-
-        if (profileResponse.ok) {
-            const profileData = await profileResponse.json();
-
-            if (Array.isArray(profileData.Skills)) {
-                studentSkills = profileData.Skills;
-            } else if (typeof profileData.Skills === "string") {
-                studentSkills = profileData.Skills.split(/[,;]+/);
-            }
-        }
-
-        // Use saved profile skills as fallback
-        if (studentSkills.length === 0) {
-            const savedProfile = JSON.parse(
-                localStorage.getItem(getProfileStorageKey()) || "{}"
-            );
-
-            studentSkills = [
-                savedProfile.profileSkill1,
-                savedProfile.profileSkill2,
-                savedProfile.profileSkill3
-            ];
-        }
-
-        studentSkills = [...new Set(
-            studentSkills
-                .filter(skill => typeof skill === "string")
-                .map(skill => skill.trim())
-                .filter(Boolean)
-        )];
-
-        if (studentSkills.length === 0) {
-            container.innerHTML =
-                "<p>Please add your skills in My Profile to get AI project recommendations.</p>";
-            return;
-        }
-
-        // Call the AI recommendation endpoint
-        const response = await fetch(
-            `${API_URL}/ai/recommendations`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    student_skills: studentSkills,
-                    top_n: 5
-                })
-            }
-        );
-
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok) {
-            throw new Error(
-                data.detail || "Unable to load AI recommendations."
-            );
-        }
-
-        const recommendations = data.recommendations || [];
-
-        if (recommendations.length === 0) {
-            container.innerHTML =
-                "<p>No project recommendations available right now.</p>";
-            return;
-        }
-
+    if (!recState.mode) {
         container.innerHTML = "";
+        return;
+    }
 
-        recommendations.forEach(project => {
-            const card = document.createElement("div");
-            card.className = "ai-recommendation-card";
+    container.innerHTML = "";
 
-            // Project name
-            const title = document.createElement("h3");
-            title.textContent = project.project_name || "Untitled Project";
+    const showMessage = text => {
+        const p = document.createElement("p");
+        p.className = "rec-message";
+        p.textContent = text;
+        container.appendChild(p);
+    };
 
-            // Project description
-            const description = document.createElement("p");
-            description.className = "ai-project-description";
-            description.textContent =
-                project.description || "No description available.";
+    if (recState.mode === "name") {
+        const query = normalizeText(recState.query);
 
-            // AI Match Score heading
-            const scoreHeader = document.createElement("div");
-            scoreHeader.className = "ai-score-header";
+        let matches = allProjects.filter(
+            project => normalizeText(project.Project_Name) === query
+        );
 
-            const scoreLabel = document.createElement("span");
-            scoreLabel.className = "ai-score-label";
-            scoreLabel.textContent = "AI Match Score";
-
-            const matchScore = document.createElement("span");
-            matchScore.className = "ai-match-score";
-
-            const percentage = Math.max(
-                0,
-                Math.min(100, Number(project.match_percentage) || 0)
+        if (matches.length === 0) {
+            matches = allProjects.filter(
+                project => normalizeText(project.Project_Name).includes(query)
             );
+        }
 
-            matchScore.textContent = `${percentage}%`;
+        if (matches.length === 0) {
+            showMessage("No project found with that name.");
+            return;
+        }
 
-            scoreHeader.append(scoreLabel, matchScore);
+        if (matches.length === 1) {
+            const single = document.createElement("div");
+            single.className = "rec-details rec-details-single";
+            single.appendChild(buildProjectDetails(matches[0]));
+            container.appendChild(single);
+            return;
+        }
 
-            // Green progress bar
-            const progressTrack = document.createElement("div");
-            progressTrack.className = "ai-progress-track";
-
-            const progressFill = document.createElement("div");
-            progressFill.className = "ai-progress-fill";
-            progressFill.style.width = `${percentage}%`;
-
-            progressTrack.appendChild(progressFill);
-
-            // Helper function for skill information
-            function createSkillSection(className, heading, skills) {
-                const section = document.createElement("div");
-                section.className = `ai-skills-section ${className}`;
-
-                const sectionHeading = document.createElement("strong");
-                sectionHeading.textContent = heading;
-
-                const sectionText = document.createElement("p");
-                sectionText.textContent =
-                    Array.isArray(skills) && skills.length
-                        ? skills.join(", ")
-                        : "None";
-
-                section.append(sectionHeading, sectionText);
-                return section;
-            }
-
-            // Matched skills - Green
-            const matchedSkills = createSkillSection(
-                "ai-matched-skills",
-                "✓ Matched Skills",
-                project.matched_skills
-            );
-
-            // Missing skills - Red
-            const missingSkills = createSkillSection(
-                "ai-missing-skills",
-                "✕ Missing Skills",
-                project.missing_skills
-            );
-
-            // Required skills
-            const requiredSkills = createSkillSection(
-                "ai-required-skills",
-                "Required Skills",
-                project.required_skills
-            );
-
-            // Recommendation reason - Beige background
-            const reasonBox = document.createElement("div");
-            reasonBox.className = "ai-recommendation-reason";
-
-            const reasonHeading = document.createElement("strong");
-            reasonHeading.textContent = "Why recommended?";
-
-            const reasonText = document.createElement("p");
-            reasonText.textContent =
-                project.recommendation_reason || "Matches your skills.";
-
-            reasonBox.append(reasonHeading, reasonText);
-
-            // Add all elements to the recommendation card
-            card.append(
-                title,
-                description,
-                scoreHeader,
-                progressTrack,
-                matchedSkills,
-                missingSkills,
-                requiredSkills,
-                reasonBox
-            );
-
-            container.appendChild(card);
+        matches.forEach(project => {
+            container.appendChild(buildRecItem(project, ""));
         });
 
-    } catch (error) {
-        console.error("AI Recommendation Error:", error);
-
-        container.innerHTML =
-            "<p>Unable to load AI recommendations. Please check the backend and try again.</p>";
+        return;
     }
+
+    const results = searchBySkill(recState.query);
+
+    if (results.length === 0) {
+        showMessage("No project or skill found for this search.");
+        return;
+    }
+
+    results.forEach(result => {
+        container.appendChild(buildRecItem(result.project, result.label));
+    });
 }
+
+/*
+ * One search box. On Enter the search type is detected automatically:
+ *   1. query exactly equals a project name  -> that one project
+ *   2. query matches a required skill       -> skill results (sorted)
+ *   3. query is part of a project name      -> matching project(s)
+ */
+function detectSearchMode(query) {
+    const q = normalizeText(query);
+
+    // 1. exact project name
+    if (allProjects.some(p => normalizeText(p.Project_Name) === q)) {
+        return "name";
+    }
+
+    // 2. skill that is really listed in a project's required skills
+    const isRequiredSkill = allProjects.some(p =>
+        getRequiredSkills(p).some(skill => skillMatchesQuery(skill, q))
+    );
+
+    if (isRequiredSkill) {
+        return "skill";
+    }
+
+    // 3. part of a project name (e.g. "hackathon")
+    if (allProjects.some(p => normalizeText(p.Project_Name).includes(q))) {
+        return "name";
+    }
+
+    // 4. skill only mentioned in descriptions
+    return "skill";
+}
+
+document.getElementById("recSearchForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const query = document.getElementById("recSearchInput").value.trim();
+
+    if (!query) {
+        recState = { mode: null, query: "" };
+        renderRecommended();
+        return;
+    }
+
+    recState = {
+        mode: detectSearchMode(query),
+        query
+    };
+
+    recOpenIds.clear();
+    renderRecommended();
+});
 
 
 async function loadDashboard() {
@@ -1276,9 +2704,8 @@ async function loadDashboard() {
         const projectsData = await projectsResponse.json();
         const myProjectsData = await myProjectsResponse.json();
 
-        const allProjects = projectsData.projects || [];
+        allProjects = projectsData.projects || [];
         myProjects = myProjectsData.projects || [];
-    
 
         const appliedIds = new Set(
             myProjects.map(project => Number(project.Project_ID))
@@ -1288,25 +2715,21 @@ async function loadDashboard() {
             project => !appliedIds.has(Number(project.Project_ID))
         );
 
-        document.getElementById("projectCount").textContent =
-            myProjects.length;
-
-        document.getElementById("teamCount").textContent =
-            myProjects.reduce((total, project) => {
-                return total + Number(project.Members || 0);
-            }, 0);
-
         renderAvailableProjects();
         renderMyProjects();
+        renderRecommended();
 
     } catch (error) {
         console.error("Dashboard loading error:", error);
 
-        projectsContainer.innerHTML =
-            "<p>Unable to load projects. Make sure the backend is running.</p>";
+        // Backend not reachable: show sample projects so the flow still works.
+        allProjects = DEMO_PROJECTS;
+        myProjects = [];
+        availableProjects = DEMO_PROJECTS;
 
-        teamContainer.innerHTML =
-            "<p>Unable to load your applied projects.</p>";
+        renderAvailableProjects();
+        renderMyProjects();
+        renderRecommended();
     }
 }
 
@@ -1503,6 +2926,7 @@ async function applyToProject(projectId) {
 
     applying.add(id);
     renderAvailableProjects();
+    renderRecommended();
 
     try {
         const response = await fetch(`${API_URL}/projects/${id}/apply`, {
@@ -1542,15 +2966,725 @@ async function applyToProject(projectId) {
     } finally {
         applying.delete(id);
         renderAvailableProjects();
+        renderRecommended();
     }
 }
 
+/* ================= DASHBOARD HOME (profile, certificates, resume, skills) ================= */
+
+/*
+ * Everything starts empty. Certificates are filled only by verified uploads
+ * and skills only from the uploaded resume (both are connected to the backend
+ * in the next step).
+ */
+const homeState = { certificates: [], skills: [], resume: null, resumeUrl: null, certAll: false };
+const CERT_PREVIEW = 12;
+
+function toggleSidebarMenu(force) {
+    const sidebar = document.querySelector(".sidebar");
+    const button = document.getElementById("menuToggle");
+
+    if (!sidebar) {
+        return;
+    }
+
+    const open = typeof force === "boolean"
+        ? force
+        : !sidebar.classList.contains("menu-open");
+
+    sidebar.classList.toggle("menu-open", open);
+
+    if (button) {
+        button.setAttribute("aria-expanded", String(open));
+    }
+}
+
+function roleLabel(role) {
+    if (!role || role === "Student" || role === "Team Member") {
+        return "Student";
+    }
+
+    return role;
+}
+
+function errorText(detail, fallback) {
+    if (Array.isArray(detail)) {
+        return detail.map(item => {
+            const field = Array.isArray(item.loc) ? item.loc.slice(1).join(" ") : "";
+            return (field ? field + ": " : "") + (item.msg || JSON.stringify(item));
+        }).join("; ");
+    }
+
+    if (detail && typeof detail === "object") {
+        return JSON.stringify(detail);
+    }
+
+    return detail || fallback;
+}
+
+let homeProfile = null;
+let accountName = "";
+
+function metadataList(value) {
+    if (typeof value === "string") {
+        try {
+            value = JSON.parse(value);
+        } catch (error) {
+            value = [];
+        }
+    }
+
+    return Array.isArray(value) ? value : [];
+}
+
+function certificatesFromProfile(profile) {
+    return metadataList(profile && profile.Document_Metadata)
+        .filter(item => item && item.kind === "certificate" && item.status === "Verified")
+        .map(item => ({
+            name: item.name,
+            filename: item.filename || item.name,
+            institute: item.institute || ""
+        }));
+}
+
+/* Saves the verified certificates with the rest of the saved profile. */
+async function persistCertificates() {
+    const profile = homeProfile;
+
+    if (!profile || !profile.Branch || !profile.Semester ||
+        !Array.isArray(profile.Skills) || profile.Skills.length === 0) {
+        throw new Error("Please complete your profile first (Edit Profile), then add certificates or a resume.");
+    }
+
+    const others = metadataList(profile.Document_Metadata)
+        .filter(item => !(item && (item.kind === "certificate" || item.kind === "resume")));
+
+    if (homeState.resume) {
+        others.push({
+            kind: "resume",
+            name: homeState.resume.name,
+            size: homeState.resume.size,
+            updated: homeState.resume.updated,
+            skills: homeState.skills
+        });
+    }
+
+    const certificates = homeState.certificates.map(certificate => ({
+        kind: "certificate",
+        name: certificate.name,
+        filename: certificate.filename,
+        institute: certificate.institute,
+        status: "Verified"
+    }));
+
+    const semester = Math.max(1, Math.min(8, Number(profile.Semester)));
+
+    const body = {
+        college: profile.College || "",
+        branch: profile.Branch,
+        year_of_study: Math.max(1, Math.min(4, Number(profile.Year_Of_Study || Math.ceil(semester / 2)))),
+        semester,
+        skills: profile.Skills,
+        interests: profile.Interests || "",
+        github_url: profile.Github_URL || "",
+        project_experience: profile.Project_Experience || "",
+        document_metadata: [...others, ...certificates]
+    };
+
+    if (body.document_metadata.length === 0) {
+        // Older backends need one item here; the dashboard ignores it.
+        body.document_metadata = [{ kind: "profile", name: "Profile created" }];
+    }
+
+    const response = await fetch(
+        `${API_URL}/profiles/${encodeURIComponent(currentUserId())}`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        }
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(errorText(result.detail, "Could not save the certificate."));
+    }
+
+    profile.Document_Metadata = body.document_metadata;
+
+    if (typeof serverProfile === "object" && serverProfile) {
+        serverProfile.Document_Metadata = body.document_metadata;
+    }
+}
+
+async function loadUserBar() {
+    let name = "";
+    let role = "Student";
+
+    try {
+        if (typeof getSession === "function") {
+            const session = getSession() || {};
+            name = session.name || session.Name || session.user_name || session.full_name || "";
+            role = session.role || session.Role || role;
+        }
+    } catch (error) {
+        /* session not available */
+    }
+
+    try {
+        const response = await fetch(
+            `${API_URL}/profiles/${encodeURIComponent(currentUserId())}`
+        );
+
+        if (response.ok) {
+            const data = await response.json();
+            homeProfile = data;
+            name = data.Name || name;
+            role = data.Role || role;
+            homeState.certificates = certificatesFromProfile(data);
+            renderCertificates();
+
+            const savedResume = metadataList(data.Document_Metadata)
+                .find(item => item && item.kind === "resume");
+
+            if (savedResume) {
+                homeState.resume = {
+                    name: savedResume.name,
+                    size: savedResume.size,
+                    updated: savedResume.updated
+                };
+                homeState.skills = Array.isArray(savedResume.skills) ? savedResume.skills : [];
+                homeState.resumeUrl = await loadResumeUrl();
+                renderResume();
+                renderSkills();
+            }
+        }
+    } catch (error) {
+        /* backend not reachable: use what we have */
+    }
+
+    accountName = name;
+    document.getElementById("heroName").textContent = name || "Member";
+    document.getElementById("heroRole").textContent = roleLabel(role);
+}
+
+function photoStorageKey() {
+    return "skillsyncPhoto_" + currentUserId();
+}
+
+function showAvatar(dataUrl) {
+    document.getElementById("userAvatarImg").src = dataUrl;
+    document.getElementById("userAvatar").classList.add("has-photo");
+}
+
+function loadSavedPhoto() {
+    try {
+        const saved = localStorage.getItem(photoStorageKey());
+
+        if (saved) {
+            showAvatar(saved);
+        }
+    } catch (error) {
+        /* storage blocked */
+    }
+}
+
+function handlePhotoChosen(file) {
+    if (!file || !file.type.startsWith("image/")) {
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        const image = new Image();
+
+        image.onload = () => {
+            const size = 256;
+            const canvas = document.createElement("canvas");
+            canvas.width = size;
+            canvas.height = size;
+
+            const side = Math.min(image.width, image.height);
+            const sx = (image.width - side) / 2;
+            const sy = (image.height - side) / 2;
+
+            canvas.getContext("2d").drawImage(image, sx, sy, side, side, 0, 0, size, size);
+
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+            showAvatar(dataUrl);
+
+            try {
+                localStorage.setItem(photoStorageKey(), dataUrl);
+            } catch (error) {
+                /* storage blocked */
+            }
+        };
+
+        image.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function formatFileSize(bytes) {
+    if (!bytes) {
+        return "";
+    }
+
+    return bytes >= 1048576
+        ? `${(bytes / 1048576).toFixed(1)} MB`
+        : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+function renderCertificates() {
+    const list = document.getElementById("certList");
+    const viewAll = document.getElementById("certViewAll");
+    list.innerHTML = "";
+
+    viewAll.disabled = homeState.certificates.length <= CERT_PREVIEW;
+    viewAll.classList.toggle("open", homeState.certAll);
+
+    if (homeState.certificates.length === 0) {
+        const note = document.createElement("p");
+        note.className = "home-note";
+        note.style.gridColumn = "1 / -1";
+        note.textContent = "No certificates uploaded yet.";
+        list.appendChild(note);
+        return;
+    }
+
+    const shown = homeState.certAll
+        ? homeState.certificates
+        : homeState.certificates.slice(0, CERT_PREVIEW);
+
+    shown.forEach(certificate => {
+        const tile = document.createElement("div");
+        tile.className = "cert-tile";
+
+        const name = document.createElement("span");
+        name.className = "cert-name";
+        name.textContent = certificate.name;
+
+        const verified = document.createElement("span");
+        verified.className = "cert-verified";
+        verified.textContent = "✓ Verified";
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "row-remove";
+        remove.setAttribute("aria-label", "Remove certificate");
+        remove.textContent = "✕";
+        remove.onclick = async () => {
+            const index = homeState.certificates.indexOf(certificate);
+            homeState.certificates.splice(index, 1);
+            renderCertificates();
+
+            try {
+                await persistCertificates();
+                setCertMessage("", false);
+            } catch (error) {
+                homeState.certificates.splice(index, 0, certificate);
+                renderCertificates();
+                setCertMessage(error.message, false);
+            }
+        };
+
+        tile.append(name, verified, remove);
+        list.appendChild(tile);
+    });
+}
+
+const DOC_ICON = '<svg width="40" height="46" viewBox="0 0 24 24" fill="none" stroke="#3B6EA5" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6M8 13h8M8 17h6"></path></svg>';
+
+/* The resume file itself is kept in this browser so View Resume keeps working after a refresh. */
+function resumeDb() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("skillsync", 1);
+        request.onupgradeneeded = () => request.result.createObjectStore("resumes");
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function resumeStore(mode, action) {
+    try {
+        const db = await resumeDb();
+
+        return await new Promise((resolve, reject) => {
+            const transaction = db.transaction("resumes", mode);
+            const request = action(transaction.objectStore("resumes"));
+            transaction.oncomplete = () => resolve(request ? request.result : null);
+            transaction.onerror = () => reject(transaction.error);
+        });
+    } catch (error) {
+        return null;
+    }
+}
+
+function saveResumeBlob(file) {
+    return resumeStore("readwrite", store => store.put(file, String(currentUserId())));
+}
+
+function deleteResumeBlob() {
+    return resumeStore("readwrite", store => store.delete(String(currentUserId())));
+}
+
+async function loadResumeUrl() {
+    const file = await resumeStore("readonly", store => store.get(String(currentUserId())));
+    return file ? URL.createObjectURL(file) : null;
+}
+
+function renderResume() {
+    const center = document.getElementById("resumeCenter");
+    const viewButton = document.getElementById("viewResumeBtn");
+    center.innerHTML = DOC_ICON;
+
+    if (!homeState.resume) {
+        center.classList.add("empty");
+        const note = document.createElement("p");
+        note.className = "home-note";
+        note.textContent = "No resume uploaded yet.";
+        center.appendChild(note);
+        viewButton.disabled = true;
+        return;
+    }
+
+    center.classList.remove("empty");
+
+    const text = document.createElement("div");
+    text.className = "resume-text";
+
+    const name = document.createElement("div");
+    name.className = "resume-name";
+    name.textContent = homeState.resume.name;
+
+    const meta = document.createElement("div");
+    meta.className = "resume-meta";
+    meta.textContent = [homeState.resume.size, homeState.resume.updated]
+        .filter(Boolean)
+        .join(" · ");
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "link-btn";
+    remove.textContent = "Remove resume";
+    remove.onclick = async () => {
+        const previous = { resume: homeState.resume, skills: homeState.skills, url: homeState.resumeUrl };
+
+        homeState.resume = null;
+        homeState.resumeUrl = null;
+        homeState.skills = [];
+        renderResume();
+        renderSkills();
+
+        try {
+            await persistCertificates();
+            await deleteResumeBlob();
+            if (previous.url) {
+                URL.revokeObjectURL(previous.url);
+            }
+            document.getElementById("resumeMessage").textContent = "";
+        } catch (error) {
+            homeState.resume = previous.resume;
+            homeState.skills = previous.skills;
+            homeState.resumeUrl = previous.url;
+            renderResume();
+            renderSkills();
+            document.getElementById("resumeMessage").textContent = error.message;
+        }
+    };
+
+    text.append(name, meta, remove);
+    center.appendChild(text);
+    viewButton.disabled = !homeState.resumeUrl;
+    viewButton.title = homeState.resumeUrl ? "" : "Choose the file again to view it on this browser";
+}
+
+function renderSkills() {
+    const container = document.getElementById("skillsList");
+    container.innerHTML = "";
+
+    if (homeState.skills.length === 0) {
+        const note = document.createElement("p");
+        note.className = "home-note";
+        note.textContent = "No skills yet.";
+        container.appendChild(note);
+        return;
+    }
+
+    const list = document.createElement("ul");
+    list.className = "skill-list";
+
+    homeState.skills.forEach(skill => {
+        const item = document.createElement("li");
+        item.textContent = skill;
+        list.appendChild(item);
+    });
+
+    container.appendChild(list);
+}
+
+function loadDashboardHome() {
+    loadUserBar();
+    loadSavedPhoto();
+    renderCertificates();
+    renderResume();
+    renderSkills();
+}
+
+document.getElementById("menuToggle").addEventListener("click", () => toggleSidebarMenu());
+
+document.getElementById("brandHome").addEventListener("click", () => showSection("dashboard"));
+
+document.getElementById("heroEditBtn").addEventListener("click", async () => {
+    showSection("profile");
+    await profileLoading;
+    toggleProfileEdit();
+});
+
+document.getElementById("certViewAll").addEventListener("click", () => {
+    homeState.certAll = !homeState.certAll;
+    renderCertificates();
+});
+
+function toggleHomeCard(card, forceOpen) {
+    const collapsed = typeof forceOpen === "boolean"
+        ? !forceOpen
+        : !card.classList.contains("collapsed");
+
+    card.classList.toggle("collapsed", collapsed);
+
+    const button = card.querySelector(".card-toggle");
+
+    if (button) {
+        button.setAttribute("aria-expanded", String(!collapsed));
+    }
+}
+
+document.querySelectorAll(".home-card-title").forEach(title => {
+    title.addEventListener("click", () => toggleHomeCard(title.closest(".home-card")));
+});
+
+document.getElementById("userAvatar").addEventListener("click", () => {
+    document.getElementById("photoInput").click();
+});
+
+document.getElementById("photoInput").addEventListener("change", event => {
+    handlePhotoChosen(event.target.files[0]);
+    event.target.value = "";
+});
+
+document.getElementById("certChooseBtn").addEventListener("click", () => {
+    document.getElementById("certInput").click();
+});
+
+function setCertMessage(text, ok) {
+    const message = document.getElementById("certMessage");
+    message.textContent = text;
+    message.classList.toggle("ok", Boolean(ok));
+}
+
+async function verifyAndAddCertificate(file) {
+    if (!/\.(pdf|docx|txt)$/i.test(file.name)) {
+        setCertMessage("Please choose a PDF, DOCX or TXT certificate.", false);
+        return;
+    }
+
+    const filename = file.name;
+    const displayName = filename.replace(/\.[^.]+$/, "");
+
+    if (homeState.certificates.some(item => item.filename === filename)) {
+        setCertMessage("This certificate is already added.", false);
+        return;
+    }
+
+    setCertMessage("Verifying certificate...", true);
+
+    try {
+        const formData = new FormData();
+        formData.append("certificates", file);
+        formData.append("skills", "");
+        formData.append("student_name", accountName);
+
+        const response = await fetch(`${API_URL}/certificates/verify`, {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(data.detail || "The verification server returned an error.");
+        }
+
+        const result = (data.results || [])[0] || {};
+
+        if (result.status !== "Verified") {
+            // Not saved and not listed: shown once, here only.
+            setCertMessage(
+                "This certificate could not be verified. " +
+                (result.reason || "Please upload a valid certificate.").replace(
+                    " This is a screening result, not proof of authenticity.", ""
+                ),
+                false
+            );
+            return;
+        }
+
+        const certificate = {
+            name: displayName,
+            filename,
+            institute: result.institute_detected || ""
+        };
+
+        homeState.certificates.push(certificate);
+        renderCertificates();
+
+        try {
+            await persistCertificates();
+            setCertMessage("Certificate verified and added.", true);
+        } catch (error) {
+            homeState.certificates.pop();
+            renderCertificates();
+            setCertMessage(error.message, false);
+        }
+    } catch (error) {
+        setCertMessage(
+            "Could not verify the certificate. " + (error.message || "Is the backend running?"),
+            false
+        );
+    }
+}
+
+document.getElementById("certInput").addEventListener("change", async event => {
+    const picked = event.target.files[0];
+
+    if (!picked) {
+        return;
+    }
+
+    // Keep our own copy so the file stays readable after the input is reset.
+    const file = new File([await picked.arrayBuffer()], picked.name, { type: picked.type });
+    event.target.value = "";
+
+    verifyAndAddCertificate(file);
+});
+
+document.getElementById("resumeChooseBtn").addEventListener("click", () => {
+    document.getElementById("resumeInput").click();
+});
+
+document.getElementById("resumeInput").addEventListener("change", async event => {
+    const picked = event.target.files[0];
+    const message = document.getElementById("resumeMessage");
+    message.textContent = "";
+
+    if (!picked) {
+        return;
+    }
+
+    // Keep our own copy so the file stays readable after the input is reset.
+    const file = new File([await picked.arrayBuffer()], picked.name, { type: picked.type });
+    event.target.value = "";
+
+    if (!/\.(pdf|docx)$/i.test(file.name)) {
+        message.textContent = "Please choose a PDF or DOCX resume.";
+        return;
+    }
+
+    message.textContent = "Reading your resume...";
+
+    let skills = [];
+
+    try {
+        // Preferred: only the resume's Skills section is read.
+        const sectionForm = new FormData();
+        sectionForm.append("resume", file);
+
+        let response = await fetch(`${API_URL}/certificates/resume-skills`, {
+            method: "POST",
+            body: sectionForm
+        });
+
+        if (response.status === 404 || response.status === 405) {
+            // Backend without the new route: read skills from the whole resume.
+            const wholeForm = new FormData();
+            wholeForm.append("certificates", file);
+            wholeForm.append("skills", "");
+            wholeForm.append("student_name", "");
+
+            response = await fetch(`${API_URL}/certificates/verify`, {
+                method: "POST",
+                body: wholeForm
+            });
+
+            const whole = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(errorText(whole.detail, "Could not read the resume."));
+            }
+
+            skills = ((whole.results || [])[0] || {}).extracted_skills || [];
+        } else {
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(errorText(data.detail, "Could not read the resume."));
+            }
+
+            skills = data.skills || [];
+        }
+    } catch (error) {
+        message.textContent = "Could not read skills from the resume. " + (error.message || "");
+        return;
+    }
+
+    if (homeState.resumeUrl) {
+        URL.revokeObjectURL(homeState.resumeUrl);
+    }
+
+    homeState.resumeUrl = URL.createObjectURL(file);
+    homeState.resume = {
+        name: file.name,
+        size: formatFileSize(file.size),
+        updated: "Updated " + new Date().toLocaleDateString("en-GB", {
+            day: "numeric", month: "short", year: "numeric"
+        })
+    };
+    homeState.skills = skills;
+
+    renderResume();
+    renderSkills();
+
+    if (skills.length > 0) {
+        toggleHomeCard(document.getElementById("skillsCard"), true);
+    }
+
+    await saveResumeBlob(file);
+
+    try {
+        await persistCertificates();
+        message.textContent = skills.length > 0
+            ? ""
+            : "Resume added, but no known skills were found in it.";
+    } catch (error) {
+        message.textContent = error.message;
+    }
+});
+
+document.getElementById("viewResumeBtn").addEventListener("click", () => {
+    if (homeState.resumeUrl) {
+        window.open(homeState.resumeUrl, "_blank");
+    }
+});
+
+
 loadDashboard();
 showSection("dashboard");
-loadAIRecommendations();
 </script>
-
 <script src="reviews.js"></script>
+
 </body>
 </html>
-```
