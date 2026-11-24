@@ -534,6 +534,10 @@ tr:hover {
 
                         <label>Submission Date</label>
                         <input type="date" id="submissionDate">
+                        <label>Select Mentor</label>
+                            <select id="mentorSelect" required>
+                            <option value="">Loading mentors...</option>
+                            </select>
 
                         <button type="submit" class="primary-btn">
                             Create Project
@@ -816,13 +820,18 @@ document.getElementById("projectForm").addEventListener("submit", async function
     }
 
     const projectData = {
-        project_name: document.getElementById("projectName").value.trim(),
-        project_description: document.getElementById("projectDescription").value.trim(),
-        members_required: Number(document.getElementById("membersRequired").value),
-        skill_required: document.getElementById("requiredSkills").value.trim(),
-        submission_date: document.getElementById("submissionDate").value,
-        user_id: currentUser.id
+     project_name: document.getElementById("projectName").value.trim(),
+     project_description: document.getElementById("projectDescription").value.trim(),
+     members_required: Number(document.getElementById("membersRequired").value),
+     skill_required: document.getElementById("requiredSkills").value.trim(),
+     submission_date: document.getElementById("submissionDate").value,
+     user_id: currentUser.id,
+     mentor_id: Number(document.getElementById("mentorSelect").value)
     };
+    if (!projectData.mentor_id) {
+    alert("Please select a mentor.");
+    return;
+    }
 
     try {
         const response = await fetch(`${API}/projects/`, {
@@ -930,6 +939,42 @@ async function loadTeam(projectId) {
         container.textContent = error.message;
     }
 }
+async function loadMentors() {
+    const mentorSelect = document.getElementById("mentorSelect");
+
+    try {
+        const response = await fetch(`${API}/projects/mentors`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Unable to load mentors");
+        }
+
+        mentorSelect.innerHTML =
+            '<option value="">Select a mentor</option>';
+
+        if (!data.mentors || data.mentors.length === 0) {
+            mentorSelect.innerHTML =
+                '<option value="">No mentors available</option>';
+            return;
+        }
+
+        data.mentors.forEach(mentor => {
+            const option = document.createElement("option");
+
+            option.value = mentor.User_ID;
+            option.textContent =
+                `${mentor.Name} (${mentor.Email})`;
+
+            mentorSelect.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("Mentor loading error:", error);
+        mentorSelect.innerHTML =
+            '<option value="">Failed to load mentors</option>';
+    }
+}
 
 async function updateApplication(memberId, action, projectId) {
     if (!memberId) {
@@ -961,6 +1006,7 @@ if (!currentUser.id) {
     alert("User ID not found. Please login again.");
 } else {
     loadProjects();
+    loadMentors();
 }
 </script>
 

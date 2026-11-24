@@ -29,7 +29,7 @@ DEFAULT_MODELS = [
 ]
 
 REQUEST_TIMEOUT_MS = 60000
-MAX_RETRIES = 2
+MAX_RETRIES = 5
 
 _client = None
 _client_key = None
